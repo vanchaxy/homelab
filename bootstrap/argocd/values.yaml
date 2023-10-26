@@ -18,9 +18,9 @@ argo-cd:
         end
         return hs
     metrics: &metrics
-      enabled: true
+      enabled: false
       serviceMonitor:
-        enabled: true
+        enabled: false
   dex:
     enabled: false
   controller:
