@@ -1,0 +1,6 @@
+gitops:
+  repo: https://github.com/vanchaxy/homelab
+  revision: main
+stacks:
+  - name: bootstrap
+    namespace: argocd
