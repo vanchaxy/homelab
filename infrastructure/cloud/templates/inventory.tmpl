@@ -1,0 +1,12 @@
+cloud:
+  children:
+    hetzner:
+      hosts:
+        %{~ for name, params in hosts ~}
+
+        ${ name }:
+          ansible_host: ${ hosts_ips[name] }
+          vpn_addr: ${ vpn_ips[name] }
+          master: ${ params["master"] }
+
+        %{~ endfor ~}

@@ -1,0 +1,6 @@
+- name: Create Kubernetes cluster
+  hosts: all
+  roles:
+    - wireguard
+    - k3s
+    - automatic_upgrade
