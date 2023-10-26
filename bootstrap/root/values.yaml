@@ -4,3 +4,4 @@ gitops:
 stacks:
   - name: bootstrap
     namespace: argocd
+  - name: system
