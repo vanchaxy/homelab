@@ -1,10 +1,10 @@
-#metal:
-#  children:
-#    metal:
-#      hosts:
-#        metal0:
-#          ansible_host: 192.168.1.110
-#          mac: '00:23:24:d1:f5:69'
-#          disk: sda
-#          network_interface: eno1
-#          master: true
+metal:
+  children:
+    metal:
+      hosts:
+        metal0:
+          ansible_host: 192.168.1.222
+          mac: '6C:4B:90:A2:75:D7'
+          disk: sda
+          network_interface: eno1
+          master: true
