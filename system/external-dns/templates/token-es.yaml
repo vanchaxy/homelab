@@ -9,7 +9,7 @@ spec:
     template:
       type: Opaque
       data:
-        value: {{ .value }}
+        value: {{`{{ .value }}`}}
   data:
     - secretKey: value
       sourceRef:
