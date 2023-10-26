@@ -1,6 +1,6 @@
 metal:
   children:
-    metal:
+    metal_p:
       hosts:
         metal0:
           ansible_host: 192.168.1.222
