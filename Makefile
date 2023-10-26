@@ -10,8 +10,8 @@ tools:
 		--rm \
 		--interactive \
 		--tty \
-		--network host \
 		--env "KUBECONFIG=${KUBECONFIG}" \
+		--env-file .env \
 		--volume "/var/run/docker.sock:/var/run/docker.sock" \
 		--volume $(shell pwd):$(shell pwd) \
 		--volume ${HOME}/.ssh:/root/.ssh \
