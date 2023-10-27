@@ -1,3 +1,8 @@
+- name: Install iscsi utils
+  ansible.builtin.dnf:
+    name:
+      - iscsi-initiator-utils
+
 - name: Download k3s binary
   ansible.builtin.get_url:
     url: https://github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/k3s
