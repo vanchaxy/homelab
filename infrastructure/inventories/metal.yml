@@ -4,7 +4,7 @@ metal:
       hosts:
         metal0:
           ansible_host: 192.168.1.222
-          mac: '6C:4B:90:A2:75:D7'
+          mac: '6c:4b:90:a2:75:d7'
           disk: sda
           network_interface: eno1
           master: true
