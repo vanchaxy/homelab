@@ -2,16 +2,16 @@ resource "bitwarden_folder" "cloud_credentials" {
   name = "Kubernetes secrets"
 }
 
-resource "kubernetes_namespace" "bitwarden-ns" {
+resource "kubernetes_namespace" "external-secrets-ns" {
   metadata {
-    name = "bitwarden"
+    name = "external-secrets"
   }
 }
 
 resource "kubernetes_secret" "bitwarden-secret" {
   metadata {
     name      = "bitwarden-cli"
-    namespace = "bitwarden"
+    namespace = "external-secrets"
   }
 
   data = {
