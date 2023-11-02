@@ -1,7 +1,31 @@
 - name: Install iscsi utils
-  ansible.builtin.dnf:
+  ansible.builtin.yum:
     name:
       - iscsi-initiator-utils
+
+- name: copy initiatorname.iscsi
+  copy:
+    content: "InitiatorName=$(/sbin/iscsi-iname)"
+    dest: "/etc/iscsi/initiatorname.iscsi"
+
+- name: Enable iscsid service
+  ansible.builtin.systemd:
+    name: iscsid
+    enabled: true
+    state: started
+  register: iscsid_service
+  until: iscsid_service is succeeded
+  retries: 5
+
+- name: Enable iscsid kernel module
+  community.general.modprobe:
+    name: iscsi_tcp
+    state: present
+  register: iscsi__register_module_enabled
+  until: iscsi__register_module_enabled is succeeded
+  retries: 10
+  delay: 10
+  failed_when: iscsi__register_module_enabled is failure
 
 - name: Download k3s binary
   ansible.builtin.get_url:
@@ -81,5 +105,18 @@
     content: "{{ kubeconfig_base64.content | b64decode | replace('127.0.0.1', hostvars[groups['cloud'][0]].ansible_host) }}"
     dest: "{{ playbook_dir }}/kubeconfig.yaml"
     mode: 0600
+  delegate_to: localhost
+  run_once: true
+
+- name: Install kilo
+  vars:
+    def_list:
+      - crds.yaml
+      - kilo-k3s.yaml
+  kubernetes.core.k8s:
+    kubeconfig: "{{ playbook_dir }}/kubeconfig.yaml"
+    state: present
+    src: "{{ item }}"
+  loop: "{{ def_list }}"
   delegate_to: localhost
   run_once: true
