@@ -21,7 +21,7 @@ argo-cd:
       enabled: true
       ingressClassName: nginx
       annotations:
-        cert-manager.io/cluster-issuer: letsencrypt-prod
+        cert-manager.io/cluster-issuer: letsencrypt
       hosts:
         - &host argocd-dev.ivanchenko.io
       tls:
