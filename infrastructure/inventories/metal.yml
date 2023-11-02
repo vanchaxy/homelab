@@ -5,6 +5,6 @@ metal:
         metal0:
           ansible_host: 192.168.1.222
           mac: '6c:4b:90:a2:75:d7'
-          disk: sda
+          disk: nvme0n1
           network_interface: eth0
           master: true
