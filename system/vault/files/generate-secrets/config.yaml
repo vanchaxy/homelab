@@ -1,6 +1,0 @@
-# Registry
-- path: registry/admin
-  data:
-    - key: password
-      length: 32
-      special: true
