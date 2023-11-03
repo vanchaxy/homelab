@@ -3,7 +3,7 @@ cluster-init: true
 {% else %}
 server: https://{{ hostvars[groups['cloud'][0]].ansible_host }}:6443
 {% endif %}
-vpn-auth: name=tailscale,joinKey=$AUTH-KEY
+vpn-auth: name=tailscale,joinKey=tskey-auth-kxJ8zx6CNTRL-y7hde4MhFwBRD5XkG9sh1CS7bwXgWSGF
 token-file: {{ k3s_token_file }}
 node-external-ip: "{{ ansible_host }}"
 {% if master %}
