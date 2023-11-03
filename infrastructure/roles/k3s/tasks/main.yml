@@ -107,16 +107,3 @@
     mode: 0600
   delegate_to: localhost
   run_once: true
-
-- name: Install kilo
-  vars:
-    def_list:
-      - crds.yaml
-      - kilo-k3s.yaml
-  kubernetes.core.k8s:
-    kubeconfig: "{{ playbook_dir }}/kubeconfig.yaml"
-    state: present
-    src: "{{ item }}"
-  loop: "{{ def_list }}"
-  delegate_to: localhost
-  run_once: true
