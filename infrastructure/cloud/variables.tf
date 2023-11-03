@@ -15,7 +15,7 @@ variable "location" {
 }
 
 variable "image" {
-  default = "fedora-38"
+  default = "ubuntu-22"
 }
 
 variable "hosts" {
