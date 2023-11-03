@@ -21,15 +21,8 @@ variable "image" {
 variable "hosts" {
   default = {
     "kube0" : { master : true, type : "cpx31" },
+    "kube1" : { master : false, type : "cpx11" },
   }
-}
-
-variable "vpn_address_range" {
-  default = "10.8.0.0/24"
-}
-
-variable "vpn_first_host_number" {
-  default = 201
 }
 
 variable "ansible_inventory_path" {

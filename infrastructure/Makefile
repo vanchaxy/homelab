@@ -12,11 +12,6 @@ cloud: ~/.ssh/id_ed25519
 cloud-destroy: ~/.ssh/id_ed25519
 	terraform -chdir=cloud destroy -var "ansible_inventory_path=$(shell pwd)/inventories"
 
-boot: ~/.ssh/id_ed25519
-	ansible-playbook \
-		--inventory inventories \
-		boot.yml
-
 cluster: ~/.ssh/id_ed25519
 	ansible-playbook \
 		--inventory inventories \

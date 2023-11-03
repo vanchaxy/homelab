@@ -28,10 +28,6 @@ resource "local_file" "inventory" {
         for s in hcloud_server.host :
         s.name => s.ipv4_address
       },
-      vpn_ips = {
-        for idx, name in keys(hcloud_server.host) :
-        name => cidrhost(var.vpn_address_range, var.vpn_first_host_number + idx)
-      },
     }
   )
   filename = "${var.ansible_inventory_path}/cloud.yml"
