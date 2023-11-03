@@ -1,0 +1,10 @@
+apiVersion: v2
+name: drone
+version: 0.0.0
+dependencies:
+  - name: grafana
+    repository: https://charts.drone.io
+    version: 0.6.1
+  - name: drone-runner-kube
+    repository: https://charts.drone.io
+    version: 0.1.10
