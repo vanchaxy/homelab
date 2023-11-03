@@ -2,9 +2,10 @@
 cluster-init: true
 {% else %}
 server: https://{{ hostvars[groups['cloud'][0]].ansible_host }}:6443
-vpn-auth: name=tailscale,joinKey=$AUTH-KEY
 {% endif %}
+vpn-auth: name=tailscale,joinKey=$AUTH-KEY
 token-file: {{ k3s_token_file }}
+node-external-ip: "{{ ansible_host }}"
 {% if master %}
 {{ k3s_server_config | to_nice_yaml }}
 {% endif %}
