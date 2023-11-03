@@ -15,7 +15,7 @@ variable "location" {
 }
 
 variable "image" {
-  default = "ubuntu-2204"
+  default = "ubuntu-22.04"
 }
 
 variable "hosts" {
