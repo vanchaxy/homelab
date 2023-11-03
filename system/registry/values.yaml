@@ -3,7 +3,7 @@ docker-registry:
     enabled: true
     className: nginx
     hosts:
-      - &host grafana-dev.ivanchenko.io
+      - &host registry.ivanchenko.io
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt
       nginx.ingress.kubernetes.io/ssl-redirect: "true"
