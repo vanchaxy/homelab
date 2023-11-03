@@ -21,7 +21,6 @@ variable "image" {
 variable "hosts" {
   default = {
     "kube0" : { master : true, type : "cpx31" },
-    "kube1" : { master : false, type : "cpx11" },
   }
 }
 
