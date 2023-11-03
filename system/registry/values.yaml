@@ -3,7 +3,7 @@ docker-registry:
     enabled: true
     className: nginx
     hosts:
-      - &host registry.ivanchenko.io
+      - &host dev-registry.ivanchenko.io
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt
       nginx.ingress.kubernetes.io/ssl-redirect: "true"
