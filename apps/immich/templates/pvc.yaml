@@ -4,8 +4,6 @@ metadata:
   name: photo-library
 spec:
   storageClassName: longhorn
-  accessModes:
-    - ReadWriteOnce
   resources:
     requests:
       storage: 300Gi
