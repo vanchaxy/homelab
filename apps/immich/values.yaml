@@ -23,12 +23,14 @@ immich:
     persistence:
       library:
         enabled: true
+        accessMode: ReadWriteMany
         size: 5Gi
 
   proxy:
     persistence:
       library:
         enabled: true
+        accessMode: ReadWriteMany
         size: 1Gi
 
     ingress:
