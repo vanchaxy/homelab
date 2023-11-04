@@ -1,6 +1,11 @@
 - name: Install tails
   ansible.builtin.shell: curl -fsSL https://tailscale.com/install.sh | sh
 
+- name: Install apache nfs-common
+  ansible.builtin.apt:
+    name: nfs-common
+    state: present
+
 - name: Download k3s binary
   ansible.builtin.get_url:
     url: https://github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/k3s
