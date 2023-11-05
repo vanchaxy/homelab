@@ -1,5 +1,0 @@
-longhorn:
-  defaultSettings:
-    nodeDownPodDeletionPolicy: delete-both-statefulset-and-deployment-pod
-  persistence:
-    defaultClassReplicaCount: 1
