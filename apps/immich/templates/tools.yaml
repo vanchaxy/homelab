@@ -22,7 +22,7 @@ spec:
           name: img-tools
           command:
             - sleep
-            - "infinity"
+            - "3600"
           volumeMounts:
             - name: library
               mountPath: /library
