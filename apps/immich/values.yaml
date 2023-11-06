@@ -18,7 +18,7 @@ immich:
     persistence:
       tsdata:
         enabled: true
-        size: 5Gi
+        size: 10Gi
 
   web:
     persistence:
