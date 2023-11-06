@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: img-tools
+  labels:
+    app.kubernetes.io/instance: img-tools
+    app.kubernetes.io/name: img-tools
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: img-tools
+      app.kubernetes.io/name: img-tools
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: img-tools
+        app.kubernetes.io/name: img-tools
+    spec:
+      containers:
+        - image: leplusorg/img
+          imagePullPolicy: IfNotPresent
+          name: img-tools
+          volumeMounts:
+            - name: library
+              mountPath: /library
+      volumes:
+        - name: library
+          persistentVolumeClaim:
+            claimName: photo-library
