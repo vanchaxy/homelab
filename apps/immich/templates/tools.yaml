@@ -17,7 +17,7 @@ spec:
         app.kubernetes.io/name: img-tools
     spec:
       containers:
-        - image: leplusorg/img
+        - image: davidanson/exiftool
           imagePullPolicy: IfNotPresent
           name: img-tools
           volumeMounts:
