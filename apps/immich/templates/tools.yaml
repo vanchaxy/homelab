@@ -20,6 +20,9 @@ spec:
         - image: davidanson/exiftool
           imagePullPolicy: IfNotPresent
           name: img-tools
+          command:
+            - sleep
+            - "infinity"
           volumeMounts:
             - name: library
               mountPath: /library
