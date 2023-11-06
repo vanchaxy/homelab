@@ -44,13 +44,13 @@ immich:
           nginx.ingress.kubernetes.io/ssl-passthrough: "true"
           nginx.ingress.kubernetes.io/proxy-body-size: "0"
         hosts:
-          - host: immich-dev.ivanchenko.io
+          - host: immich.ivanchenko.io
             paths:
               - path: "/"
         tls:
           - secretName: immich-tls
             hosts:
-              - immich-dev.ivanchenko.io
+              - immich.ivanchenko.io
 
   machine-learning:
     probes:

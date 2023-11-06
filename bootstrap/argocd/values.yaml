@@ -23,7 +23,7 @@ argo-cd:
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt
       hosts:
-        - &host argocd-dev.ivanchenko.io
+        - &host argocd.ivanchenko.io
       tls:
         - secretName: argocd-tls-certificate
           hosts:
