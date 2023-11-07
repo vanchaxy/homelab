@@ -68,6 +68,22 @@ photoprism:
   env:
     PHOTOPRISM_ORIGINALS_PATH: /photoprism/originals/library
 
+ingress:
+  main:
+    enabled: true
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    hosts:
+      - host: photoprism.ivanchenko.io
+    tls:
+      - secretName: photoprism-tls
+        hosts:
+          - photoprism.ivanchenko.io
+
   persistence:
     config:
       enabled: true
