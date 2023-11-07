@@ -20,6 +20,9 @@ spec:
         - image: jlesage/czkawka:v23.10.1
           imagePullPolicy: IfNotPresent
           name: czkawka
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsUser: 0
           ports:
             - containerPort: 5800
               protocol: TCP
