@@ -5,3 +5,6 @@ dependencies:
   - name: immich
     repository: https://immich-app.github.io/immich-charts
     version: 0.1.3
+  - name: photoprism
+    repository: https://djjudas21.github.io/charts
+    version: 7.4.8

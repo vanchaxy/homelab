@@ -63,3 +63,23 @@ immich:
       startup:
         spec:
           initialDelaySeconds: 90
+
+photoprism:
+  env:
+    PHOTOPRISM_ORIGINALS_PATH: /photoprism/originals/library
+
+  persistence:
+    config:
+      enabled: true
+      mountPath: /photoprism/storage
+
+    originals:
+      enabled: true
+      mountPath: "/photoprism/originals/library"
+      existingClaim: photo-library
+
+  mariadb:
+    enabled: true
+    primary:
+      persistence:
+        enabled: true
