@@ -75,7 +75,7 @@ photoprism:
 
     originals:
       enabled: true
-      mountPath: "/photoprism/originals/library"
+      mountPath: "/photoprism/originals"
       existingClaim: photo-library
 
   mariadb:
