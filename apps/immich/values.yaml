@@ -9,14 +9,9 @@ immich:
 
   postgresql:
     enabled: true
-    persistence:
-      size: 3Gi
 
   redis:
     enabled: true
-    master:
-      persistence:
-        size: 3Gi
 
   typesense:
     enabled: true
@@ -30,7 +25,7 @@ immich:
       library:
         enabled: true
         accessMode: ReadWriteMany
-        size: 1Gi
+        size: 5Gi
 
   proxy:
     persistence:
