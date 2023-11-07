@@ -72,6 +72,7 @@ photoprism:
     config:
       enabled: true
       mountPath: /photoprism/storage
+      size: 10Gi
 
     originals:
       enabled: true
