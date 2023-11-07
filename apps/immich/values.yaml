@@ -79,6 +79,8 @@ photoprism:
         nginx.ingress.kubernetes.io/proxy-body-size: "0"
       hosts:
         - host: photoprism.ivanchenko.io
+          paths:
+            - path: /
       tls:
         - secretName: photoprism-tls
           hosts:
