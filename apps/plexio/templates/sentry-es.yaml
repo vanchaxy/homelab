@@ -1,0 +1,18 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: sentry-secret
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: vault
+  target:
+    template:
+      engineVersion: v2
+      data:
+        SENTRY_DSN: {{` "{{ .sentry_dsn }}" `}}
+  data:
+    - secretKey: sentry_dsn
+      remoteRef:
+        key: plexio-sentry-secret
+        property: sentry_dsn

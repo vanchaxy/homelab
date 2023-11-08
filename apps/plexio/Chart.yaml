@@ -1,0 +1,7 @@
+apiVersion: v2
+name: plexio
+version: 0.0.0
+dependencies:
+  - name: plexio
+    repository: oci://registry.registry.svc.cluster.local:5000/library
+    version: 0.1.0

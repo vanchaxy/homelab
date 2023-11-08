@@ -1,0 +1,18 @@
+plexio:
+  image:
+    tag: "main-b8f44078"
+  frontapp:
+    image:
+      tag: "main-1b012b70"
+  env:
+    - name: REDIS_HOST
+      value: 'plexio-redis-master.plexio'
+    - name: SENTRY_DSN
+      valueFrom:
+        secretKeyRef:
+          name: plexio-secret
+          key: SENTRY_DSN
+    - name: SENTRY_ENVIRONMENT
+      value: 'beta'
+    - name: CORS_ORIGIN_REGEX
+      value: '.*plexio.stream|.*strem.io|.*stremio.com'
