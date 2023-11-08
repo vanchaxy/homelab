@@ -18,14 +18,14 @@ drone:
       nginx.ingress.kubernetes.io/ssl-passthrough: "true"
 
     hosts:
-      - host: drone-dev.ivanchenko.io
+      - host: drone.ivanchenko.io
         paths:
           - path: /
             pathType: Prefix
     tls:
       - secretName: drone-tls
         hosts:
-          - drone-dev.ivanchenko.io
+          - drone.ivanchenko.io
 
 drone-runner-kube:
   rbac:
@@ -50,11 +50,11 @@ drone-runner-kube:
       nginx.ingress.kubernetes.io/ssl-passthrough: "true"
 
     hosts:
-      - host: drone-runner-dev.ivanchenko.io
+      - host: drone-runner.ivanchenko.io
         paths:
           - path: /
             pathType: Prefix
     tls:
       - secretName: drone-runner-tls
         hosts:
-          - drone-runner-dev.ivanchenko.io
+          - drone-runner.ivanchenko.io

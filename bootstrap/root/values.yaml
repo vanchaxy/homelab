@@ -5,5 +5,5 @@ stacks:
   - name: bootstrap
     namespace: argocd
   - name: system
-#  - name: platform
+  - name: platform
   - name: apps
