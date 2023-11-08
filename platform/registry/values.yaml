@@ -1,4 +1,4 @@
-docker-registry:
+registry:
   ingress:
     enabled: true
     hosts:
