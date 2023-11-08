@@ -3,5 +3,5 @@ name: plexio
 version: 0.0.0
 dependencies:
   - name: plexio
-    repository: oci://registry.registry.svc.cluster.local:5000/library
+    repository: oci://registry.registry.svc.cluster.local:5000
     version: 0.1.0

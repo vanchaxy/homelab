@@ -1,8 +1,10 @@
 plexio:
   image:
+    repository: registry.registry.svc.cluster.local:5000/plexio
     tag: "main-b8f44078"
   frontapp:
     image:
+      repository: registry.registry.svc.cluster.local:5000/plexio
       tag: "main-1b012b70"
   env:
     - name: REDIS_HOST
