@@ -26,3 +26,32 @@ spec:
     - hosts:
         - speed.ivanchenko.io
       secretName: librespeed-tls
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    kubernetes.io/ingress.class: nginx-home
+    nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
+  labels:
+    app.kubernetes.io/instance: librespeed
+    app.kubernetes.io/name: librespeed
+  name: librespeed-home
+spec:
+  rules:
+    - host: speed.home.ivanchenko.io
+      http:
+        paths:
+          - backend:
+              service:
+                name: librespeed-svc
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - speed.home.ivanchenko.io
+      secretName: librespeed-tls

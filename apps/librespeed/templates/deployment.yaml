@@ -24,3 +24,5 @@ spec:
             - containerPort: 80
               protocol: TCP
               name: http
+      nodeSelector:
+        topology.kubernetes.io/region: home
