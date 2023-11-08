@@ -1,8 +1,10 @@
 plexio:
   image:
+    repository: registry.ivanchenko.io/plexio
     tag: "main-0de3ae87"
   frontapp:
     image:
+      repository: registry.ivanchenko.io/plexio-frontapp
       tag: "main-0de3ae87"
   env:
     - name: REDIS_HOST
