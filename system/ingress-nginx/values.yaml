@@ -9,8 +9,8 @@ ingress-nginx:
 
 ingress-nginx-home:
   controller:
-    ingressClass: ingress-controller-leader-home
-    electionID: nginx-home
+    ingressClass: nginx-home
+    electionID: ingress-controller-leader-home
 
     service:
       annotations:
