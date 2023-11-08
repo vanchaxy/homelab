@@ -12,7 +12,7 @@ plexio:
     - name: SENTRY_DSN
       valueFrom:
         secretKeyRef:
-          name: plexio-secret
+          name: sentry-secret
           key: SENTRY_DSN
     - name: SENTRY_ENVIRONMENT
       value: 'beta'
