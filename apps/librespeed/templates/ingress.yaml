@@ -38,8 +38,8 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
     nginx.ingress.kubernetes.io/proxy-body-size: 256M
   labels:
-    app.kubernetes.io/instance: librespeed
-    app.kubernetes.io/name: librespeed
+    app.kubernetes.io/instance: librespeed-home
+    app.kubernetes.io/name: librespeed-home
   name: librespeed-home
 spec:
   rules:
@@ -56,4 +56,4 @@ spec:
   tls:
     - hosts:
         - speed.home.ivanchenko.io
-      secretName: librespeed-tls
+      secretName: librespeed-home-tls
