@@ -2,6 +2,8 @@ apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
   name: registry-admin-secret
+  labels:
+    argocd.argoproj.io/secret-type: repository
 spec:
   secretStoreRef:
     kind: ClusterSecretStore
@@ -9,8 +11,6 @@ spec:
   target:
     template:
       engineVersion: v2
-      labels:
-        argocd.argoproj.io/secret-type: repository
       data:
         name: registry
         url: registry.ivanchenko.io
