@@ -9,7 +9,8 @@ external-dns:
           key: password
   extraArgs:
     - --annotation-filter=external-dns.alpha.kubernetes.io/exclude notin (true)
-    - --log-level=debug
+
+  logLevel: debug
 
   metrics:
     enabled: true
