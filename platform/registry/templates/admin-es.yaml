@@ -1,0 +1,19 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: drone-secret
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: vault
+  target:
+    template:
+      engineVersion: v2
+      data:
+        username: admin
+        password: {{` "{{ .password }}" `}}
+  data:
+    - secretKey: password
+      remoteRef:
+        key: registry
+        property: password
