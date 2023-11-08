@@ -1,6 +1,6 @@
 drone:
   env:
-    DRONE_SERVER_HOST: drone-dev.ivanchenko.io
+    DRONE_SERVER_HOST: drone.ivanchenko.io
     DRONE_SERVER_PROTO: https
     DRONE_USER_CREATE: username:vanchaxy,admin:true
     DRONE_USER_FILTER: vanchaxy
