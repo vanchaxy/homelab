@@ -6,3 +6,19 @@ ingress-nginx:
       enabled: true
       serviceMonitor:
         enabled: true
+
+ingress-nginx-home:
+  controller:
+    ingressClass: ingress-controller-leader-home
+    electionID: nginx-home
+
+    service:
+      annotations:
+        metallb.universe.tf/address-pool: home
+
+    admissionWebhooks:
+      timeoutSeconds: 30
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true

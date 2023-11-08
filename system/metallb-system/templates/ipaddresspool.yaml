@@ -6,3 +6,13 @@ metadata:
 spec:
   addresses:
     - 5.161.84.41/32
+---
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: home
+  namespace: {{ .Release.Namespace }}
+spec:
+  addresses:
+    - 192.168.1.231/32
+  autoAssign: false
