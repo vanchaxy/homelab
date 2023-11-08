@@ -1,7 +1,7 @@
 apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
-  name: drone-secret
+  name: registry-admin-secret
 spec:
   secretStoreRef:
     kind: ClusterSecretStore
