@@ -21,3 +21,5 @@ loki:
   fluent-bit:
     loki:
       serviceName: loki
+    config:
+      memBufLimit: "50MB"
