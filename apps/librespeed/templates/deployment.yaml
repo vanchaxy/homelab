@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: actualbudget
+  name: librespeed
   labels:
     app.kubernetes.io/instance: librespeed
     app.kubernetes.io/name: librespeed
