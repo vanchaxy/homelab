@@ -12,6 +12,10 @@ loki:
       size: 10Gi
 
   monitoring:
+    selfMonitoring:
+      enabled: false
+    grafanaAgent:
+      installOperator: true
     lokiCanary:
       enabled: false
 
