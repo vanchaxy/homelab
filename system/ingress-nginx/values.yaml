@@ -11,6 +11,9 @@ ingress-nginx-home:
   controller:
     ingressClassResource:
       name: nginx-home
+      enabled: true
+      default: false
+      controllerValue: "k8s.io/ingress-nginx-home"
 
     ingressClass: nginx-home
     electionID: ingress-controller-leader-home
