@@ -9,7 +9,8 @@ ingress-nginx:
 
 ingress-nginx-home:
   controller:
-    ingressClassResource: nginx-home
+    ingressClassResource:
+      name: nginx-home
 
     ingressClass: nginx-home
     electionID: ingress-controller-leader-home
