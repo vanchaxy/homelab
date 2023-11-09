@@ -15,7 +15,7 @@ loki:
     selfMonitoring:
       enabled: false
     grafanaAgent:
-      installOperator: false
+      installOperator: true
     lokiCanary:
       enabled: false
 
