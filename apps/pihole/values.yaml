@@ -11,9 +11,11 @@ pihole:
       metallb.universe.tf/address-pool: home
       metallb.universe.tf/allow-shared-ip: home
     type: LoadBalancer
+    externalTrafficPolicy: Cluster
 
   serviceDhcp:
     annotations:
       metallb.universe.tf/address-pool: home
       metallb.universe.tf/allow-shared-ip: home
     type: LoadBalancer
+    externalTrafficPolicy: Cluster
