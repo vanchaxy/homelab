@@ -11,5 +11,13 @@ loki:
     persistence:
       size: 10Gi
 
+  monitoring:
+    lokiCanary:
+      enabled: false
+
   test:
     enabled: false
+
+  fluent-bit:
+    loki:
+      serviceName: loki
