@@ -1,0 +1,28 @@
+grafana:
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    hosts:
+      - &host grafana.ivanchenko.io
+    tls:
+      - secretName: grafana-tls
+        hosts:
+          - *host
+  grafana.ini:
+    server:
+      root_url: https://grafana.ivanchenko.io
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+      - name: Prometheus
+        type: prometheus
+        url: http://monitoring-system-kube-pro-prometheus.monitoring-system.svc.cluster.local:9090
+        access: proxy
+        isDefault: true
