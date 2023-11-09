@@ -1,5 +1,8 @@
 ingress-nginx-home:
   controller:
+    nodeSelector:
+      topology.kubernetes.io/region: home
+
     ingressClassResource:
       name: nginx-home
       enabled: true
