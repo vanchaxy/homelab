@@ -18,7 +18,17 @@ immich:
     persistence:
       tsdata:
         enabled: true
-        size: 20Gi
+        size: 30Gi
+    probes:
+      liveness:
+        spec:
+          initialDelaySeconds: 90
+      readiness:
+        spec:
+          initialDelaySeconds: 90
+      startup:
+        spec:
+          initialDelaySeconds: 90
 
   web:
     persistence:
