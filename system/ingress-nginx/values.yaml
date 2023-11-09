@@ -1,28 +1,7 @@
 ingress-nginx:
   controller:
-    admissionWebhooks:
-      timeoutSeconds: 30
-    metrics:
-      enabled: true
-      serviceMonitor:
-        enabled: true
-
-ingress-nginx-home:
-  controller:
     ingressClassResource:
-      name: nginx-home
-      enabled: true
-      default: false
-      controllerValue: "k8s.io/ingress-nginx-home"
-
-    ingressClass: nginx-home
-    electionID: ingress-controller-leader-home
-
-    service:
-      annotations:
-        metallb.universe.tf/address-pool: home
-        metallb.universe.tf/allow-shared-ip: home
-
+      default: true
     admissionWebhooks:
       timeoutSeconds: 30
     metrics:
