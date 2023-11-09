@@ -22,13 +22,13 @@ immich:
     probes:
       liveness:
         spec:
-          initialDelaySeconds: 90
+          initialDelaySeconds: 300
       readiness:
         spec:
-          initialDelaySeconds: 90
+          initialDelaySeconds: 300
       startup:
         spec:
-          initialDelaySeconds: 90
+          initialDelaySeconds: 300
 
   web:
     persistence:
@@ -66,13 +66,13 @@ immich:
     probes:
       liveness:
         spec:
-          initialDelaySeconds: 90
+          initialDelaySeconds: 300
       readiness:
         spec:
-          initialDelaySeconds: 90
+          initialDelaySeconds: 300
       startup:
         spec:
-          initialDelaySeconds: 90
+          initialDelaySeconds: 300
 
 photoprism:
   env:
