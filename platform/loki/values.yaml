@@ -18,8 +18,11 @@ loki:
   test:
     enabled: false
 
-  fluent-bit:
-    loki:
-      serviceName: loki
-    config:
-      memBufLimit: "50MB"
+  tableManager:
+    enabled: true
+    retention_deletes_enabled: true
+    retention_period: 10d
+
+fluent-bit:
+  config:
+    memBufLimit: "50MB"
