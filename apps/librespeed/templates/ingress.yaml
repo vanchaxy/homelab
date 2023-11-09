@@ -43,7 +43,7 @@ metadata:
   name: librespeed-home
 spec:
   rules:
-    - host: speed.home.ivanchenko.io
+    - host: speed.ivanchenko.io
       http:
         paths:
           - backend:
@@ -55,5 +55,5 @@ spec:
             pathType: Prefix
   tls:
     - hosts:
-        - speed.home.ivanchenko.io
-      secretName: librespeed-home-tls
+        - speed.ivanchenko.io
+      secretName: librespeed-tls
