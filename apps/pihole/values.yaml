@@ -1,7 +1,7 @@
 pihole:
   dnsmasq:
     customDnsEntries:
-      - address=/nas/192.168.178.10
+      - address=/speed.ivanchenko.io/192.168.1.231
 
   persistentVolumeClaim:
     enabled: true
@@ -22,8 +22,6 @@ pihole:
 
   ingress:
     enabled: true
-
-#    ingressClassName: nginx-home
 
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt
