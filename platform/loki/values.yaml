@@ -1,4 +1,4 @@
-loki-stack:
+loki:
   loki:
     auth_enabled: false
     commonConfig:
