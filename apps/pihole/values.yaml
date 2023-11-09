@@ -9,17 +9,17 @@ pihole:
   serviceWeb:
     loadBalancerIP: 192.168.1.231
     annotations:
-      metallb.universe.tf/allow-shared-ip: metal0
+      metallb.universe.tf/allow-shared-ip: home
     type: LoadBalancer
 
   serviceDns:
     loadBalancerIP: 192.168.1.231
     annotations:
-      metallb.universe.tf/allow-shared-ip: metal0
+      metallb.universe.tf/allow-shared-ip: home
     type: LoadBalancer
 
   serviceDhcp:
     loadBalancerIP: 192.168.1.231
     annotations:
-      metallb.universe.tf/allow-shared-ip: metal0
+      metallb.universe.tf/allow-shared-ip: home
     type: LoadBalancer

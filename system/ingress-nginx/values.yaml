@@ -15,6 +15,7 @@ ingress-nginx-home:
     service:
       annotations:
         metallb.universe.tf/address-pool: home
+        metallb.universe.tf/allow-shared-ip: home
 
     admissionWebhooks:
       timeoutSeconds: 30
