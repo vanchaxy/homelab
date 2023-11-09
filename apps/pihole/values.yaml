@@ -23,7 +23,7 @@ pihole:
   ingress:
     enabled: true
 
-    ingressClassName: nginx-home
+#    ingressClassName: nginx-home
 
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt
