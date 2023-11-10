@@ -1,6 +1,6 @@
 immich:
   image:
-    tag: v1.84.0
+    tag: v1.85.0
 
   immich:
     persistence:
