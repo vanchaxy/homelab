@@ -4,6 +4,10 @@ authentik:
     postgresql:
       password: "ThisIsNotASecurePassword"
 
+  envFrom:
+    - secretRef:
+        name: authentik-secret
+
   ingress:
     ingressClassName: nginx
     enabled: true
@@ -15,6 +19,7 @@ authentik:
 
   postgresql:
     enabled: true
-    postgresqlPassword: "ThisIsNotASecurePassword"
+    auth:
+      existingSecret: "postgresql-secret"
   redis:
     enabled: true
