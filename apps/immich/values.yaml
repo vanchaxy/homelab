@@ -1,6 +1,6 @@
 immich:
   image:
-    tag: v1.87.0
+    tag: v1.88.2
 
   immich:
     persistence:
@@ -13,37 +13,7 @@ immich:
   redis:
     enabled: true
 
-  typesense:
-    enabled: true
-    persistence:
-      tsdata:
-        enabled: true
-        size: 30Gi
-    probes:
-      liveness:
-        spec:
-          initialDelaySeconds: 300
-      readiness:
-        spec:
-          initialDelaySeconds: 300
-      startup:
-        spec:
-          initialDelaySeconds: 300
-
-  web:
-    persistence:
-      library:
-        enabled: true
-        accessMode: ReadWriteMany
-        size: 5Gi
-
-  proxy:
-    persistence:
-      library:
-        enabled: true
-        accessMode: ReadWriteMany
-        size: 1Gi
-
+  server:
     ingress:
       main:
         enabled: true
@@ -61,6 +31,23 @@ immich:
           - secretName: immich-tls
             hosts:
               - immich.ivanchenko.io
+
+  typesense:
+    enabled: true
+    persistence:
+      tsdata:
+        enabled: true
+        size: 30Gi
+    probes:
+      liveness:
+        spec:
+          initialDelaySeconds: 300
+      readiness:
+        spec:
+          initialDelaySeconds: 300
+      startup:
+        spec:
+          initialDelaySeconds: 300
 
   machine-learning:
     probes:
