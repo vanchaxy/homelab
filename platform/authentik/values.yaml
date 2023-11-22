@@ -19,7 +19,6 @@ authentik:
 
   postgresql:
     enabled: true
-    auth:
-      existingSecret: "postgresql-secret"
+    existingSecret: "postgresql-secret"
   redis:
     enabled: true
