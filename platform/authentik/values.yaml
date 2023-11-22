@@ -1,9 +1,4 @@
 authentik:
-  authentik:
-    secret_key: "PleaseGenerateA50CharKey"
-    postgresql:
-      password: "ThisIsNotASecurePassword"
-
   envFrom:
     - secretRef:
         name: authentik-secret
