@@ -1,0 +1,20 @@
+authentik:
+  authentik:
+    secret_key: "PleaseGenerateA50CharKey"
+    postgresql:
+      password: "ThisIsNotASecurePassword"
+
+  ingress:
+    ingressClassName: nginx
+    enabled: true
+    hosts:
+      - host: auth.ivanchenko.io
+        paths:
+          - path: "/"
+            pathType: Prefix
+
+  postgresql:
+    enabled: true
+    postgresqlPassword: "ThisIsNotASecurePassword"
+  redis:
+    enabled: true
