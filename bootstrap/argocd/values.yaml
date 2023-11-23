@@ -1,4 +1,7 @@
 argo-cd:
+  configs:
+    secret:
+      createSecret: false
   server:
     extraArgs:
       - --insecure
