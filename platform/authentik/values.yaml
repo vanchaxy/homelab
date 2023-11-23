@@ -1,11 +1,11 @@
 authentik:
-#  envFrom:
-#    - secretRef:
-#        name: authentik-secret
-  authentik:
-    secret_key: "PleaseGenerateA50CharKey"
-    postgresql:
-      password: "ThisIsNotASecurePassword"
+  envFrom:
+    - secretRef:
+        name: authentik-secret
+#  authentik:
+#    secret_key: "PleaseGenerateA50CharKey"
+#    postgresql:
+#      password: "ThisIsNotASecurePassword"
 
   ingress:
     ingressClassName: nginx
@@ -18,7 +18,7 @@ authentik:
 
   postgresql:
     enabled: true
-    postgresqlPassword: "ThisIsNotASecurePassword"
-#    existingSecret: "postgresql-secret"
+#    postgresqlPassword: "ThisIsNotASecurePassword"
+    existingSecret: "postgresql-secret"
   redis:
     enabled: true
