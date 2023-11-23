@@ -6,11 +6,17 @@ authentik:
   ingress:
     ingressClassName: nginx
     enabled: true
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt
     hosts:
-      - host: auth.ivanchenko.io
+      - host: &host auth.ivanchenko.io
         paths:
           - path: "/"
             pathType: Prefix
+    tls:
+      - secretName: auth-tls
+        hosts:
+          - *host
 
   postgresql:
     enabled: true
