@@ -7,7 +7,7 @@ argo-cd:
       dex.config: |
         connectors:
         - config:
-            issuer: http://auth.ivanchenko.io/application/o/argocd/
+            issuer: https://auth.ivanchenko.io/application/o/argocd/
             clientID: X1QgQfyg1G5tK7ulxUJ2BCFVKPEsLeag563BaOMI
             clientSecret: $dex.authentik.clientSecret
             insecureEnableGroups: true
