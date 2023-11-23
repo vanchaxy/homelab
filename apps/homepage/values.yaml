@@ -64,7 +64,6 @@ homepage:
           paths:
             - path: /
               pathType: Prefix
-          tls:
-            - secretName: home-tls
-              hosts:
-                - *host
+      tls:
+        - hosts:
+            - *host
