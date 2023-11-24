@@ -16,3 +16,7 @@ http-debug:
         paths:
           - path: /
             pathType: ImplementationSpecific
+    tls:
+      - secretName: http-debug-tls
+        hosts:
+          - http-debug.ivanchenko.io
