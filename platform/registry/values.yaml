@@ -1,5 +1,6 @@
 registry:
-  updateStrategy: Recreate
+  updateStrategy:
+    type: Recreate
   ingress:
     enabled: true
     hosts:
