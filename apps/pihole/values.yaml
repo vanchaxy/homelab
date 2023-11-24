@@ -1,7 +1,7 @@
 pihole:
   image:
     repository: pihole/pihole
-    tag: 2023.05.2
+    tag: 2023.11.0
 
   dnsmasq:
     customDnsEntries:
