@@ -36,11 +36,6 @@ homepage:
       - longhorn:
           expanded: true
           total: true
-#          labels: true
-#          nodes: true
-      - search:
-          provider: duckduckgo
-          target: _blank
     kubernetes:
       mode: cluster
     settings:
