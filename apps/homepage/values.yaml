@@ -14,6 +14,7 @@ homepage:
           - My homepage:
               href: https://home.ivanchenko.io/
               description: Homepage is awesome
+              icon: "homepage.png"
               namespace: homepage
               pod-selector: ''
 
@@ -30,7 +31,7 @@ homepage:
           expanded: true
           total: true
     kubernetes:
-      mode: cluster
+      mode: default
     settings:
       providers:
         longhorn:
