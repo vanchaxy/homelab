@@ -1,5 +1,7 @@
 ingress-nginx-home:
   controller:
+    allowSnippetAnnotations: true
+
     nodeSelector:
       topology.kubernetes.io/region: home
 
