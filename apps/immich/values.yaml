@@ -33,7 +33,7 @@ immich:
           gethomepage.dev/widget.type: "immich"
           gethomepage.dev/widget.url: "http://immich-server.immich.svc.cluster.local:3001"
           gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_IMMICH_API_KEY}}"
-          gethomepage.dev/pod-selector: ""
+          gethomepage.dev/pod-selector: " "
         hosts:
           - host: immich.ivanchenko.io
             paths:
