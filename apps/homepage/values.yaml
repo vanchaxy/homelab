@@ -78,10 +78,6 @@ homepage:
           hosts:
             - *host
 
-  controllers:
-    main:
-      containers:
-        main:
-          envFrom:
-            - secretRef:
-                name: secret-name
+  envFrom:
+    - secretRef:
+        name: secret-name
