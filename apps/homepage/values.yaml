@@ -30,13 +30,9 @@ homepage:
             show: true
             cpu: true
             memory: true
-#            showLabel: true
-#            label: "cluster"
-#          nodes:
-#            show: true
-#            cpu: true
-#            memory: true
-#            showLabel: true
+            showLabel: false
+          nodes:
+            show: false
       - longhorn:
           expanded: true
           total: true
