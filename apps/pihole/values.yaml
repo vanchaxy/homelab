@@ -3,8 +3,6 @@ pihole:
     repository: pihole/pihole
     tag: 2023.11.0
 
-  adminPassword: ""
-
   dnsmasq:
     customDnsEntries:
       - address=/speed.ivanchenko.io/192.168.1.231
