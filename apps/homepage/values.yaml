@@ -50,7 +50,7 @@ homepage:
     settings:
       providers:
         longhorn:
-          url: http://longhorn-frontend.longhorn.svc.cluster.local
+          url: http://longhorn-frontend.longhorn-system.svc.cluster.local
 
   serviceAccount:
     create: true
