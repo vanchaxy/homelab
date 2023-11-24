@@ -1,6 +1,4 @@
 registry:
-  updateStrategy:
-    type: Recreate
   ingress:
     enabled: true
     hosts:
@@ -40,6 +38,7 @@ registry:
         - mountPath: /auth
           name: auth
   persistence:
+    accessMode: ReadWriteMany
     enabled: true
     size: 5Gi
   garbageCollect:
