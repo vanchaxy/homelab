@@ -11,19 +11,12 @@ homepage:
                 href: https://github.com/
     services:
       - My First Group:
-          - My First Service:
-              href: http://localhost/
+          - My homepage:
+              href: https://home.ivanchenko.io/
               description: Homepage is awesome
+              namespace: homepage
+              pod-selector: ''
 
-      - My Second Group:
-          - My Second Service:
-              href: http://localhost/
-              description: Homepage is the best
-
-      - My Third Group:
-          - My Third Service:
-              href: http://localhost/
-              description: Homepage is 😎
     widgets:
       - kubernetes:
           cluster:
