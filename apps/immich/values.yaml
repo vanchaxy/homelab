@@ -31,6 +31,7 @@ immich:
           gethomepage.dev/group: "Dynamic"
           gethomepage.dev/icon: "immich.png"
           gethomepage.dev/widget.type: "immich"
+          gethomepage.dev/widget.url: "http://immich-server.immich.svc.cluster.local:3001"
           gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_IMMICH_API_KEY}}"
         hosts:
           - host: immich.ivanchenko.io
