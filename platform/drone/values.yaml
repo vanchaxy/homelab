@@ -27,7 +27,7 @@ drone:
         hosts:
           - drone.ivanchenko.io
 
-drone-runner-kube:
+drone-runner-docker:
   rbac:
     buildNamespaces:
       - drone
