@@ -4,4 +4,4 @@ version: 0.0.0
 dependencies:
   - name: http-debug
     repository: https://bicarus-labs.github.io/helm-charts
-    version: 1.16.0
+    version: 0.1.0
