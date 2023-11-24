@@ -23,6 +23,8 @@ pihole:
   ingress:
     enabled: true
 
+    ingressClassName: nginx
+
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt
       kubernetes.io/ingress.class: nginx
