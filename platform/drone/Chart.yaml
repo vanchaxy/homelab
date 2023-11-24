@@ -5,6 +5,6 @@ dependencies:
   - name: drone
     repository: https://charts.drone.io
     version: 0.6.5
-  - name: drone-runner-docker
+  - name: drone-runner-kube
     repository: https://charts.drone.io
-    version: 0.6.2
+    version: 0.1.10
