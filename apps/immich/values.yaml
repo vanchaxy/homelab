@@ -1,5 +1,8 @@
 immich:
   image:
+    # registry and repository for renovate, not used in chart
+    registry: ghcr.io
+    repository: immich-app/immich-server
     tag: v1.88.2
 
   immich:
