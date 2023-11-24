@@ -25,13 +25,13 @@ immich:
           nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
           nginx.ingress.kubernetes.io/ssl-passthrough: "true"
           nginx.ingress.kubernetes.io/proxy-body-size: "0"
-          gethomepage.dev/enabled: "true"
-          gethomepage.dev/name: "Immich"
-          gethomepage.dev/description: "Immich desc"
-          gethomepage.dev/group: "Dynamic"
-          gethomepage.dev/icon: "immich.png"
-          gethomepage.dev/widget.type: "immich"
-          gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_IMMICH_API_KEY}}"
+#          gethomepage.dev/enabled: "true"
+#          gethomepage.dev/name: "Immich"
+#          gethomepage.dev/description: "Immich desc"
+#          gethomepage.dev/group: "Dynamic"
+#          gethomepage.dev/icon: "immich.png"
+#          gethomepage.dev/widget.type: "immich"
+#          gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_IMMICH_API_KEY}}"
         hosts:
           - host: immich.ivanchenko.io
             paths:

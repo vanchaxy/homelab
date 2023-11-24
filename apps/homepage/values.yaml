@@ -14,6 +14,14 @@ homepage:
           - My First Service:
               href: http://localhost/
               description: Homepage is awesome
+          - Immich:
+              icon: immich.png
+              href: https://immich.ivanchenko.io/
+              description: Photos immich
+              widget:
+                type: immich
+                url: http://immich-server.immich.scv.cluster.local:3001
+                key: "{{HOMEPAGE_VAR_IMMICH_API_KEY}}"
 
       - My Second Group:
           - My Second Service:
