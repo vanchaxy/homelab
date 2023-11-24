@@ -77,3 +77,11 @@ homepage:
         - secretName: home-tls
           hosts:
             - *host
+
+  controllers:
+    main:
+      containers:
+        main:
+          envFrom:
+            - secretRef:
+                name: secret-name
