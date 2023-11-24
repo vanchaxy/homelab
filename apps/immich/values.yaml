@@ -27,7 +27,7 @@ immich:
           nginx.ingress.kubernetes.io/proxy-body-size: "0"
           gethomepage.dev/enabled: "true"
           gethomepage.dev/name: "Immich"
-          gethomepage.dev/description: "Immich desc"
+          gethomepage.dev/description: "Photo and video backup solution"
           gethomepage.dev/group: "Dynamic"
           gethomepage.dev/icon: "immich.png"
           gethomepage.dev/widget.type: "immich"
