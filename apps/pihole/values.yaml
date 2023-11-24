@@ -25,7 +25,6 @@ pihole:
 
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt
-      kubernetes.io/ingress.class: nginx-home
       nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
       nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
       nginx.ingress.kubernetes.io/auth-url: |-

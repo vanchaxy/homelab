@@ -5,13 +5,12 @@ longhorn:
     defaultClassReplicaCount: 1
   ingress:
     enabled: true
-    ingressClassName: nginx-home
+    ingressClassName: nginx
     host: longhorn.ivanchenko.io
     tls: true
     tlsSecret: longhorn-tls
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt
-      kubernetes.io/ingress.class: nginx-home
       nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
       nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
       nginx.ingress.kubernetes.io/proxy-body-size: 10000m
