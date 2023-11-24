@@ -19,7 +19,7 @@ grafana:
     server:
       root_url: https://grafana.ivanchenko.io
     auth:
-      signout_redirect_url: "https://authentik.company/application/o/grafana/end-session/"
+      signout_redirect_url: "https://auth.ivanchenko.io/application/o/grafana/end-session/"
       oauth_auto_login: true
     auth.generic_oauth:
       name: authentik
