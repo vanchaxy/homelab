@@ -31,7 +31,7 @@ immich:
           gethomepage.dev/group: "Dynamic"
           gethomepage.dev/icon: "immich.png"
           gethomepage.dev/widget.type: "immich"
-          gethomepage.dev/widget.key: "{{ IMMICH_API_KEY }}"
+          gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_IMMICH_API_KEY}}"
         hosts:
           - host: immich.ivanchenko.io
             paths:
