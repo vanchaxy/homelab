@@ -7,6 +7,3 @@ stacks:
   - name: system
   - name: platform
   - name: apps
-serverSideApply:
-  - test
-  - test2

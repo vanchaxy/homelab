@@ -39,5 +39,4 @@ spec:
         syncOptions:
           - CreateNamespace=true
           - ApplyOutOfSyncOnly=true
-          - {{ `ServerSideApply={{ has path.basename ` }}{{ $.Values.serverSideApply | toJson }}{{ ` }}` }}
 {{- end }}
