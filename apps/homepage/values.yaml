@@ -16,6 +16,7 @@ homepage:
               description: Homepage is awesome
               icon: "homepage.png"
               namespace: homepage
+              app: homepage
               pod-selector: ''
 
     widgets:
