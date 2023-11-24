@@ -12,7 +12,7 @@ http-debug:
 #          proxy_set_header X-Forwarded-Host $http_host;
 #        cert-manager.io/cluster-issuer: letsencrypt
       hosts:
-        - host: http-debug.ivanchenko.io
+        - host: "http-debug.ivanchenko.io"
           paths:
             - path: /
               pathType: ImplementationSpecific
