@@ -43,6 +43,7 @@ pihole:
       nginx.ingress.kubernetes.io/auth-snippet: |
         proxy_set_header X-Forwarded-Host $http_host;
       gethomepage.dev/enabled: "true"
+      gethomepage.dev/href: "https://pihole.ivanchenko.io/admin/"
       gethomepage.dev/name: "Pi-hole"
       gethomepage.dev/description: "A black hole for Internet advertisements"
       gethomepage.dev/group: "Dynamic"
