@@ -23,7 +23,7 @@ authentik:
           - path: "/"
             pathType: Prefix
     tls:
-      - secretName: auth-tls
+      - secretName: authentik-outpost-tls
         hosts:
           - *host
 
