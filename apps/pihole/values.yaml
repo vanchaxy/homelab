@@ -46,7 +46,7 @@ pihole:
       gethomepage.dev/name: "Pi-hole"
       gethomepage.dev/description: "A black hole for Internet advertisements"
       gethomepage.dev/group: "Dynamic"
-      gethomepage.dev/icon: "pihole.png"
+      gethomepage.dev/icon: "pi-hole.png"
       gethomepage.dev/widget.type: "pihole"
       gethomepage.dev/widget.url: "http://pihole-web.pihole.svc.cluster.local"
       gethomepage.dev/pod-selector: " "
