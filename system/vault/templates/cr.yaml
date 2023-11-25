@@ -28,6 +28,12 @@ spec:
   ingress:
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt
+      gethomepage.dev/enabled: "true"
+      gethomepage.dev/name: "Vault"
+      gethomepage.dev/description: "Identity-based secrets management system"
+      gethomepage.dev/group: "Dynamic"
+      gethomepage.dev/icon: "https://cdn.freebiesupply.com/logos/large/2x/vault-enterprise-logo-png-transparent.png"
+      gethomepage.dev/pod-selector: ""
     spec:
       ingressClassName: nginx
       rules:
