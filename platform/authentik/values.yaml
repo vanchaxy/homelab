@@ -26,6 +26,7 @@ authentik:
       - secretName: authentik-outpost-tls
         hosts:
           - *host
+          - fake-auth.ivanchenko.io
 
   postgresql:
     enabled: true
