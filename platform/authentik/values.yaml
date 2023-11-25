@@ -18,7 +18,7 @@ authentik:
       gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_AUTHENTIK_API_KEY}}"
       gethomepage.dev/pod-selector: " "
     hosts:
-      - host: &host potato.random.com
+      - host: &host auth.ivanchenko.io
         paths:
           - path: "/"
             pathType: Prefix
