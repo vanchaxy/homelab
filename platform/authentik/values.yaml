@@ -18,12 +18,12 @@ authentik:
       gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_AUTHENTIK_API_KEY}}"
       gethomepage.dev/pod-selector: " "
     hosts:
-      - host: &host auth.ivanchenko.io
+      - host: &host potato.random.com
         paths:
           - path: "/"
             pathType: Prefix
     tls:
-      - secretName: authentik-cert-tls
+      - secretName: auth-tls
         hosts:
           - *host
 
