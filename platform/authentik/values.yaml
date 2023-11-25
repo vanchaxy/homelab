@@ -25,7 +25,7 @@ authentik:
     tls:
       - secretName: authentik-outpost-tls
         hosts:
-          - *host
+          - "*.ivanchenko.io"
 
   postgresql:
     enabled: true
