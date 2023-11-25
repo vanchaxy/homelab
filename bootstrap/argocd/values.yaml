@@ -45,6 +45,12 @@ argo-cd:
       ingressClassName: nginx
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/name: "Argo CD"
+        gethomepage.dev/description: "GitOps continuous delivery tool for Kubernetes"
+        gethomepage.dev/group: "Dynamic"
+        gethomepage.dev/icon: "argocd.png"
+        gethomepage.dev/pod-selector: ""
       hosts:
         - &host argocd.ivanchenko.io
       tls:
