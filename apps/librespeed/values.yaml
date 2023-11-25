@@ -1,0 +1,4 @@
+image:
+  repository: lscr.io/linuxserver/librespeed
+  tag: 5.2.5
+  imagePullPolicy: IfNotPresent

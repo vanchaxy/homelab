@@ -1,0 +1,48 @@
+grafana:
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    hosts:
+      - &host grafana.ivanchenko.io
+    tls:
+      - secretName: grafana-tls
+        hosts:
+          - *host
+  envFromSecret: oauth-secret
+  grafana.ini:
+    server:
+      root_url: https://grafana.ivanchenko.io
+    auth:
+      signout_redirect_url: "https://auth.ivanchenko.io/application/o/grafana/end-session/"
+      oauth_auto_login: true
+    auth.generic_oauth:
+      name: authentik
+      enabled: true
+      client_id: $__env{OAUTH_CLIENT_ID}
+      client_secret: $__env{OAUTH_CLIENT_SECRET}
+      scopes: "openid profile email"
+      auth_url: "https://auth.ivanchenko.io/application/o/authorize/"
+      token_url: "https://auth.ivanchenko.io/application/o/token/"
+      api_url: "https://auth.ivanchenko.io/application/o/userinfo/"
+      role_attribute_path: contains(groups[*], 'Grafana Admins') && 'Admin' || 'Viewer'
+  persistence:
+    enabled: true
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Prometheus
+          type: prometheus
+          url: http://monitoring-system-kube-pro-prometheus.monitoring-system.svc.cluster.local:9090
+          access: proxy
+          isDefault: true
+        - name: Loki
+          type: loki
+          access: proxy
+          url: http://loki.loki.svc.cluster.local:3100

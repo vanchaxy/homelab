@@ -1,0 +1,26 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: registry-secret
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: vault
+  target:
+    template:
+      engineVersion: v2
+      metadata:
+        labels:
+          argocd.argoproj.io/secret-type: repository
+      data:
+        name: registry
+        url: registry.ivanchenko.io
+        enableOCI: "true"
+        type: helm
+        username: admin
+        password: {{` "{{ .password }}" `}}
+  data:
+    - secretKey: password
+      remoteRef:
+        key: registry
+        property: password

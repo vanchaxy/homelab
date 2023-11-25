@@ -1,0 +1,73 @@
+immich:
+  image:
+    # repository for renovate, not used in chart
+    repository: ghcr.io/immich-app/immich-server
+    tag: v1.88.2
+
+  immich:
+    persistence:
+      library:
+        existingClaim: photo-library
+
+  postgresql:
+    enabled: true
+
+  redis:
+    enabled: true
+
+  server:
+    ingress:
+      main:
+        enabled: true
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt
+          kubernetes.io/ingress.class: nginx
+          nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+          nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+          nginx.ingress.kubernetes.io/proxy-body-size: "0"
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "Immich"
+          gethomepage.dev/description: "Photo and video backup solution"
+          gethomepage.dev/group: "Dynamic"
+          gethomepage.dev/icon: "immich.png"
+          gethomepage.dev/widget.type: "immich"
+          gethomepage.dev/widget.url: "http://immich-server.immich.svc.cluster.local:3001"
+          gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_IMMICH_API_KEY}}"
+          gethomepage.dev/pod-selector: " "
+        hosts:
+          - host: immich.ivanchenko.io
+            paths:
+              - path: "/"
+        tls:
+          - secretName: immich-tls
+            hosts:
+              - immich.ivanchenko.io
+
+  typesense:
+    enabled: true
+    persistence:
+      tsdata:
+        enabled: true
+        size: 30Gi
+    probes:
+      liveness:
+        spec:
+          initialDelaySeconds: 300
+      readiness:
+        spec:
+          initialDelaySeconds: 300
+      startup:
+        spec:
+          initialDelaySeconds: 300
+
+  machine-learning:
+    probes:
+      liveness:
+        spec:
+          initialDelaySeconds: 300
+      readiness:
+        spec:
+          initialDelaySeconds: 300
+      startup:
+        spec:
+          initialDelaySeconds: 300

@@ -1,0 +1,11 @@
+{% if inventory_hostname == groups['cloud'][0] %}
+cluster-init: true
+{% else %}
+server: https://{{ hostvars[groups['cloud'][0]].ansible_host }}:6443
+{% endif %}
+vpn-auth: name=tailscale,joinKey=tskey
+token-file: {{ k3s_token_file }}
+node-external-ip: "{{ ansible_host }}"
+{% if master %}
+{{ k3s_server_config | to_nice_yaml }}
+{% endif %}

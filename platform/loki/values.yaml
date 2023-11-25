@@ -1,0 +1,32 @@
+loki:
+  loki:
+    auth_enabled: false
+    commonConfig:
+      replication_factor: 1
+    storage:
+      type: 'filesystem'
+
+  singleBinary:
+    replicas: 1
+    persistence:
+      size: 10Gi
+
+  monitoring:
+    selfMonitoring:
+      enabled: false
+    grafanaAgent:
+      installOperator: true
+    lokiCanary:
+      enabled: false
+
+  test:
+    enabled: false
+
+  compactor:
+    shared_store: filesystem
+    retention_enabled: true
+    retention_delete_delay: 10d
+
+fluent-bit:
+  config:
+    memBufLimit: "50MB"

@@ -1,0 +1,20 @@
+plexio:
+  image:
+    repository: registry.ivanchenko.io/plexio
+    tag: "main-0de3ae87"
+  frontapp:
+    image:
+      repository: registry.ivanchenko.io/plexio-frontapp
+      tag: "main-0de3ae87"
+  env:
+    - name: REDIS_HOST
+      value: 'plexio-redis-master.plexio'
+    - name: SENTRY_DSN
+      valueFrom:
+        secretKeyRef:
+          name: sentry-secret
+          key: SENTRY_DSN
+    - name: SENTRY_ENVIRONMENT
+      value: 'beta'
+    - name: CORS_ORIGIN_REGEX
+      value: '.*plexio.stream|.*strem.io|.*stremio.com'

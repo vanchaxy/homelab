@@ -1,0 +1,11 @@
+ingress-nginx:
+  controller:
+    allowSnippetAnnotations: true
+    ingressClassResource:
+      default: true
+    admissionWebhooks:
+      timeoutSeconds: 30
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true

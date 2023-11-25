@@ -1,0 +1,35 @@
+authentik:
+  envFrom:
+    - secretRef:
+        name: authentik-secret
+
+  ingress:
+    ingressClassName: nginx
+    enabled: true
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt
+      gethomepage.dev/enabled: "true"
+      gethomepage.dev/name: "Authentik"
+      gethomepage.dev/description: "Identity Provider"
+      gethomepage.dev/group: "Dynamic"
+      gethomepage.dev/icon: "authentik.png"
+      gethomepage.dev/widget.type: "authentik"
+      gethomepage.dev/widget.url: "http://authentik.authentik.svc.cluster.local"
+      gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_AUTHENTIK_API_KEY}}"
+      gethomepage.dev/pod-selector: " "
+    hosts:
+      - host: &host auth.ivanchenko.io
+        paths:
+          - path: "/"
+            pathType: Prefix
+    tls:
+      - secretName: auth-tls
+        hosts:
+          - *host
+
+  postgresql:
+    enabled: true
+    existingSecret: "postgresql-secret"
+
+  redis:
+    enabled: true
