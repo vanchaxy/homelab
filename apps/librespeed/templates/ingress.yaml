@@ -13,6 +13,14 @@ metadata:
     nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
     nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
     nginx.ingress.kubernetes.io/proxy-body-size: 256M
+    {{ if eq (index $config "class") "nginx" }}
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/name: "LibreSpeed"
+    gethomepage.dev/description: "Free and Open Source Speedtest"
+    gethomepage.dev/group: "Dynamic"
+    gethomepage.dev/icon: "librespeed.png"
+    gethomepage.dev/pod-selector: ""
+    {{ end }}
   labels:
     app.kubernetes.io/instance: librespeed-home
     app.kubernetes.io/name: librespeed-home

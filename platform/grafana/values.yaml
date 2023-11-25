@@ -8,6 +8,12 @@ grafana:
       nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
       nginx.ingress.kubernetes.io/ssl-passthrough: "true"
       nginx.ingress.kubernetes.io/proxy-body-size: "0"
+      gethomepage.dev/enabled: "true"
+      gethomepage.dev/name: "Grafana"
+      gethomepage.dev/description: "The open observability platform"
+      gethomepage.dev/group: "Dynamic"
+      gethomepage.dev/icon: "grafana.png"
+      gethomepage.dev/pod-selector: ""
     hosts:
       - &host grafana.ivanchenko.io
     tls:
