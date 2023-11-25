@@ -50,7 +50,7 @@ pihole:
       gethomepage.dev/icon: "pi-hole.png"
       gethomepage.dev/widget.type: "pihole"
       gethomepage.dev/widget.url: "http://pihole-web.pihole.svc.cluster.local"
-      gethomepage.dev/pod-selector: " "
+      gethomepage.dev/pod-selector: ""
 
     path: /
     hosts:
