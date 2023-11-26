@@ -263,7 +263,7 @@ prowlarr:
         gethomepage.dev/icon: "prowlarr.png"
         gethomepage.dev/widget.type: "prowlarr"
         gethomepage.dev/widget.url: "http://media-prowlarr.media.svc.cluster.local:9696"
-        gethomepage.dev/widget.key: "username"
+        gethomepage.dev/widget.key: "0b7b43d4e25a46428ce144f6c22ef2f4"
         gethomepage.dev/pod-selector: "app.kubernetes.io/name=prowlarr"
         nginx.ingress.kubernetes.io/auth-url: |-
           https://auth.ivanchenko.io/outpost.goauthentik.io/auth/nginx
