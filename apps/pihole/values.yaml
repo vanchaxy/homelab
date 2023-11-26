@@ -9,6 +9,7 @@ pihole:
 
   persistentVolumeClaim:
     enabled: true
+    size: 1Gi
 
   serviceDns:
     annotations:
