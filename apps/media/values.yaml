@@ -90,7 +90,8 @@ qbittorrent:
                 name: main
                 port: http
       tls:
-        - hosts:
+        - secretName: qbittorrent-tls
+          hosts:
             - *host
 
   persistence:
@@ -179,7 +180,8 @@ rdtclient:
                 name: main
                 port: http
       tls:
-        - hosts:
+        - secretName: rdtclient-tls
+          hosts:
             - *host
 
   persistence:
