@@ -118,3 +118,78 @@ qbittorrent:
           port-forward:
             - path: /tmp/gluetun
               readOnly: true
+
+rdtclient:
+  global:
+    nameOverride: rdtclient
+
+  defaultPodOptions:
+    automountServiceAccountToken: false
+
+  controllers:
+    main:
+      pod:
+        securityContext:
+          fsGroup: 568
+          fsGroupChangePolicy: "OnRootMismatch"
+
+      containers:
+        main:
+          image:
+            repository: rogerfar/rdtclient
+            tag: 2.0.49
+          securityContext:
+            runAsUser: 568
+            runAsGroup: 568
+
+  service:
+    main:
+      type: ClusterIP
+      ports:
+        http:
+          port: 6500
+
+  ingress:
+    main:
+      enabled: true
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt
+        kubernetes.io/ingress.class: nginx
+#        gethomepage.dev/enabled: "true"
+#        gethomepage.dev/name: "qBittorrent"
+#        gethomepage.dev/description: "Free and reliable P2P Bittorrent client"
+#        gethomepage.dev/group: "Dynamic"
+#        gethomepage.dev/icon: "qbittorrent.png"
+#        gethomepage.dev/widget.type: "qbittorrent"
+#        gethomepage.dev/widget.url: "http://media-qbittorrent.media.svc.cluster.local:8080"
+#        gethomepage.dev/widget.username: "username"
+#        gethomepage.dev/widget.password: "password"
+        gethomepage.dev/pod-selector: "app.kubernetes.io/name=rdtclient"
+      ingressClassName: "nginx"
+      hosts:
+        - host: &host "rdtclient.ivanchenko.io"
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: main
+                port: http
+      tls:
+        - hosts:
+            - *host
+
+  persistence:
+    config:
+      enabled: true
+      existingClaim: rdtclient-db
+      advancedMounts:
+        main:
+          main:
+            - path: /data/db
+
+    download-data:
+      type: emptyDir
+      advancedMounts:
+        main:
+          main:
+            - path: /data/downloads
