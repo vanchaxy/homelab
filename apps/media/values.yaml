@@ -74,6 +74,13 @@ qbittorrent:
           main:
             - path: /config
 
+    download-data:
+      type: emptyDir
+      advancedMounts:
+        main:
+          main:
+            - path: /download
+
     gluetun-data:
       type: emptyDir
       advancedMounts:
