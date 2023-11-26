@@ -28,7 +28,7 @@ qbittorrent:
             VPN_PORT_FORWARDING: on
           envFrom:
             - secretRef:
-              name: vpn-secret
+                name: vpn-secret
           securityContext:
             capabilities:
               add:
