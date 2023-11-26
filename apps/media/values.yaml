@@ -1,4 +1,7 @@
 qbittorrent:
+  global:
+    nameOverride: qbittorrent
+
   defaultPodOptions:
     automountServiceAccountToken: false
 
