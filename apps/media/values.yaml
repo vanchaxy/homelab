@@ -65,6 +65,18 @@ qbittorrent:
   ingress:
     main:
       enabled: true
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt
+        kubernetes.io/ingress.class: nginx
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/name: "qBittorrent"
+        gethomepage.dev/description: "Free and reliable P2P Bittorrent client"
+        gethomepage.dev/group: "Dynamic"
+        gethomepage.dev/icon: "qbittorrent.png"
+        gethomepage.dev/widget.type: "qbittorrent"
+        gethomepage.dev/widget.url: "http://media-qbittorrent.media.svc.cluster.local:8080"
+        gethomepage.dev/widget.username: "username"
+        gethomepage.dev/widget.password: "password"
       ingressClassName: "nginx"
       hosts:
         - host: &host "qbittorrent.ivanchenko.io"
