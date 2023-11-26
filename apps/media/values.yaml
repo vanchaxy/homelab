@@ -15,8 +15,13 @@ qbittorrent:
       containers:
         main:
           image:
-            repository: ghcr.io/onedr0p/qbittorrent
+            repository: linuxserver/qbittorrent
             tag: 4.6.0
+          env:
+            PUID: 568
+            PGID: 568
+            TZ: Etc/UTC
+            WEBUI_PORT: 8080
           securityContext:
             runAsUser: 568
             runAsGroup: 568
