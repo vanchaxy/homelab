@@ -142,7 +142,6 @@ rdtclient:
             PUID: 568
             PGID: 568
             TZ: Etc/UTC
-            WEBUI_PORT: 8080
           securityContext:
             runAsUser: 0
             runAsGroup: 0
@@ -160,15 +159,15 @@ rdtclient:
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt
         kubernetes.io/ingress.class: nginx
-#        gethomepage.dev/enabled: "true"
-#        gethomepage.dev/name: "qBittorrent"
-#        gethomepage.dev/description: "Free and reliable P2P Bittorrent client"
-#        gethomepage.dev/group: "Dynamic"
-#        gethomepage.dev/icon: "qbittorrent.png"
-#        gethomepage.dev/widget.type: "qbittorrent"
-#        gethomepage.dev/widget.url: "http://media-qbittorrent.media.svc.cluster.local:8080"
-#        gethomepage.dev/widget.username: "username"
-#        gethomepage.dev/widget.password: "password"
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/name: "rdt-client"
+        gethomepage.dev/description: "Real-Debrid Client Proxy"
+        gethomepage.dev/group: "Dynamic"
+        gethomepage.dev/icon: "real-debrid.svg"
+        gethomepage.dev/widget.type: "qbittorrent"
+        gethomepage.dev/widget.url: "http://media-rdtclient.media.svc.cluster.local:6500"
+        gethomepage.dev/widget.username: "username"
+        gethomepage.dev/widget.password: "password"
         gethomepage.dev/pod-selector: "app.kubernetes.io/name=rdtclient"
       ingressClassName: "nginx"
       hosts:
