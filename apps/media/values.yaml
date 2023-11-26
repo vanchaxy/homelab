@@ -97,7 +97,7 @@ qbittorrent:
   persistence:
     config:
       enabled: true
-      existingClaim: qbittorrent-config
+      size: 200Mi
       advancedMounts:
         main:
           main:
@@ -187,7 +187,7 @@ rdtclient:
   persistence:
     config:
       enabled: true
-      existingClaim: rdtclient-db
+      size: 200Mi
       advancedMounts:
         main:
           main:
@@ -202,7 +202,7 @@ rdtclient:
 
 prowlarr:
   global:
-    nameOverride: rdtclient
+    nameOverride: prowlarr
 
   defaultPodOptions:
     automountServiceAccountToken: false
