@@ -1,0 +1,8 @@
+apiVersion: v2
+name: media
+version: 0.0.0
+dependencies:
+  - name: app-template
+    repository: https://bjw-s.github.io/helm-charts/app-template
+    version: 2.3.0
+    alias: qbittorrent
