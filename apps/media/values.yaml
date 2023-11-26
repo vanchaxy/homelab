@@ -9,7 +9,7 @@ qbittorrent:
     main:
       pod:
         securityContext:
-          fsGroup: 568
+          fsGroup: 0
           fsGroupChangePolicy: "OnRootMismatch"
 
       containers:
@@ -18,13 +18,13 @@ qbittorrent:
             repository: linuxserver/qbittorrent
             tag: 4.6.0
           env:
-            PUID: 568
-            PGID: 568
+            PUID: 0
+            PGID: 0
             TZ: Etc/UTC
             WEBUI_PORT: 8080
           securityContext:
-            runAsUser: 568
-            runAsGroup: 568
+            runAsUser: 0
+            runAsGroup: 0
 
         gluetun:
           dependsOn: main
