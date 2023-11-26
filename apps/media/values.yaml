@@ -199,3 +199,76 @@ rdtclient:
         main:
           main:
             - path: /data/downloads
+
+prowlarr:
+  global:
+    nameOverride: rdtclient
+
+  defaultPodOptions:
+    automountServiceAccountToken: false
+
+  controllers:
+    main:
+      pod:
+        securityContext:
+          fsGroup: 568
+          fsGroupChangePolicy: "OnRootMismatch"
+
+      containers:
+        main:
+          image:
+            repository: linuxserver/prowlarr
+            tag: 1.9.4
+          env:
+            PUID: 568
+            PGID: 568
+            TZ: Etc/UTC
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+
+  service:
+    main:
+      type: ClusterIP
+      ports:
+        http:
+          port: 9696
+
+  ingress:
+    main:
+      enabled: true
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt
+        kubernetes.io/ingress.class: nginx
+#        gethomepage.dev/enabled: "true"
+#        gethomepage.dev/name: "rdt-client"
+#        gethomepage.dev/description: "Real-Debrid Client Proxy"
+#        gethomepage.dev/group: "Dynamic"
+#        gethomepage.dev/icon: "real-debrid.svg"
+#        gethomepage.dev/widget.type: "qbittorrent"
+#        gethomepage.dev/widget.url: "http://media-rdtclient.media.svc.cluster.local:6500"
+#        gethomepage.dev/widget.username: "username"
+#        gethomepage.dev/widget.password: "password"
+#        gethomepage.dev/pod-selector: "app.kubernetes.io/name=rdtclient"
+      ingressClassName: "nginx"
+      hosts:
+        - host: &host "prowlarr.ivanchenko.io"
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: main
+                port: http
+      tls:
+        - secretName: prowlarr-tls
+          hosts:
+            - *host
+
+  persistence:
+    config:
+      enabled: true
+      size: 200Mi
+      advancedMounts:
+        main:
+          main:
+            - path: /config
