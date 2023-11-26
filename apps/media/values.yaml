@@ -79,7 +79,7 @@ qbittorrent:
         gethomepage.dev/widget.url: "http://media-qbittorrent.media.svc.cluster.local:8080"
         gethomepage.dev/widget.username: "username"
         gethomepage.dev/widget.password: "password"
-        pod-selector: "app.kubernetes.io/name=qbittorrent"
+        gethomepage.dev/pod-selector: "app.kubernetes.io/name=qbittorrent"
       ingressClassName: "nginx"
       hosts:
         - host: &host "qbittorrent.ivanchenko.io"
