@@ -22,3 +22,7 @@ dependencies:
     repository: https://bjw-s.github.io/helm-charts
     version: 2.3.0
     alias: sonarr
+  - name: app-template
+    repository: https://bjw-s.github.io/helm-charts
+    version: 2.3.0
+    alias: plex
