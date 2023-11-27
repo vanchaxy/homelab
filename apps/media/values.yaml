@@ -113,7 +113,7 @@ qbittorrent:
 
     downloads:
       type: persistentVolumeClaim
-      existingClaim: media-pvc
+      existingClaim: media-lib
       advancedMounts:
         main:
           main:
@@ -213,7 +213,7 @@ rdtclient:
 
     downloads:
       type: persistentVolumeClaim
-      existingClaim: media-pvc
+      existingClaim: media-lib
       advancedMounts:
         main:
           main:
@@ -381,7 +381,7 @@ radarr:
             - path: /config
     data:
       type: persistentVolumeClaim
-      existingClaim: media-pvc
+      existingClaim: media-lib
       advancedMounts:
         main:
           main:
@@ -469,7 +469,7 @@ sonarr:
             - path: /config
     data:
       type: persistentVolumeClaim
-      existingClaim: media-pvc
+      existingClaim: media-lib
       advancedMounts:
         main:
           main:
@@ -550,7 +550,7 @@ plex:
             - path: /config
     data:
       type: persistentVolumeClaim
-      existingClaim: media-pvc
+      existingClaim: media-lib
       advancedMounts:
         main:
           main:
