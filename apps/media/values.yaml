@@ -434,7 +434,7 @@ sonarr:
         gethomepage.dev/group: "Dynamic"
         gethomepage.dev/icon: "sonarr.png"
         gethomepage.dev/widget.type: "sonarr"
-        gethomepage.dev/widget.url: "http://media-sonarr.media.svc.cluster.local:7878"
+        gethomepage.dev/widget.url: "http://media-sonarr.media.svc.cluster.local:8989"
         gethomepage.dev/widget.key: "0b7b43d4e25a46428ce144f6c22ef2f4"
         gethomepage.dev/pod-selector: "app.kubernetes.io/name=sonarr"
         nginx.ingress.kubernetes.io/auth-url: |-
@@ -475,3 +475,93 @@ sonarr:
           main:
             - path: /data
               subPath: data
+
+plex:
+  global:
+    nameOverride: plex
+
+  defaultPodOptions:
+    automountServiceAccountToken: false
+
+  controllers:
+    main:
+      pod:
+        securityContext:
+          fsGroup: 568
+          fsGroupChangePolicy: "OnRootMismatch"
+
+      containers:
+        main:
+          image:
+            repository: linuxserver/plex
+            tag: 1.32.7
+          env:
+            PUID: 568
+            PGID: 568
+            TZ: Etc/UTC
+            VERSION: docker
+            PLEX_CLAIM: ""
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+
+  service:
+    main:
+      type: ClusterIP
+      ports:
+        http:
+          port: 32400
+
+  ingress:
+    main:
+      enabled: true
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt
+        kubernetes.io/ingress.class: nginx
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/name: "plex"
+        gethomepage.dev/description: "Smart PVR for series"
+        gethomepage.dev/group: "Dynamic"
+        gethomepage.dev/icon: "plex.png"
+        gethomepage.dev/widget.type: "plex"
+        gethomepage.dev/widget.url: "http://media-plex.media.svc.cluster.local:32400"
+        gethomepage.dev/widget.key: "0b7b43d4e25a46428ce144f6c22ef2f4"
+        gethomepage.dev/pod-selector: "app.kubernetes.io/name=plex"
+        nginx.ingress.kubernetes.io/auth-url: |-
+          https://auth.ivanchenko.io/outpost.goauthentik.io/auth/nginx
+        nginx.ingress.kubernetes.io/auth-signin: |-
+          https://auth.ivanchenko.io/outpost.goauthentik.io/start
+        nginx.ingress.kubernetes.io/auth-response-headers: |-
+          Set-Cookie,X-authentik-username,X-authentik-groups,X-authentik-email,X-authentik-name,X-authentik-uid
+        nginx.ingress.kubernetes.io/auth-snippet: |
+          proxy_set_header X-Forwarded-Host $http_host;
+      ingressClassName: "nginx"
+      hosts:
+        - host: &host "plex.ivanchenko.io"
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: main
+                port: http
+      tls:
+        - secretName: plex-tls
+          hosts:
+            - *host
+
+  persistence:
+    config:
+      enabled: true
+      size: 1Gi
+      advancedMounts:
+        main:
+          main:
+            - path: /config
+    data:
+      type: persistentVolumeClaim
+      existingClaim: media-pvc
+      advancedMounts:
+        main:
+          main:
+            - path: /data/media
+              subPath: data/media
