@@ -238,7 +238,7 @@ prowlarr:
         main:
           image:
             repository: linuxserver/prowlarr
-            tag: 1.9.4
+            tag: 1.10.5
           env:
             PUID: 568
             PGID: 568
