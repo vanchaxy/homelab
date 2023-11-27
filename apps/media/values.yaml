@@ -406,7 +406,7 @@ sonarr:
         main:
           image:
             repository: linuxserver/sonarr
-            tag: develop-4.0.0
+            tag: develop-4.0.0.733-ls12
           env:
             PUID: 568
             PGID: 568
