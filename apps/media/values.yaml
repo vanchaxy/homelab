@@ -500,7 +500,7 @@ plex:
             PGID: 568
             TZ: Etc/UTC
             VERSION: docker
-            PLEX_CLAIM: "claim-gZMLbg2aomgwvDyfZvyi"
+            PLEX_CLAIM: "claim-pyXokpt1qVEo4sXobCgB"
           securityContext:
             runAsUser: 0
             runAsGroup: 0
