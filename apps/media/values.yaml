@@ -118,7 +118,7 @@ qbittorrent:
         main:
           main:
             - path: /downloads
-              subPath: /downloads
+              subPath: downloads
 
     gluetun-data:
       type: emptyDir
@@ -218,7 +218,7 @@ rdtclient:
         main:
           main:
             - path: /data/downloads
-              subPath: /downloads
+              subPath: downloads
 
 prowlarr:
   global:
@@ -386,6 +386,6 @@ radarr:
         main:
           main:
             - path: /downloads
-              subPath: /downloads
+              subPath: downloads
             - path: /movies
-              subPath: /movies
+              subPath: movies
