@@ -3,7 +3,7 @@ argo-cd:
     secret:
       createSecret: false
     cm:
-      admin.enabled: false
+      admin.enabled: true
       url: https://argocd.ivanchenko.io
       dex.config: |
         connectors:
