@@ -598,14 +598,14 @@ overseerr:
         cert-manager.io/cluster-issuer: letsencrypt
         kubernetes.io/ingress.class: nginx
         gethomepage.dev/enabled: "true"
-#        gethomepage.dev/name: "overseerr"
-#        gethomepage.dev/description: "Smart PVR for series"
-#        gethomepage.dev/group: "Dynamic"
-#        gethomepage.dev/icon: "plex.png"
-#        gethomepage.dev/widget.type: "plex"
-#        gethomepage.dev/widget.url: "http://media-plex.media.svc.cluster.local:32400"
-#        gethomepage.dev/widget.key: "0b7b43d4e25a46428ce144f6c22ef2f4"
-#        gethomepage.dev/pod-selector: "app.kubernetes.io/name=plex"
+        gethomepage.dev/name: "overseerr"
+        gethomepage.dev/description: "Request management and media discovery tool"
+        gethomepage.dev/group: "Dynamic"
+        gethomepage.dev/icon: "overseerr.png"
+        gethomepage.dev/widget.type: "overseerr"
+        gethomepage.dev/widget.url: "http://media-overseerr.media.svc.cluster.local:32400"
+        gethomepage.dev/widget.key: "0b7b43d4e25a46428ce144f6c22ef2f4"
+        gethomepage.dev/pod-selector: "app.kubernetes.io/name=overseerr"
       ingressClassName: "nginx"
       hosts:
         - host: &host "overseerr.ivanchenko.io"
