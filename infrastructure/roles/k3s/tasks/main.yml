@@ -6,6 +6,33 @@
     name: nfs-common
     state: present
 
+- name: Configure MultiPath configuration
+  blockinfile:
+    path: /etc/multipath.conf
+    block: |
+      blacklist {
+        devnode "^sd[a-z0-9]+"
+      }
+    create: yes
+    owner: root
+    group: root
+    mode: 0600
+    state: present
+  register: multipathconf
+
+- name: Increase inotify user limit
+  sysctl:
+    name: fs.inotify.max_user_watches
+    value: 16384
+    sysctl_set: yes
+
+- name: Restart multipathd
+  service:
+    name: multipathd
+    state: restarted
+  when:
+    - multipathconf.changed
+
 - name: Download k3s binary
   ansible.builtin.get_url:
     url: https://github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/k3s
