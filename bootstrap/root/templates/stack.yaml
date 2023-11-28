@@ -39,6 +39,7 @@ spec:
         syncOptions:
           - CreateNamespace=true
           - ApplyOutOfSyncOnly=true
+          - RespectIgnoreDifferences=true
       ignoreDifferences:
         - group: argoproj.io
           kind: Application
