@@ -39,4 +39,11 @@ spec:
         syncOptions:
           - CreateNamespace=true
           - ApplyOutOfSyncOnly=true
+      ignoreDifferences:
+        - group: argoproj.io
+          kind: Application
+          managedFieldsManagers:
+            - argocd-server
+          jsonPointers:
+            - /spec/syncPolicy/automated
 {{- end }}
