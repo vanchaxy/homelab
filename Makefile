@@ -20,3 +20,10 @@ tools:
 		--volume homelab-tools-nix:/nix \
 		--workdir $(shell pwd) \
 		nixos/nix nix-shell
+
+backup-secret:
+	kubectl create secret generic idrivee2-secret \
+		--from-literal=AWS_ACCESS_KEY_ID=${IDRIVE_ACCESS_KEY_ID} \
+		--from-literal=AWS_SECRET_ACCESS_KEY=${IDRIVE_SECRET_ACCESS_KEY} \
+		--from-literal=AWS_ENDPOINTS=${IDRIVE_ENDPOINTS} \
+		-n longhorn-system
