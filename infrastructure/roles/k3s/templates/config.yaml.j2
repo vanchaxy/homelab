@@ -6,6 +6,11 @@ server: https://{{ hostvars[groups['cloud'][0]].ansible_host }}:6443
 vpn-auth: name=tailscale,joinKey=tskey
 token-file: {{ k3s_token_file }}
 node-external-ip: "{{ ansible_host }}"
+node-label:
+  - "topology.kubernetes.io/region={{ region }}"
+  - "node.longhorn.io/default-node-tags={{ [region] | to_json }}"
+  - "node.longhorn.io/create-default-disk=config"
+  - "node.longhorn.io/default-disks-config: {{ disks_config | to_json }}"
 {% if master %}
 {{ k3s_server_config | to_nice_yaml }}
 {% endif %}
