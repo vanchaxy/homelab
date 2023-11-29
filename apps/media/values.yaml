@@ -111,14 +111,14 @@ qbittorrent:
           main:
             - path: /config
 
-    downloads:
-      type: persistentVolumeClaim
-      existingClaim: media-lib
-      advancedMounts:
-        main:
-          main:
-            - path: /data/downloads
-              subPath: data/downloads
+#    downloads:
+#      type: persistentVolumeClaim
+#      existingClaim: media-lib
+#      advancedMounts:
+#        main:
+#          main:
+#            - path: /data/downloads
+#              subPath: data/downloads
 
     gluetun-data:
       type: emptyDir
@@ -211,14 +211,14 @@ rdtclient:
           main:
             - path: /data/db
 
-    downloads:
-      type: persistentVolumeClaim
-      existingClaim: media-lib
-      advancedMounts:
-        main:
-          main:
-            - path: /data/downloads
-              subPath: data/downloads
+#    downloads:
+#      type: persistentVolumeClaim
+#      existingClaim: media-lib
+#      advancedMounts:
+#        main:
+#          main:
+#            - path: /data/downloads
+#              subPath: data/downloads
 
 prowlarr:
   global:
@@ -379,14 +379,14 @@ radarr:
         main:
           main:
             - path: /config
-    data:
-      type: persistentVolumeClaim
-      existingClaim: media-lib
-      advancedMounts:
-        main:
-          main:
-            - path: /data
-              subPath: data
+#    data:
+#      type: persistentVolumeClaim
+#      existingClaim: media-lib
+#      advancedMounts:
+#        main:
+#          main:
+#            - path: /data
+#              subPath: data
 
 sonarr:
   global:
@@ -467,14 +467,14 @@ sonarr:
         main:
           main:
             - path: /config
-    data:
-      type: persistentVolumeClaim
-      existingClaim: media-lib
-      advancedMounts:
-        main:
-          main:
-            - path: /data
-              subPath: data
+#    data:
+#      type: persistentVolumeClaim
+#      existingClaim: media-lib
+#      advancedMounts:
+#        main:
+#          main:
+#            - path: /data
+#              subPath: data
 
 plex:
   global:
@@ -567,14 +567,14 @@ plex:
         main:
           main:
             - path: /config
-    data:
-      type: persistentVolumeClaim
-      existingClaim: media-lib
-      advancedMounts:
-        main:
-          main:
-            - path: /data/media
-              subPath: data/media
+#    data:
+#      type: persistentVolumeClaim
+#      existingClaim: media-lib
+#      advancedMounts:
+#        main:
+#          main:
+#            - path: /data/media
+#              subPath: data/media
 
 overseerr:
   global:
