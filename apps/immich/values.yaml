@@ -58,6 +58,9 @@ immich:
       tsdata:
         enabled: true
         size: 30Gi
+        labels:
+          recurring-job.longhorn.io/source: enabled
+          recurring-job-group.longhorn.io/immich: enabled
     probes:
       liveness:
         spec:
