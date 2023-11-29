@@ -160,7 +160,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: vault-file
 spec:
-  storageClassName: longhorn
+  storageClassName: longhorn-ssd
   accessModes:
     - ReadWriteOnce
   resources:

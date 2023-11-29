@@ -3,7 +3,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: media-lib
 spec:
-  storageClassName: longhorn
+  storageClassName: longhorn-hdd
   accessModes:
     - ReadWriteMany
   resources:

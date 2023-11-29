@@ -3,7 +3,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: photo-library
 spec:
-  storageClassName: longhorn
+  storageClassName: longhorn-ssd-retain
   accessModes:
     - ReadWriteMany
   resources:

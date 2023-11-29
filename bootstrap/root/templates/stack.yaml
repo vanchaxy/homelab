@@ -27,11 +27,9 @@ spec:
         path: '{{ `{{path}}` }}'
         targetRevision: {{ $.Values.gitops.revision }}
       syncPolicy:
-        {{ if not $.Values.stopSync }}
         automated:
           prune: true
           selfHeal: true
-        {{ end }}
         retry:
           limit: 10
           backoff:

@@ -3,14 +3,11 @@ cluster-init: true
 {% else %}
 server: https://{{ hostvars[groups['cloud'][0]].ansible_host }}:6443
 {% endif %}
-vpn-auth: name=tailscale,joinKey=tskey
+vpn-auth: name=tailscale,joinKey=tskey-auth-kki4Ud3CNTRL-f2bAE47pmWK93y6qF3R7RK93vkBzQ3WUf
 token-file: {{ k3s_token_file }}
 node-external-ip: "{{ ansible_host }}"
 node-label:
-  - "topology.kubernetes.io/region={{ region }}"
-  - "node.longhorn.io/default-node-tags={{ [region] | to_json }}"
-  - "node.longhorn.io/create-default-disk=config"
-  - "node.longhorn.io/default-disks-config: {{ disks_config | to_json }}"
+  - 'topology.kubernetes.io/region={{ region }}'
 {% if master %}
 {{ k3s_server_config | to_nice_yaml }}
 {% endif %}

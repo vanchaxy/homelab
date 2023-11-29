@@ -8,12 +8,5 @@ cloud:
           ansible_host: ${ hosts_ips[name] }
           master: ${ params["master"] }
           region: cloud
-          disks_config:
-            - name: ssd
-              path: /mnt/default-ssd
-              allowScheduling: true
-              storageReserved: 62914560
-              tags:
-                - ssd
 
         %{~ endfor ~}

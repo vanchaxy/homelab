@@ -7,6 +7,7 @@ helm template \
     --include-crds \
     --namespace argocd \
     --values "${VALUES}" \
+    --set argo-cd.configs.secret.createSecret=true \
     argocd . \
     | kubectl apply -n argocd -f -
 

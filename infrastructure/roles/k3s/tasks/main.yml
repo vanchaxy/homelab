@@ -101,10 +101,10 @@
   retries: 5
 
 - name: Get Kubernetes config file
-  run_once: true
   ansible.builtin.slurp:
     src: /etc/rancher/k3s/k3s.yaml
   register: kubeconfig_base64
+  when: inventory_hostname == groups['cloud'][0]
 
 - name: Write Kubernetes config file with the correct cluster address
   ansible.builtin.copy:
@@ -112,4 +112,4 @@
     dest: "{{ playbook_dir }}/kubeconfig.yaml"
     mode: 0600
   delegate_to: localhost
-  run_once: true
+  when: inventory_hostname == groups['cloud'][0]
