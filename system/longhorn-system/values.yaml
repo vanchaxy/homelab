@@ -1,5 +1,13 @@
 longhorn:
+  helmPreUpgradeCheckerJob:
+    enabled: false
   defaultSettings:
+    backupTarget: s3://longhorn-backups@us-east-1/
+    backupTargetCredentialSecret: idrivee2-secret
+    createDefaultDiskLabeledNodes: true
+    storageOverProvisioningPercentage: 100
+    defaultReplicaCount: 1
+    autoDeletePodWhenVolumeDetachedUnexpectedly: true
     nodeDownPodDeletionPolicy: delete-both-statefulset-and-deployment-pod
   persistence:
     defaultClassReplicaCount: 1
