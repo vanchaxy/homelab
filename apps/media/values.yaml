@@ -564,7 +564,7 @@ plex:
   persistence:
     config:
       enabled: true
-      size: 1Gi
+      size: 50Gi
       advancedMounts:
         main:
           main:
