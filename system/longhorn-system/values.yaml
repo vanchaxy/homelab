@@ -1,4 +1,7 @@
 longhorn:
+  persistence:
+    defaultClass: false
+    defaultClassReplicaCount: 1
   helmPreUpgradeCheckerJob:
     enabled: false
   defaultSettings:
@@ -9,8 +12,6 @@ longhorn:
     defaultReplicaCount: 1
     autoDeletePodWhenVolumeDetachedUnexpectedly: true
     nodeDownPodDeletionPolicy: delete-both-statefulset-and-deployment-pod
-  persistence:
-    defaultClassReplicaCount: 1
   ingress:
     enabled: true
     ingressClassName: nginx
