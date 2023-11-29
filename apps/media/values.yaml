@@ -486,6 +486,8 @@ plex:
   controllers:
     main:
       pod:
+        nodeSelector:
+          topology.kubernetes.io/region: home
         securityContext:
           fsGroup: 568
           fsGroupChangePolicy: "OnRootMismatch"
