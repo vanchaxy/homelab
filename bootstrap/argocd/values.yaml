@@ -9,7 +9,7 @@ argo-cd:
         connectors:
         - config:
             issuer: https://auth.ivanchenko.io/application/o/argocd/
-            clientID: X1QgQfyg1G5tK7ulxUJ2BCFVKPEsLeag563BaOMI
+            clientID: wFcLzxdqFVTNG7ppkR6LJtYsriQSGqpboro4oIe3
             clientSecret: $dex.authentik.clientSecret
             insecureEnableGroups: true
             scopes:
