@@ -19,9 +19,7 @@ immich:
     enabled: true
     master:
       persistence:
-        labels:
-          recurring-job.longhorn.io/source: enabled
-          recurring-job-group.longhorn.io/immich: enabled
+        existingClaim: redis-data-immich-redis-master-0
 
   server:
     ingress:
