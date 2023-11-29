@@ -16,13 +16,13 @@ spec:
   data:
     - secretKey: drone_github_client_id
       remoteRef:
-        key: drone-secret
+        key: drone
         property: drone_github_client_id
     - secretKey: drone_github_client_secret
       remoteRef:
-        key: drone-secret
+        key: drone
         property: drone_github_client_secret
     - secretKey: drone_rpc_secret
       remoteRef:
-        key: drone-secret
+        key: drone
         property: drone_rpc_secret

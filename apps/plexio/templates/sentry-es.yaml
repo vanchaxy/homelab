@@ -14,5 +14,5 @@ spec:
   data:
     - secretKey: sentry_dsn
       remoteRef:
-        key: plexio-sentry-secret
+        key: plexio
         property: sentry_dsn

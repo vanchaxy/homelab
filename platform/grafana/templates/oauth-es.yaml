@@ -15,9 +15,9 @@ spec:
   data:
     - secretKey: oauth_client_id
       remoteRef:
-        key: grafana-secret
+        key: grafana
         property: oauth_client_id
     - secretKey: oauth_client_secret
       remoteRef:
-        key: grafana-secret
+        key: grafana
         property: oauth_client_secret
