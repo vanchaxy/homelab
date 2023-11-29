@@ -11,9 +11,18 @@ immich:
 
   postgresql:
     enabled: true
+    primary:
+      persistence:
+        labels:
+          recurring-job.longhorn.io/source: enabled
+          recurring-job-group.longhorn.io/immich: enabled
 
   redis:
     enabled: true
+    master:
+      labels:
+        recurring-job.longhorn.io/source: enabled
+        recurring-job-group.longhorn.io/immich: enabled
 
   server:
     ingress:
