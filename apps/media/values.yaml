@@ -540,6 +540,24 @@ plex:
         - secretName: plex-tls
           hosts:
             - *host
+    home:
+      enabled: true
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt
+        kubernetes.io/ingress.class: nginx-home
+      ingressClassName: "nginx-home"
+      hosts:
+        - host: &host "plex.ivanchenko.io"
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: main
+                port: http
+      tls:
+        - secretName: plex-home-tls
+          hosts:
+            - *host
 
   persistence:
     config:
