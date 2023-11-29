@@ -29,6 +29,8 @@ spec:
               value: "true"
             - name: CONFIG_DOCKERCONFIGJSONPATH
               value: "/app/secrets/.dockerconfigjson"
+            - name: CONFIG_EXCLUDED_NAMESPACES
+              value: "monitoring-system"
           volumeMounts:
             - name: src-dockerconfigjson
               mountPath: "/app/secrets"
