@@ -57,6 +57,14 @@ qbittorrent:
             - name: PORT_FORWARDED
               value: "/tmp/gluetun/forwarded_port"
 
+        crossseed:
+          dependsOn: main
+          image:
+            repository: crossseed/cross-seed
+            tag: 5.8.5
+          command:
+            - daemon
+
   service:
     main:
       type: ClusterIP
@@ -110,6 +118,9 @@ qbittorrent:
         main:
           main:
             - path: /config
+          crossseed:
+            - path: /torrents
+              subPath: qBittorrent/BT_backup
 
     downloads:
       type: persistentVolumeClaim
@@ -129,6 +140,22 @@ qbittorrent:
           port-forward:
             - path: /tmp/gluetun
               readOnly: true
+
+    crossseed-config:
+      enabled: true
+      size: 200Mi
+      advancedMounts:
+        main:
+          crossseed:
+            - path: /config
+
+    crossseed-seeds:
+      enabled: true
+      size: 200Mi
+      advancedMounts:
+        main:
+          crossseed:
+            - path: /cross-seeds
 
 rdtclient:
   global:
