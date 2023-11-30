@@ -69,11 +69,11 @@ qbittorrent:
             - http://media-prowlarr:9696/3/api?apikey=0b7b43d4e25a46428ce144f6c22ef2f4
             - http://media-prowlarr:9696/4/api?apikey=0b7b43d4e25a46428ce144f6c22ef2f4
             - http://media-prowlarr:9696/5/api?apikey=0b7b43d4e25a46428ce144f6c22ef2f4
-            - '-A'
-            - inject
-            - '--qbittorrent-url'
-            - 'http://localhost:8080'
-            - '--duplicate-categories'
+#            - '-A'
+#            - inject
+#            - '--qbittorrent-url'
+#            - 'http://localhost:8080'
+#            - '--duplicate-categories'
 
   service:
     main:
