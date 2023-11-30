@@ -121,6 +121,7 @@ qbittorrent:
           crossseed:
             - path: /torrents
               subPath: qBittorrent/BT_backup
+              readOnly: true
 
     downloads:
       type: persistentVolumeClaim
