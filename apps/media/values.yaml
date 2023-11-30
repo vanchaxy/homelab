@@ -75,6 +75,8 @@ qbittorrent:
             - '--qbittorrent-url'
             - 'http://admin:adminadmin@localhost:8080'
             - '--duplicate-categories'
+            - '--match-mode'
+            - 'risky'
 
   service:
     main:
