@@ -62,7 +62,7 @@ qbittorrent:
           image:
             repository: crossseed/cross-seed
             tag: 5.8.5
-          command:
+          args:
             - daemon
 
   service:
