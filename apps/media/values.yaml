@@ -63,7 +63,11 @@ qbittorrent:
             repository: crossseed/cross-seed
             tag: 5.8.5
           args:
-            - daemon
+            - search
+            - '-T'
+            - http://media-prowlarr:9696/3/api?apikey=0b7b43d4e25a46428ce144f6c22ef2f4
+            - http://media-prowlarr:9696/4/api?apikey=0b7b43d4e25a46428ce144f6c22ef2f4
+            - http://media-prowlarr:9696/5/api?apikey=0b7b43d4e25a46428ce144f6c22ef2f4
 
   service:
     main:
