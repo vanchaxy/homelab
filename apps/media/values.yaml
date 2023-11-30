@@ -37,7 +37,6 @@ qbittorrent:
             VPN_SERVICE_PROVIDER: protonvpn
             VPN_PORT_FORWARDING: on
             DNS_KEEP_NAMESERVER: on
-            FIREWALL_OUTBOUND_SUBNETS: 10.0.0.0/8
           envFrom:
             - secretRef:
                 name: vpn-secret
