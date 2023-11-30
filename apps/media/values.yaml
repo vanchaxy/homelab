@@ -145,6 +145,7 @@ qbittorrent:
     crossseed-config:
       enabled: true
       size: 200Mi
+      accessMode: ReadWriteOnce
       advancedMounts:
         main:
           crossseed:
@@ -153,6 +154,7 @@ qbittorrent:
     crossseed-seeds:
       enabled: true
       size: 200Mi
+      accessMode: ReadWriteOnce
       advancedMounts:
         main:
           crossseed:
