@@ -63,7 +63,7 @@ qbittorrent:
           dependsOn: main
           image:
             repository: registry.ivanchenko.io/cross-seed
-            tag: master-a2493d54
+            tag: master-942100b6
           env:
             - name: LOG_LEVEL
               value: debug
