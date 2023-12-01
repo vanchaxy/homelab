@@ -170,7 +170,7 @@ crossseed:
             - '/data/downloads'
             - '--link-dir'
             - '/data/x-seed'
-            - '--api-auth'
+#            - '--api-auth'
 
   service:
     main:
