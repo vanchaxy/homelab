@@ -36,8 +36,8 @@ qbittorrent:
           env:
             VPN_SERVICE_PROVIDER: protonvpn
             VPN_PORT_FORWARDING: on
-#            DNS_KEEP_NAMESERVER: on
-#            FIREWALL_OUTBOUND_SUBNETS: 10.0.0.0/8
+            DNS_KEEP_NAMESERVER: on
+            FIREWALL_OUTBOUND_SUBNETS: 10.43.0.0/16
           envFrom:
             - secretRef:
                 name: vpn-secret
@@ -59,27 +59,27 @@ qbittorrent:
             - name: PORT_FORWARDED
               value: "/tmp/gluetun/forwarded_port"
 
-#        crossseed:
-#          dependsOn: main
-#          image:
-#            repository: registry.ivanchenko.io/cross-seed
-#            tag: master-2eedc6a7
-#          env:
-#            - name: LOG_LEVEL
-#              value: debug
-#          args:
-#            - search
-#            - '-T'
-#            - http://media-prowlarr:9696/3/api?apikey=0b7b43d4e25a46428ce144f6c22ef2f4
-#            - http://media-prowlarr:9696/4/api?apikey=0b7b43d4e25a46428ce144f6c22ef2f4
-#            - http://media-prowlarr:9696/5/api?apikey=0b7b43d4e25a46428ce144f6c22ef2f4
-#            - '-A'
-#            - inject
-#            - '--qbittorrent-url'
-#            - 'http://admin:adminadmin@localhost:8080'
-#            - '--duplicate-categories'
-#            - '--match-mode'
-#            - 'risky'
+        crossseed:
+          dependsOn: main
+          image:
+            repository: registry.ivanchenko.io/cross-seed
+            tag: master-2eedc6a7
+          env:
+            - name: LOG_LEVEL
+              value: debug
+          args:
+            - search
+            - '-T'
+            - http://media-prowlarr:9696/3/api?apikey=0b7b43d4e25a46428ce144f6c22ef2f4
+            - http://media-prowlarr:9696/4/api?apikey=0b7b43d4e25a46428ce144f6c22ef2f4
+            - http://media-prowlarr:9696/5/api?apikey=0b7b43d4e25a46428ce144f6c22ef2f4
+            - '-A'
+            - inject
+            - '--qbittorrent-url'
+            - 'http://admin:adminadmin@localhost:8080'
+            - '--duplicate-categories'
+            - '--match-mode'
+            - 'risky'
 
   service:
     main:
