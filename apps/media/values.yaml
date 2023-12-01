@@ -161,7 +161,8 @@ crossseed:
             startup:
               enabled: false
           args:
-            - search
+#            - search
+            - daemon
             - '-T'
             - http://media-prowlarr:9696/3/api?apikey=0b7b43d4e25a46428ce144f6c22ef2f4
 #            - http://media-prowlarr:9696/4/api?apikey=0b7b43d4e25a46428ce144f6c22ef2f4
@@ -177,14 +178,14 @@ crossseed:
             - '/data/downloads'
             - '--link-dir'
             - '/data/x-seed'
-#            - '--api-auth'
+            - '--api-auth'
 
   service:
     main:
       type: ClusterIP
       ports:
         http:
-          port: 8080
+          port: 2468
 
   ingress:
     main:
