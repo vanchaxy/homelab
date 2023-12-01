@@ -152,7 +152,7 @@ crossseed:
         main:
           image:
             repository: registry.ivanchenko.io/cross-seed
-            tag: master-109e4e1b
+            tag: master-6c291cbb
           probes:
             liveness:
               enabled: false
