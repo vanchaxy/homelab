@@ -162,7 +162,7 @@ crossseed:
             - '-A'
             - inject
             - '--qbittorrent-url'
-            - 'http://admin:adminadmin@localhost:8080'
+            - 'http://admin:adminadmin@media-qbittorrent:8080'
             - '--duplicate-categories'
             - '--match-mode'
             - 'risky'
