@@ -168,7 +168,7 @@ crossseed:
             - 'risky'
             - '--data-dirs'
             - '/data/downloads'
-            - '--linkDir'
+            - '--link-dir'
             - '/data/x-seed'
             - '--api-auth'
 
