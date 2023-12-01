@@ -36,8 +36,6 @@ qbittorrent:
           env:
             VPN_SERVICE_PROVIDER: protonvpn
             VPN_PORT_FORWARDING: on
-#            DNS_KEEP_NAMESERVER: on
-#            FIREWALL_OUTBOUND_SUBNETS: 10.0.0.0/8
           envFrom:
             - secretRef:
                 name: vpn-secret
@@ -58,28 +56,6 @@ qbittorrent:
               value: "8080"
             - name: PORT_FORWARDED
               value: "/tmp/gluetun/forwarded_port"
-
-#        crossseed:
-#          dependsOn: main
-#          image:
-#            repository: registry.ivanchenko.io/cross-seed
-#            tag: master-2eedc6a7
-#          env:
-#            - name: LOG_LEVEL
-#              value: debug
-#          args:
-#            - search
-#            - '-T'
-#            - http://media-prowlarr:9696/3/api?apikey=0b7b43d4e25a46428ce144f6c22ef2f4
-#            - http://media-prowlarr:9696/4/api?apikey=0b7b43d4e25a46428ce144f6c22ef2f4
-#            - http://media-prowlarr:9696/5/api?apikey=0b7b43d4e25a46428ce144f6c22ef2f4
-#            - '-A'
-#            - inject
-#            - '--qbittorrent-url'
-#            - 'http://admin:adminadmin@localhost:8080'
-#            - '--duplicate-categories'
-#            - '--match-mode'
-#            - 'risky'
 
   service:
     main:
@@ -134,10 +110,6 @@ qbittorrent:
         main:
           main:
             - path: /config
-          crossseed:
-            - path: /torrents
-              subPath: qBittorrent/BT_backup
-              readOnly: true
 
     downloads:
       type: persistentVolumeClaim
@@ -147,6 +119,8 @@ qbittorrent:
           main:
             - path: /data/downloads
               subPath: data/downloads
+            - path: /data/x-seed
+              subPath: data/x-seed
 
     gluetun-data:
       type: emptyDir
@@ -158,16 +132,84 @@ qbittorrent:
             - path: /tmp/gluetun
               readOnly: true
 
-    crossseed-config:
+crossseed:
+  global:
+    nameOverride: crossseed
+
+  defaultPodOptions:
+    automountServiceAccountToken: false
+
+  controllers:
+    main:
+      pod:
+        nodeSelector:
+          topology.kubernetes.io/region: cloud
+        securityContext:
+          fsGroup: 568
+          fsGroupChangePolicy: "OnRootMismatch"
+
+      containers:
+        main:
+          image:
+            repository: registry.ivanchenko.io/cross-seed
+            tag: master-12976c85
+          args:
+            - search
+            - '-T'
+            - http://media-prowlarr:9696/3/api?apikey=0b7b43d4e25a46428ce144f6c22ef2f4
+#            - http://media-prowlarr:9696/4/api?apikey=0b7b43d4e25a46428ce144f6c22ef2f4
+            - http://media-prowlarr:9696/5/api?apikey=0b7b43d4e25a46428ce144f6c22ef2f4
+            - '-A'
+            - inject
+            - '--qbittorrent-url'
+            - 'http://admin:adminadmin@localhost:8080'
+            - '--duplicate-categories'
+            - '--match-mode'
+            - 'risky'
+            - '--data-dirs'
+            - '/data/downloads'
+            - '--linkDir'
+            - '/data/x-seed'
+            - '--api-auth'
+
+  service:
+    main:
+      type: ClusterIP
+      ports:
+        http:
+          port: 8080
+
+  ingress:
+    main:
+      enabled: true
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt
+        kubernetes.io/ingress.class: nginx
+      ingressClassName: "nginx"
+      hosts:
+        - host: &host "crossseed.ivanchenko.io"
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: main
+                port: http
+      tls:
+        - secretName: crossseed-tls
+          hosts:
+            - *host
+
+  persistence:
+    config:
       enabled: true
       size: 200Mi
       accessMode: ReadWriteOnce
       advancedMounts:
         main:
-          crossseed:
+          main:
             - path: /config
 
-    crossseed-seeds:
+    seeds:
       enabled: true
       size: 200Mi
       accessMode: ReadWriteOnce
@@ -175,6 +217,27 @@ qbittorrent:
         main:
           crossseed:
             - path: /cross-seeds
+
+    downloads:
+      type: persistentVolumeClaim
+      existingClaim: media-lib
+      advancedMounts:
+        main:
+          main:
+            - path: /data/downloads
+              subPath: data/downloads
+            - path: /data/x-seed
+              subPath: data/x-seed
+
+    torrents:
+      type: persistentVolumeClaim
+      existingClaim: media-qbittorrent-config
+      advancedMounts:
+        main:
+          main:
+            - path: /torrents
+              subPath: qBittorrent/BT_backup
+              readOnly: true
 
 rdtclient:
   global:
