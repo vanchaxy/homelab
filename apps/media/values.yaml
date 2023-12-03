@@ -153,6 +153,8 @@ crossseed:
           image:
             repository: registry.ivanchenko.io/cross-seed
             tag: master-3314ea0a
+          env:
+            X_HOOK: https://crossseed.ivanchenko.io/api/webhook
           probes:
             liveness:
               enabled: false
