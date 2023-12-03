@@ -153,8 +153,6 @@ crossseed:
           image:
             repository: registry.ivanchenko.io/cross-seed
             tag: master-3314ea0a
-          env:
-            X_HOOK: https://crossseed.ivanchenko.io/api/webhook
           probes:
             liveness:
               enabled: false
@@ -272,6 +270,7 @@ rdtclient:
             PUID: 568
             PGID: 568
             TZ: Etc/UTC
+            X_HOOK: https://crossseed.ivanchenko.io/api/webhook
           securityContext:
             runAsUser: 0
             runAsGroup: 0
