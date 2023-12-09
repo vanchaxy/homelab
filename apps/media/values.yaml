@@ -786,7 +786,7 @@ tautulli:
         main:
           image:
             repository: linuxserver/tautulli
-            tag: 2.13.3
+            tag: 2.13.4
           env:
             PUID: 568
             PGID: 568
