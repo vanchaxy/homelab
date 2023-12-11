@@ -18,3 +18,5 @@ plexio:
       value: 'beta'
     - name: CORS_ORIGIN_REGEX
       value: '.*plexio.stream|.*strem.io|.*stremio.com'
+    - name: MATCHING_PLEX_ADDRESS
+      value: http://localhost:32400
