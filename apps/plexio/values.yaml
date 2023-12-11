@@ -1,7 +1,7 @@
 plexio:
   image:
     repository: registry.ivanchenko.io/plexio
-    tag: "main-0de3ae87"
+    tag: "main-c6414df6"
   frontapp:
     image:
       repository: registry.ivanchenko.io/plexio-frontapp
