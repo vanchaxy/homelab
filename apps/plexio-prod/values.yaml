@@ -14,13 +14,21 @@ plexio:
             image:
               repository: registry.ivanchenko.io/plexio
             env:
-              REDIS_HOST: 'plexio-prod-redis-master'
-              MATCHING_PLEX_ADDRESS: http://plexio-prod-plex-matcher:32400
-              SENTRY_ENVIRONMENT: 'prod'
-              CORS_ORIGIN_REGEX: '.*plexio.stream|.*strem.io|.*stremio.com'
-            envFrom:
-              - secretRef:
-                  name: sentry-secret
+              - name: CORS_ORIGIN_REGEX
+                value: .*plexio.stream|.*strem.io|.*stremio.com
+              - name: MATCHING_PLEX_ADDRESS
+                value: 'http://plexio-prod-plex-matcher:32400'
+              - name: REDIS_HOST
+                value: plexio-prod-redis-master
+              - name: SENTRY_DSN
+                value: sentry-secret
+              - name: SENTRY_ENVIRONMENT
+                value: prod
+              - name: SENTRY_DSN
+                valueFrom:
+                  secretKeyRef:
+                    name: sentry-secret
+                    key: SENTRY_DSN
 
     ingress:
       main:
