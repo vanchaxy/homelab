@@ -1,4 +1,12 @@
 plexio:
+  plex-matcher:
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: plexinc/pms-docker
+
   controllers:
     main:
       containers:
