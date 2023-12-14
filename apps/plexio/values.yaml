@@ -4,7 +4,7 @@ plexio:
       containers:
         main:
           image:
-            tag: feature-better-chart-34eb2f14
+            tag: main-1f3f8261
 
   server:
     controllers:
@@ -14,9 +14,9 @@ plexio:
             image:
               repository: registry.ivanchenko.io/plexio
             env:
-              REDIS_HOST: 'plexio-prod-redis-master'
-              MATCHING_PLEX_ADDRESS: http://plexio-prod-plex-matcher:32400
-              SENTRY_ENVIRONMENT: 'prod'
+              REDIS_HOST: 'plexio-redis-master'
+              MATCHING_PLEX_ADDRESS: http://plexio-plex-matcher:32400
+              SENTRY_ENVIRONMENT: 'production'
               CORS_ORIGIN_REGEX: '.*plexio.stream|.*strem.io|.*stremio.com'
             envFrom:
               - secretRef:
