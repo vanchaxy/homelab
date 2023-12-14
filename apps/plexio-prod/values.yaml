@@ -27,12 +27,9 @@ plexio:
               MATCHING_PLEX_ADDRESS: http://plexio-prod-plex-matcher:32400
               SENTRY_ENVIRONMENT: 'prod'
               CORS_ORIGIN_REGEX: '.*plexio.stream|.*strem.io|.*stremio.com'
-            ennFrom:
-              - name: SENTRY_DSN
-                valueFrom:
-                  secretKeyRef:
-                    name: sentry-secret
-                    key: SENTRY_DSN
+            envFrom:
+              - secretRef:
+                  name: sentry-secret
 
     ingress:
       main:
