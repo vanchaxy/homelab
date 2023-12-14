@@ -4,4 +4,4 @@ version: 0.0.0
 dependencies:
   - name: plexio
     repository: oci://registry.ivanchenko.io
-    version: 0.2.0-rc2
+    version: 0.2.0-rc3
