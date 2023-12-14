@@ -25,9 +25,14 @@ plexio:
             env:
               REDIS_HOST: 'plexio-prod-redis-master'
               MATCHING_PLEX_ADDRESS: http://plexio-prod-plex-matcher:32400
-              SENTRY_DSN: sentry-secret
               SENTRY_ENVIRONMENT: 'prod'
               CORS_ORIGIN_REGEX: '.*plexio.stream|.*strem.io|.*stremio.com'
+            ennFrom:
+              - name: SENTRY_DSN
+                valueFrom:
+                  secretKeyRef:
+                    name: sentry-secret
+                    key: SENTRY_DSN
 
     ingress:
       main:
