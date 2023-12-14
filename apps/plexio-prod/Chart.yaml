@@ -4,4 +4,4 @@ version: 0.0.0
 dependencies:
   - name: plexio
     repository: https://vanchaxy.github.io/plexio
-    version: 0.2.0
+    version: 0.2.1
