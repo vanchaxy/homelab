@@ -1,0 +1,77 @@
+plexio:
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            tag: main-1f3f8261
+
+  server:
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: registry.ivanchenko.io/plexio
+            env:
+              REDIS_HOST: 'plexio-beta-redis-master'
+              MATCHING_PLEX_ADDRESS: http://plexio-beta-plex-matcher:32400
+              SENTRY_ENVIRONMENT: 'beta'
+              CORS_ORIGIN_REGEX: '.*plexio.stream|.*strem.io|.*stremio.com'
+            envFrom:
+              - secretRef:
+                  name: sentry-secret
+
+    ingress:
+      main:
+        enabled: true
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt
+          kubernetes.io/ingress.class: nginx
+          nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+          nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
+          nginx.ingress.kubernetes.io/use-regex: "true"
+        hosts:
+          - host: beta.plexio.stream
+            paths:
+              - path: /api/.*
+                pathType: Prefix
+                service:
+                  name: main
+              - path: /.*json
+                pathType: Prefix
+                service:
+                  name: main
+        tls:
+          - secretName: plexio-beta-tls
+            hosts:
+              - beta.plexio.stream
+
+  frontend:
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: registry.ivanchenko.io/plexio-frontapp
+
+    ingress:
+      main:
+        enabled: true
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt
+          kubernetes.io/ingress.class: nginx
+          nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+          nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
+          nginx.ingress.kubernetes.io/use-regex: "true"
+        hosts:
+          - host: beta.plexio.stream
+            paths:
+              - path: /.*
+                pathType: Prefix
+                service:
+                  name: main
+        tls:
+          - secretName: plexio-beta-tls
+            hosts:
+              - beta.plexio.stream
