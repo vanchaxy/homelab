@@ -6,6 +6,7 @@ plexio:
           main:
             image:
               repository: plexinc/pms-docker
+              tag: 1.32.8.7639-fb6452ebf
 
   controllers:
     main:
@@ -22,8 +23,8 @@ plexio:
             image:
               repository: registry.ivanchenko.io/plexio
             env:
-              REDIS_HOST: 'plexio-redis-master'
-              MATCHING_PLEX_ADDRESS: http://plex-matcher:32400
+              REDIS_HOST: 'plexio-prod-redis-master'
+              MATCHING_PLEX_ADDRESS: http://plexio-prod-plex-matcher:32400
               SENTRY_DSN: sentry-secret
               SENTRY_ENVIRONMENT: 'prod'
               CORS_ORIGIN_REGEX: '.*plexio.stream|.*strem.io|.*stremio.com'
