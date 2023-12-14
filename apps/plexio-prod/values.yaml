@@ -1,0 +1,75 @@
+plexio:
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            tag: feature-better-chart-34eb2f14
+
+  server:
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: registry.ivanchenko.io/plexio
+            env:
+              REDIS_HOST: 'plexio-redis-master'
+              MATCHING_PLEX_ADDRESS: http://plex-matcher:32400
+              SENTRY_DSN: sentry-secret
+              SENTRY_ENVIRONMENT: 'prod'
+              CORS_ORIGIN_REGEX: '.*plexio.stream|.*strem.io|.*stremio.com'
+
+    ingress:
+      main:
+        enabled: true
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt
+          kubernetes.io/ingress.class: nginx
+          nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+          nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
+          nginx.ingress.kubernetes.io/use-regex: "true"
+        hosts:
+          - host: plexio.stream
+            paths:
+              - path: /api/.*
+                pathType: Prefix
+                service:
+                  name: main
+              - path: /.*json
+                pathType: Prefix
+                service:
+                  name: main
+        tls:
+          - secretName: plexio-tls
+            hosts:
+              - plexio.stream
+
+  frontend:
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: registry.ivanchenko.io/plexio-frontapp
+
+    ingress:
+      main:
+        enabled: true
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt
+          kubernetes.io/ingress.class: nginx
+          nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+          nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
+          nginx.ingress.kubernetes.io/use-regex: "true"
+        hosts:
+          - host: plexio.stream
+            paths:
+              - path: /.*
+                pathType: Prefix
+                service:
+                  name: main
+        tls:
+          - secretName: plexio-tls
+            hosts:
+              - plexio.stream

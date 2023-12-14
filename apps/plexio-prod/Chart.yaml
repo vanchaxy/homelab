@@ -1,0 +1,7 @@
+apiVersion: v2
+name: plexio
+version: 0.0.0
+dependencies:
+  - name: plexio
+    repository: oci://registry.ivanchenko.io
+    version: 0.2.0-rc1
