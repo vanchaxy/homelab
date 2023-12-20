@@ -14,5 +14,5 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   addresses:
-    - 192.168.1.231/32
+    - 192.168.50.231/32
   autoAssign: false

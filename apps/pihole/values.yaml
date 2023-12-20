@@ -5,8 +5,8 @@ pihole:
 
   dnsmasq:
     customDnsEntries:
-      - address=/speed.ivanchenko.io/192.168.1.231
-      - address=/plex.ivanchenko.io/192.168.1.231
+      - address=/speed.ivanchenko.io/192.168.50.231
+      - address=/plex.ivanchenko.io/192.168.50.231
 
   persistentVolumeClaim:
     enabled: true
