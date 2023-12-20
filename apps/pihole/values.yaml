@@ -8,6 +8,9 @@ pihole:
       - address=/speed.ivanchenko.io/192.168.50.231
       - address=/plex.ivanchenko.io/192.168.50.231
 
+  nodeSelector:
+    topology.kubernetes.io/region: home
+
   persistentVolumeClaim:
     enabled: true
     size: 1Gi
