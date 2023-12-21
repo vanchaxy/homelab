@@ -6,7 +6,7 @@ immich:
 
   env:
     DB_USERNAME: "postgres"
-    DB_PASSWORD: "{{ .Values.postgresql.global.postgresql.auth.postgresPassword }}"
+    DB_PASSWORD: "immich"
 
   immich:
     persistence:
@@ -18,7 +18,9 @@ immich:
     global:
       postgresql:
         auth:
-          postgresPassword: immich
+          username: postgres
+          database: immich
+          password: immich
     primary:
       podSecurityContext:
         fsGroup: 999
