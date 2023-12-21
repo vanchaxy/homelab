@@ -4,6 +4,10 @@ immich:
     repository: ghcr.io/immich-app/immich-server
     tag: v1.91.4
 
+  env:
+    DB_USERNAME: "postgres"
+    DB_PASSWORD: "{{ .Values.postgresql.global.postgresql.auth.postgresPassword }}"
+
   immich:
     persistence:
       library:
@@ -11,6 +15,10 @@ immich:
 
   postgresql:
     enabled: true
+    global:
+      postgresql:
+        auth:
+          postgresPassword: immich
     primary:
       podSecurityContext:
         fsGroup: 999
