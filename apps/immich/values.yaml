@@ -24,8 +24,8 @@ immich:
     primary:
       podSecurityContext:
         fsGroup: 999
-        containerSecurityContext:
-          runAsUser: 999
+      containerSecurityContext:
+        runAsUser: 999
       persistence:
         existingClaim: data-immich-postgresql-0
     volumePermissions:
