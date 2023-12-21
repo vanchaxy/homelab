@@ -15,10 +15,10 @@ immich:
 
   postgresql:
     enabled: true
-    global:
-      postgresql:
-        auth:
-          postgresPassword: immich
+#    global:
+#      postgresql:
+#        auth:
+#          postgresPassword: immich
     primary:
       persistence:
         existingClaim: data-immich-postgresql-0
