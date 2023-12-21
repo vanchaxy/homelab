@@ -2,11 +2,11 @@ immich:
   image:
     # repository for renovate, not used in chart
     repository: ghcr.io/immich-app/immich-server
-    tag: v1.91.4
+    tag: v1.90.2
 
-#  env:
-#    DB_USERNAME: "postgres"
-#    DB_PASSWORD: "{{ .Values.postgresql.global.postgresql.auth.postgresPassword }}"
+  env:
+    DB_USERNAME: "postgres"
+    DB_PASSWORD: "{{ .Values.postgresql.global.postgresql.auth.postgresPassword }}"
 
   immich:
     persistence:
@@ -15,10 +15,10 @@ immich:
 
   postgresql:
     enabled: true
-#    global:
-#      postgresql:
-#        auth:
-#          postgresPassword: immich
+    global:
+      postgresql:
+        auth:
+          postgresPassword: immich
     primary:
       persistence:
         existingClaim: data-immich-postgresql-0
@@ -59,6 +59,26 @@ immich:
           - secretName: immich-tls
             hosts:
               - immich.ivanchenko.io
+
+  typesense:
+    enabled: true
+    persistence:
+      tsdata:
+        enabled: true
+        size: 30Gi
+        labels:
+          recurring-job.longhorn.io/source: enabled
+          recurring-job-group.longhorn.io/immich: enabled
+    probes:
+      liveness:
+        spec:
+          initialDelaySeconds: 300
+      readiness:
+        spec:
+          initialDelaySeconds: 300
+      startup:
+        spec:
+          initialDelaySeconds: 300
 
   machine-learning:
     probes:
