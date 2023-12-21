@@ -37,6 +37,8 @@ grafana:
       token_url: "https://auth.ivanchenko.io/application/o/token/"
       api_url: "https://auth.ivanchenko.io/application/o/userinfo/"
       role_attribute_path: contains(groups[*], 'Grafana Admins') && 'Admin' || 'Viewer'
+  deploymentStrategy:
+    type: Recreate
   persistence:
     enabled: true
   datasources:
