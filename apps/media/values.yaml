@@ -9,7 +9,7 @@ qbittorrent:
     main:
       pod:
         nodeSelector:
-          topology.kubernetes.io/region: cloud
+          topology.kubernetes.io/region: home
         securityContext:
           fsGroup: 568
           fsGroupChangePolicy: "OnRootMismatch"
