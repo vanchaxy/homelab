@@ -10,3 +10,5 @@ k3s_server_config:
     - metrics-server
   disable-cloud-controller: true
   secrets-encryption: true
+  tls-san: 
+    - "192.168.8.107"
