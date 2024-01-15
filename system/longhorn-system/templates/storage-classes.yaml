@@ -20,7 +20,7 @@ parameters:
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
-  name: longhorn-ssd-retain
+  name: longhorn-photo
   annotations:
     storageclass.kubernetes.io/is-default-class: "false"
 provisioner: driver.longhorn.io
@@ -33,40 +33,4 @@ parameters:
   fromBackup: ""
   fsType: "ext4"
   dataLocality: "disabled"
-  diskSelector: "ssd"
----
-kind: StorageClass
-apiVersion: storage.k8s.io/v1
-metadata:
-  name: longhorn-hdd
-  annotations:
-    storageclass.kubernetes.io/is-default-class: "false"
-provisioner: driver.longhorn.io
-allowVolumeExpansion: true
-reclaimPolicy: "Delete"
-volumeBindingMode: Immediate
-parameters:
-  numberOfReplicas: "1"
-  staleReplicaTimeout: "30"
-  fromBackup: ""
-  fsType: "ext4"
-  dataLocality: "disabled"
-  diskSelector: "hdd"
----
-kind: StorageClass
-apiVersion: storage.k8s.io/v1
-metadata:
-  name: longhorn-hdd-retain
-  annotations:
-    storageclass.kubernetes.io/is-default-class: "false"
-provisioner: driver.longhorn.io
-allowVolumeExpansion: true
-reclaimPolicy: "Retain"
-volumeBindingMode: Immediate
-parameters:
-  numberOfReplicas: "1"
-  staleReplicaTimeout: "30"
-  fromBackup: ""
-  fsType: "ext4"
-  dataLocality: "disabled"
-  diskSelector: "hdd"
+  diskSelector: "photo"
