@@ -5,7 +5,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   addresses:
-    - 5.161.84.41/32
+    - 5.161.92.40/32
 ---
 apiVersion: metallb.io/v1beta1
 kind: IPAddressPool
@@ -14,5 +14,5 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   addresses:
-    - 192.168.8.107/32
+    - 192.168.50.231/32
   autoAssign: false
