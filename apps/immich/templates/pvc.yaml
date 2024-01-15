@@ -6,7 +6,7 @@ metadata:
     recurring-job.longhorn.io/source: enabled
     recurring-job-group.longhorn.io/immich: enabled
 spec:
-  storageClassName: longhorn-ssd-retain
+  storageClassName: longhorn-photo
   accessModes:
     - ReadWriteMany
   resources:
