@@ -680,13 +680,13 @@ plex:
             - *host
 
   persistence:
-    config:
-      enabled: true
-      size: 50Gi
-      advancedMounts:
-        main:
-          main:
-            - path: /config
+#    config:
+#      enabled: true
+#      size: 50Gi
+#      advancedMounts:
+#        main:
+#          main:
+#            - path: /config
     data:
       type: persistentVolumeClaim
       existingClaim: media-lib
