@@ -1,0 +1,7 @@
+apiVersion: v2
+name: infisical
+version: 0.0.0
+dependencies:
+  - name: infisical-helm-charts/secrets-operator
+    version: 0.4.2
+    repository: https://dl.cloudsmith.io/public/infisical/helm-charts/helm/charts/
