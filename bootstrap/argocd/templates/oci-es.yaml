@@ -1,26 +1,18 @@
-apiVersion: external-secrets.io/v1beta1
-kind: ExternalSecret
+apiVersion: secrets.infisical.com/v1alpha1
+kind: InfisicalSecret
 metadata:
   name: registry-secret
 spec:
-  secretStoreRef:
-    kind: ClusterSecretStore
-    name: vault
-  target:
-    template:
-      engineVersion: v2
-      metadata:
-        labels:
-          argocd.argoproj.io/secret-type: repository
-      data:
-        name: registry
-        url: registry.ivanchenko.io
-        enableOCI: "true"
-        type: helm
-        username: admin
-        password: {{` "{{ .password }}" `}}
-  data:
-    - secretKey: password
-      remoteRef:
-        key: registry
-        property: password
+  hostAPI: https://app.infisical.com/api
+  resyncInterval: 60
+  authentication:
+    serviceToken:
+      serviceTokenSecretReference:
+        secretName: service-token
+        secretNamespace: default
+      secretsScope:
+        envSlug: prod
+        secretsPath: "/argocd/registry"
+  managedSecretReference:
+    secretName: registry-secret
+    secretNamespace: argocd
