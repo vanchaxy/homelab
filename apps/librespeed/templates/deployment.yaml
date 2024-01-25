@@ -26,3 +26,7 @@ spec:
               name: http
       nodeSelector:
         topology.kubernetes.io/region: home
+      tolerations:
+        - key: "media"
+          operator: "Exists"
+          effect: "NoExecute"
