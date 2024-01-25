@@ -1,0 +1,19 @@
+apiVersion: secrets.infisical.com/v1alpha1
+kind: InfisicalSecret
+metadata:
+  name: image-pull-secret-src
+spec:
+  hostAPI: https://app.infisical.com/api
+  resyncInterval: 60
+  authentication:
+    serviceToken:
+      serviceTokenSecretReference:
+        secretName: service-token
+        secretNamespace: default
+      secretsScope:
+        envSlug: prod
+        secretsPath: "/imagepullsecret"
+  managedSecretReference:
+    secretName: image-pull-secret-src
+    secretNamespace: imagepullsecret
+    secretType: kubernetes.io/dockerconfigjson
