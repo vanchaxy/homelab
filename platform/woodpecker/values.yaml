@@ -1,0 +1,29 @@
+woodpecker:
+  agent:
+    replicaCount: 2
+    env:
+      WOODPECKER_BACKEND_K8S_STORAGE_RWX: false
+      # Agents will spawn pods to run workflow steps using the
+      # Kubernetes backend instead of running them directly on
+      # the agent pod, so we can run many workflows per agent.
+      WOODPECKER_MAX_WORKFLOWS: 10
+  server:
+    env:
+      WOODPECKER_HOST: https://ci.ivanchenko.io
+      WOODPECKER_WEBHOOK_HOST: http://woodpecker-server.woodpecker
+      WOODPECKER_GITHUB: true
+      WOODPECKER_ADMIN: vanchaxy
+    ingress:
+      enabled: true
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt
+        kubernetes.io/ingress.class: nginx
+      ingressClassName: nginx
+      hosts:
+        - host: &host ci.ivanchenko.io
+          paths:
+            - path: /
+      tls:
+        - secretName: woodpecker-tls-certificate
+          hosts:
+            - *host
