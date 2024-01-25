@@ -13,7 +13,7 @@ spec:
         secretNamespace: default
       secretsScope:
         envSlug: prod
-        secretsPath: "/authentik/authentik/"
+        secretsPath: "/"
   managedSecretReference:
     secretName: authentik-secret
     secretNamespace: authentik
