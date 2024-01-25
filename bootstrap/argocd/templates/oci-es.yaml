@@ -12,7 +12,7 @@ spec:
         secretNamespace: default
       secretsScope:
         envSlug: prod
-        secretsPath: "/argocd/argocd"
+        secretsPath: "/argocd/registry"
   managedSecretReference:
     secretName: registry-secret
     secretNamespace: argocd
