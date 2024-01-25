@@ -14,5 +14,5 @@ spec:
         envSlug: prod
         secretsPath: "/registry"
   managedSecretReference:
-    secretName: registry
-    secretNamespace: registry-admin-secret
+    secretName: registry-admin-secret
+    secretNamespace: registry
