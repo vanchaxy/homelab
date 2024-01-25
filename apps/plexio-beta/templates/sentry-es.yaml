@@ -1,18 +1,18 @@
-apiVersion: external-secrets.io/v1beta1
-kind: ExternalSecret
+apiVersion: secrets.infisical.com/v1alpha1
+kind: InfisicalSecret
 metadata:
   name: sentry-secret
 spec:
-  secretStoreRef:
-    kind: ClusterSecretStore
-    name: vault
-  target:
-    template:
-      engineVersion: v2
-      data:
-        SENTRY_DSN: {{` "{{ .sentry_dsn }}" `}}
-  data:
-    - secretKey: sentry_dsn
-      remoteRef:
-        key: plexio
-        property: sentry_dsn
+  hostAPI: https://app.infisical.com/api
+  resyncInterval: 60
+  authentication:
+    serviceToken:
+      serviceTokenSecretReference:
+        secretName: service-token
+        secretNamespace: default
+      secretsScope:
+        envSlug: prod
+        secretsPath: "/plexio"
+  managedSecretReference:
+    secretName: sentry-secret
+    secretNamespace: plexio-beta

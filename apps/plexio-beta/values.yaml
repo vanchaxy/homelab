@@ -4,7 +4,7 @@ plexio:
       containers:
         main:
           image:
-            tag: main-1f3f8261
+            tag: main-7675f961
 
   server:
     controllers:
