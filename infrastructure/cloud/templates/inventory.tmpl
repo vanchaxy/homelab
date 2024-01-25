@@ -8,5 +8,6 @@ cloud:
           ansible_host: ${ hosts_ips[name] }
           master: ${ params["master"] }
           region: cloud
+          taint: ""
 
         %{~ endfor ~}
