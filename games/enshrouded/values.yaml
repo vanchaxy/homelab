@@ -30,7 +30,7 @@ enshrouded:
         metallb.universe.tf/address-pool: default
         metallb.universe.tf/allow-shared-ip: default
       ports:
-        game:
+        http:
           port: 15636
 
   persistence:
