@@ -5,6 +5,11 @@ ingress-nginx-home:
     nodeSelector:
       topology.kubernetes.io/region: home
 
+    tolerations:
+      - key: "media"
+        operator: "Exists"
+        effect: "NoExecute"
+
     ingressClassResource:
       name: nginx-home
       enabled: true
