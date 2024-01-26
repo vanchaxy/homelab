@@ -8,5 +8,7 @@ kube-prometheus-stack:
       podMonitorSelectorNilUsesHelmValues: false
       probeSelectorNilUsesHelmValues: false
   prometheus-node-exporter:
+    kubeRBACProxy:
+      enabled: true
     tolerations:
       - operator: "Exists"
