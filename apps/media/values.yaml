@@ -663,7 +663,7 @@ plex:
             PGID: 568
             TZ: Etc/UTC
             VERSION: docker
-            PLEX_CLAIM: claim-auJFjEsVbf4aybEWsrWL
+            PLEX_CLAIM: claim-EuC8mLYsVrAkBzzqhA6r
           securityContext:
             runAsUser: 0
             runAsGroup: 0
