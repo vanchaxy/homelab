@@ -5,3 +5,6 @@ openebs:
   localprovisioner:
     hostpathClass:
       enabled: false
+
+    deviceClass:
+      enabled: false
