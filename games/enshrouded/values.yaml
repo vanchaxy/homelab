@@ -42,9 +42,11 @@ enshrouded:
           enabled: false
         game:
           enabled: true
+          protocol: UDP
           port: 15636
         query:
           enabled: true
+          protocol: UDP
           port: 15637
 
   persistence:
