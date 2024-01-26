@@ -9,7 +9,7 @@ argo-cd:
         connectors:
         - config:
             issuer: https://auth.ivanchenko.io/application/o/argocd/
-            clientID: wFcLzxdqFVTNG7ppkR6LJtYsriQSGqpboro4oIe3
+            clientID: qyQ1pfdklw1bLcpkom0KAgRInVzvVbHa8gveko52
             clientSecret: $dex.authentik.clientSecret
             insecureEnableGroups: true
             scopes:
@@ -21,7 +21,7 @@ argo-cd:
           id: authentik
     rbac:
       policy.csv: |
-        g, ArgoCD Admins, role:admin
+        g, admins, role:admin
   server:
     extraArgs:
       - --insecure
