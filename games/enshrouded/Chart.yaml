@@ -1,0 +1,8 @@
+apiVersion: v2
+name: enshrouded
+version: 0.0.0
+dependencies:
+  - name: app-template
+    repository: https://bjw-s.github.io/helm-charts
+    version: 2.4.0
+    alias: enshrouded

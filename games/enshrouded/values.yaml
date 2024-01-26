@@ -1,0 +1,43 @@
+enshrouded:
+  global:
+    nameOverride: enshrouded
+
+  defaultPodOptions:
+    automountServiceAccountToken: false
+
+  controllers:
+    main:
+      pod:
+        securityContext:
+          fsGroup: 4711
+          fsGroupChangePolicy: "OnRootMismatch"
+
+      containers:
+        main:
+          image:
+            repository: mornedhels/enshrouded-server
+            tag: 0.2.0
+          env:
+            PUID: 4711
+            PGID: 4711
+            SERVER_PASSWORD: secreT
+            UPDATE_CRON: "*/30 * * * *"
+
+  service:
+    main:
+      type: LoadBalancer
+      annotations:
+        metallb.universe.tf/address-pool: default
+        metallb.universe.tf/allow-shared-ip: default
+      ports:
+        game:
+          port: 15636
+
+  persistence:
+    config:
+      enabled: true
+      size: 30000Mi
+      advancedMounts:
+        main:
+          main:
+            - path: /opt/enshrouded
