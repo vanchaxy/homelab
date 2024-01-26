@@ -3,9 +3,9 @@ kind: PersistentVolumeClaim
 metadata:
   name: media-lib
 spec:
-  storageClassName: longhorn-hdd
+  storageClassName: hostpath-hdd-home
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
-      storage: 1000Gi
+      storage: 3000Gi
