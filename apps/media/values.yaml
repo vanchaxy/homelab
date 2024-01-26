@@ -109,6 +109,7 @@ qbittorrent:
   persistence:
     config:
       enabled: true
+      storageClass: hostpath-ssd-home
       size: 200Mi
       advancedMounts:
         main:
@@ -218,6 +219,7 @@ crossseed:
   persistence:
     config:
       enabled: true
+      storageClass: hostpath-ssd-home
       size: 200Mi
       accessMode: ReadWriteOnce
       advancedMounts:
@@ -227,6 +229,7 @@ crossseed:
 
     seeds:
       enabled: true
+      storageClass: hostpath-ssd-home
       size: 200Mi
       accessMode: ReadWriteOnce
       advancedMounts:
@@ -337,6 +340,7 @@ rdtclient:
   persistence:
     config:
       enabled: true
+      storageClass: hostpath-ssd-home
       size: 200Mi
       advancedMounts:
         main:
@@ -432,6 +436,7 @@ prowlarr:
   persistence:
     config:
       enabled: true
+      storageClass: hostpath-ssd-home
       size: 200Mi
       advancedMounts:
         main:
@@ -518,6 +523,7 @@ radarr:
   persistence:
     config:
       enabled: true
+      storageClass: hostpath-ssd-home
       size: 200Mi
       advancedMounts:
         main:
@@ -613,6 +619,7 @@ sonarr:
     config:
       enabled: true
       size: 200Mi
+      storageClass: hostpath-ssd-home
       advancedMounts:
         main:
           main:
@@ -716,13 +723,14 @@ plex:
             - *host
 
   persistence:
-#    config:
-#      enabled: true
-#      size: 50Gi
-#      advancedMounts:
-#        main:
-#          main:
-#            - path: /config
+    config:
+      enabled: true
+      storageClass: hostpath-ssd-home
+      size: 50Gi
+      advancedMounts:
+        main:
+          main:
+            - path: /config
     data:
       type: persistentVolumeClaim
       existingClaim: media-lib
@@ -804,6 +812,7 @@ overseerr:
   persistence:
     config:
       enabled: true
+      storageClass: hostpath-ssd-home
       size: 200Mi
       advancedMounts:
         main:
@@ -882,6 +891,7 @@ tautulli:
   persistence:
     config:
       enabled: true
+      storageClass: hostpath-ssd-home
       size: 200Mi
       advancedMounts:
         main:
