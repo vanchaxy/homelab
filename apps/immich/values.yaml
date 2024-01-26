@@ -10,6 +10,7 @@ immich:
         existingClaim: photo-library
 
   postgresql:
+    enabled: true
     primary:
       persistence:
         existingClaim: data-immich-postgresql-0
@@ -19,6 +20,7 @@ immich:
           effect: "NoExecute"
 
   redis:
+    enabled: true
     master:
       persistence:
         existingClaim: redis-data-immich-redis-master-0
