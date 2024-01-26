@@ -11,6 +11,11 @@ pihole:
   nodeSelector:
     topology.kubernetes.io/region: home
 
+  tolerations:
+    - key: "media"
+      operator: "Exists"
+      effect: "NoExecute"
+
   persistentVolumeClaim:
     enabled: true
     size: 1Gi
