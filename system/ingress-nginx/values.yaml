@@ -1,5 +1,11 @@
 ingress-nginx:
   controller:
+
+    service:
+      annotations:
+        metallb.universe.tf/address-pool: default
+        metallb.universe.tf/allow-shared-ip: default
+
     allowSnippetAnnotations: true
     ingressClassResource:
       default: true

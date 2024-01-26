@@ -22,6 +22,13 @@ enshrouded:
             PGID: 4711
             SERVER_PASSWORD: secreT
             UPDATE_CRON: "*/30 * * * *"
+          probes:
+            liveness:
+              enabled: false
+            readiness:
+              enabled: false
+            startup:
+              enabled: false
 
   service:
     main:
@@ -31,7 +38,13 @@ enshrouded:
         metallb.universe.tf/allow-shared-ip: default
       ports:
         http:
+          enabled: false
+        game:
+          enabled: true
           port: 15636
+        query:
+          enabled: true
+          port: 15637
 
   persistence:
     config:
