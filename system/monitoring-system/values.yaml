@@ -7,3 +7,6 @@ kube-prometheus-stack:
       serviceMonitorSelectorNilUsesHelmValues: false
       podMonitorSelectorNilUsesHelmValues: false
       probeSelectorNilUsesHelmValues: false
+  prometheus-node-exporter:
+    tolerations:
+      - operator: "Exists"
