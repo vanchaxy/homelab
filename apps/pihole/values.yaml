@@ -19,6 +19,7 @@ pihole:
   persistentVolumeClaim:
     enabled: true
     size: 1Gi
+    storageClass: hostpath-ssd-home
 
   serviceDns:
     annotations:
