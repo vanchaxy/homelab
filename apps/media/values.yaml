@@ -10,6 +10,10 @@ qbittorrent:
       pod:
         nodeSelector:
           topology.kubernetes.io/region: home
+        tolerations:
+          - key: "media"
+            operator: "Exists"
+            effect: "NoExecute"
         securityContext:
           fsGroup: 568
           fsGroupChangePolicy: "OnRootMismatch"
@@ -144,6 +148,10 @@ crossseed:
       pod:
         nodeSelector:
           topology.kubernetes.io/region: home
+        tolerations:
+          - key: "media"
+            operator: "Exists"
+            effect: "NoExecute"
         securityContext:
           fsGroup: 568
           fsGroupChangePolicy: "OnRootMismatch"
@@ -257,6 +265,12 @@ rdtclient:
   controllers:
     main:
       pod:
+        nodeSelector:
+          topology.kubernetes.io/region: home
+        tolerations:
+          - key: "media"
+            operator: "Exists"
+            effect: "NoExecute"
         securityContext:
           fsGroup: 568
           fsGroupChangePolicy: "OnRootMismatch"
@@ -348,6 +362,12 @@ prowlarr:
   controllers:
     main:
       pod:
+        nodeSelector:
+          topology.kubernetes.io/region: home
+        tolerations:
+          - key: "media"
+            operator: "Exists"
+            effect: "NoExecute"
         securityContext:
           fsGroup: 568
           fsGroupChangePolicy: "OnRootMismatch"
@@ -428,6 +448,12 @@ radarr:
   controllers:
     main:
       pod:
+        nodeSelector:
+          topology.kubernetes.io/region: home
+        tolerations:
+          - key: "media"
+            operator: "Exists"
+            effect: "NoExecute"
         securityContext:
           fsGroup: 568
           fsGroupChangePolicy: "OnRootMismatch"
@@ -516,6 +542,12 @@ sonarr:
   controllers:
     main:
       pod:
+        nodeSelector:
+          topology.kubernetes.io/region: home
+        tolerations:
+          - key: "media"
+            operator: "Exists"
+            effect: "NoExecute"
         securityContext:
           fsGroup: 568
           fsGroupChangePolicy: "OnRootMismatch"
@@ -606,6 +638,10 @@ plex:
       pod:
         nodeSelector:
           topology.kubernetes.io/region: home
+        tolerations:
+          - key: "media"
+            operator: "Exists"
+            effect: "NoExecute"
         securityContext:
           fsGroup: 568
           fsGroupChangePolicy: "OnRootMismatch"
@@ -706,6 +742,12 @@ overseerr:
   controllers:
     main:
       pod:
+        nodeSelector:
+          topology.kubernetes.io/region: home
+        tolerations:
+          - key: "media"
+            operator: "Exists"
+            effect: "NoExecute"
         securityContext:
           fsGroup: 568
           fsGroupChangePolicy: "OnRootMismatch"
@@ -778,6 +820,12 @@ tautulli:
   controllers:
     main:
       pod:
+        nodeSelector:
+          topology.kubernetes.io/region: home
+        tolerations:
+          - key: "media"
+            operator: "Exists"
+            effect: "NoExecute"
         securityContext:
           fsGroup: 568
           fsGroupChangePolicy: "OnRootMismatch"
