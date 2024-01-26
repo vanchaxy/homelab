@@ -4,42 +4,21 @@ immich:
     repository: ghcr.io/immich-app/immich-server
     tag: v1.91.4
 
-  env:
-    DB_USERNAME: "postgres"
-    DB_PASSWORD: "immich"
-
   immich:
     persistence:
       library:
         existingClaim: photo-library
 
   postgresql:
-    enabled: true
-    global:
-      postgresql:
-        auth:
-          username: postgres
-          database: immich
-          password: immich
     primary:
-      podSecurityContext:
-        fsGroup: 999
-      containerSecurityContext:
-        runAsUser: 999
       persistence:
         existingClaim: data-immich-postgresql-0
       tolerations:
         - key: "media"
           operator: "Exists"
           effect: "NoExecute"
-    volumePermissions:
-      enabled: true
-#      pgHbaConfiguration: |-
-#        local all all trust
-
 
   redis:
-    enabled: true
     master:
       persistence:
         existingClaim: redis-data-immich-redis-master-0
