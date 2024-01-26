@@ -20,6 +20,7 @@ enshrouded:
           env:
             PUID: 4711
             PGID: 4711
+            SERVER_NAME: 88005553535
             SERVER_PASSWORD: secreT
             UPDATE_CRON: "*/30 * * * *"
           probes:
