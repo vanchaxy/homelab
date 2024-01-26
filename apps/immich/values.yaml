@@ -28,6 +28,10 @@ immich:
         runAsUser: 999
       persistence:
         existingClaim: data-immich-postgresql-0
+      tolerations:
+        - key: "media"
+          operator: "Exists"
+          effect: "NoExecute"
     volumePermissions:
       enabled: true
 #      pgHbaConfiguration: |-
@@ -39,6 +43,10 @@ immich:
     master:
       persistence:
         existingClaim: redis-data-immich-redis-master-0
+      tolerations:
+        - key: "media"
+          operator: "Exists"
+          effect: "NoExecute"
 
   server:
     ingress:
