@@ -73,7 +73,7 @@ qbittorrent:
       enabled: true
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt
-        kubernetes.io/ingress.class: nginx-home
+        kubernetes.io/ingress.class: nginx
         gethomepage.dev/enabled: "true"
         gethomepage.dev/name: "qBittorrent"
         gethomepage.dev/description: "Free and reliable P2P Bittorrent client"
@@ -92,7 +92,7 @@ qbittorrent:
           Set-Cookie,X-authentik-username,X-authentik-groups,X-authentik-email,X-authentik-name,X-authentik-uid
         nginx.ingress.kubernetes.io/auth-snippet: |
           proxy_set_header X-Forwarded-Host $http_host;
-      ingressClassName: "nginx-home"
+      ingressClassName: "nginx"
       hosts:
         - host: &host "qbittorrent.ivanchenko.io"
           paths:
@@ -201,8 +201,8 @@ crossseed:
       enabled: true
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt
-        kubernetes.io/ingress.class: nginx-home
-      ingressClassName: "nginx-home"
+        kubernetes.io/ingress.class: nginx
+      ingressClassName: "nginx"
       hosts:
         - host: &host "crossseed.ivanchenko.io"
           paths:
@@ -304,7 +304,7 @@ rdtclient:
       enabled: true
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt
-        kubernetes.io/ingress.class: nginx-home
+        kubernetes.io/ingress.class: nginx
         gethomepage.dev/enabled: "true"
         gethomepage.dev/name: "rdt-client"
         gethomepage.dev/description: "Real-Debrid Client Proxy"
@@ -323,7 +323,7 @@ rdtclient:
           Set-Cookie,X-authentik-username,X-authentik-groups,X-authentik-email,X-authentik-name,X-authentik-uid
         nginx.ingress.kubernetes.io/auth-snippet: |
           proxy_set_header X-Forwarded-Host $http_host;
-      ingressClassName: "nginx-home"
+      ingressClassName: "nginx"
       hosts:
         - host: &host "rdtclient.ivanchenko.io"
           paths:
@@ -401,7 +401,7 @@ prowlarr:
       enabled: true
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt
-        kubernetes.io/ingress.class: nginx-home
+        kubernetes.io/ingress.class: nginx
         gethomepage.dev/enabled: "true"
         gethomepage.dev/name: "prowlarr"
         gethomepage.dev/description: "The Ultimate Indexer Manager"
@@ -419,7 +419,7 @@ prowlarr:
           Set-Cookie,X-authentik-username,X-authentik-groups,X-authentik-email,X-authentik-name,X-authentik-uid
         nginx.ingress.kubernetes.io/auth-snippet: |
           proxy_set_header X-Forwarded-Host $http_host;
-      ingressClassName: "nginx-home"
+      ingressClassName: "nginx"
       hosts:
         - host: &host "prowlarr.ivanchenko.io"
           paths:
@@ -488,7 +488,7 @@ radarr:
       enabled: true
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt
-        kubernetes.io/ingress.class: nginx-home
+        kubernetes.io/ingress.class: nginx
         gethomepage.dev/enabled: "true"
         gethomepage.dev/name: "radarr"
         gethomepage.dev/description: "Smart PVR for movies"
@@ -506,7 +506,7 @@ radarr:
           Set-Cookie,X-authentik-username,X-authentik-groups,X-authentik-email,X-authentik-name,X-authentik-uid
         nginx.ingress.kubernetes.io/auth-snippet: |
           proxy_set_header X-Forwarded-Host $http_host;
-      ingressClassName: "nginx-home"
+      ingressClassName: "nginx"
       hosts:
         - host: &host "radarr.ivanchenko.io"
           paths:
@@ -583,7 +583,7 @@ sonarr:
       enabled: true
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt
-        kubernetes.io/ingress.class: nginx-home
+        kubernetes.io/ingress.class: nginx
         gethomepage.dev/enabled: "true"
         gethomepage.dev/name: "sonarr"
         gethomepage.dev/description: "Smart PVR for series"
@@ -601,7 +601,7 @@ sonarr:
           Set-Cookie,X-authentik-username,X-authentik-groups,X-authentik-email,X-authentik-name,X-authentik-uid
         nginx.ingress.kubernetes.io/auth-snippet: |
           proxy_set_header X-Forwarded-Host $http_host;
-      ingressClassName: "nginx-home"
+      ingressClassName: "nginx"
       hosts:
         - host: &host "sonarr.ivanchenko.io"
           paths:
@@ -680,7 +680,7 @@ plex:
       enabled: true
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt
-        kubernetes.io/ingress.class: nginx-home
+        kubernetes.io/ingress.class: nginx
         gethomepage.dev/enabled: "true"
         gethomepage.dev/name: "plex"
         gethomepage.dev/description: "Smart PVR for series"
@@ -690,7 +690,7 @@ plex:
         gethomepage.dev/widget.url: "http://media-plex.media.svc.cluster.local:32400"
         gethomepage.dev/widget.key: "0b7b43d4e25a46428ce144f6c22ef2f4"
         gethomepage.dev/pod-selector: "app.kubernetes.io/name=plex"
-      ingressClassName: "nginx-home"
+      ingressClassName: "nginx"
       hosts:
         - host: &host "plex.ivanchenko.io"
           paths:
@@ -785,7 +785,7 @@ overseerr:
       enabled: true
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt
-        kubernetes.io/ingress.class: nginx-home
+        kubernetes.io/ingress.class: nginx
         gethomepage.dev/enabled: "true"
         gethomepage.dev/name: "overseerr"
         gethomepage.dev/description: "Request management and media discovery tool"
@@ -795,7 +795,7 @@ overseerr:
         gethomepage.dev/widget.url: "http://media-overseerr.media.svc.cluster.local:32400"
         gethomepage.dev/widget.key: "0b7b43d4e25a46428ce144f6c22ef2f4"
         gethomepage.dev/pod-selector: "app.kubernetes.io/name=overseerr"
-      ingressClassName: "nginx-home"
+      ingressClassName: "nginx"
       hosts:
         - host: &host "overseerr.ivanchenko.io"
           paths:
@@ -864,7 +864,7 @@ tautulli:
       enabled: true
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt
-        kubernetes.io/ingress.class: nginx-home
+        kubernetes.io/ingress.class: nginx
         gethomepage.dev/enabled: "true"
         gethomepage.dev/name: "tautulli"
         gethomepage.dev/description: "Monitoring and tracking tool for Plex Media Server"
@@ -874,7 +874,7 @@ tautulli:
         gethomepage.dev/widget.url: "http://media-tautulli.media.svc.cluster.local:8181"
         gethomepage.dev/widget.key: "0b7b43d4e25a46428ce144f6c22ef2f4"
         gethomepage.dev/pod-selector: "app.kubernetes.io/name=tautulli"
-      ingressClassName: "nginx-home"
+      ingressClassName: "nginx"
       hosts:
         - host: &host "tautulli.ivanchenko.io"
           paths:
