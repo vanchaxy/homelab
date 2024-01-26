@@ -1,0 +1,7 @@
+openebs:
+  ndm:
+    enabled: false
+
+  localprovisioner:
+    hostpathClass:
+      enabled: false
