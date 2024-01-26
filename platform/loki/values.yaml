@@ -25,8 +25,23 @@ loki:
   compactor:
     shared_store: filesystem
     retention_enabled: true
-    retention_delete_delay: 10d
+    retention_delete_delay: 1h
+
+  limits_config:
+    retention_period: 240h
+
+  schemaConfig:
+    configs:
+      - from: 2024-01-18
+        store: tsdb
+        object_store: gcs
+        schema: v12
+        index:
+          prefix: loki_index_
+          period: 24h
 
 fluent-bit:
   config:
-    memBufLimit: "50MB"
+    memBufLimit: "100MB"
+  tolerations:
+    - operator: "Exists"
