@@ -1,23 +1,18 @@
-apiVersion: external-secrets.io/v1beta1
-kind: ExternalSecret
+apiVersion: secrets.infisical.com/v1alpha1
+kind: InfisicalSecret
 metadata:
   name: oauth-secret
 spec:
-  secretStoreRef:
-    kind: ClusterSecretStore
-    name: vault
-  target:
-    template:
-      engineVersion: v2
-      data:
-        OAUTH_CLIENT_ID: {{` "{{ .oauth_client_id }}" `}}
-        OAUTH_CLIENT_SECRET: {{` "{{ .oauth_client_secret }}" `}}
-  data:
-    - secretKey: oauth_client_id
-      remoteRef:
-        key: grafana
-        property: oauth_client_id
-    - secretKey: oauth_client_secret
-      remoteRef:
-        key: grafana
-        property: oauth_client_secret
+  hostAPI: https://app.infisical.com/api
+  resyncInterval: 60
+  authentication:
+    serviceToken:
+      serviceTokenSecretReference:
+        secretName: service-token
+        secretNamespace: default
+      secretsScope:
+        envSlug: prod
+        secretsPath: "/grafana/oauth"
+  managedSecretReference:
+    secretName: oauth-secret
+    secretNamespace: grafana
