@@ -4,6 +4,12 @@ immich:
     repository: ghcr.io/immich-app/immich-server
     tag: v1.91.4
 
+  defaultPodOptions:
+    tolerations:
+      - key: "media"
+        operator: "Exists"
+        effect: "NoExecute"
+
   env:
     DB_USERNAME: "postgres"
     DB_PASSWORD: "immich"
