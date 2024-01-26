@@ -34,7 +34,7 @@ dependencies:
     repository: https://bjw-s.github.io/helm-charts
     version: 2.4.0
     alias: tautulli
-  - name: app-template
-    repository: https://bjw-s.github.io/helm-charts
-    version: 2.4.0
-    alias: crossseed
+#  - name: app-template
+#    repository: https://bjw-s.github.io/helm-charts
+#    version: 2.4.0
+#    alias: crossseed
