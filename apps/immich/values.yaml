@@ -67,6 +67,10 @@ immich:
           - secretName: immich-tls
             hosts:
               - immich.ivanchenko.io
+    tolerations:
+      - key: "media"
+        operator: "Exists"
+        effect: "NoExecute"
 
   machine-learning:
     probes:
@@ -79,6 +83,12 @@ immich:
       startup:
         spec:
           initialDelaySeconds: 300
+    tolerations:
+      - key: "media"
+        operator: "Exists"
+        effect: "NoExecute"
+
+  microservices:
     tolerations:
       - key: "media"
         operator: "Exists"
