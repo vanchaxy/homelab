@@ -59,6 +59,7 @@ enshrouded:
     config:
       enabled: true
       size: 30000Mi
+      storageClass: hostpath-ssd-game
       labels:
         recurring-job.longhorn.io/source: enabled
         recurring-job-group.longhorn.io/enshrouded: enabled

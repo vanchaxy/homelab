@@ -2,6 +2,23 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
+  name: hostpath-ssd-game
+  annotations:
+    openebs.io/cas-type: local
+    cas.openebs.io/config: |
+      - name: StorageType
+        value: "hostpath"
+provisioner: openebs.io/local
+volumeBindingMode: WaitForFirstConsumer
+allowedTopologies:
+- matchLabelExpressions:
+  - key: topology.kubernetes.io/region
+    values:
+    - game
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
   name: hostpath-ssd-home
   annotations:
     openebs.io/cas-type: local
