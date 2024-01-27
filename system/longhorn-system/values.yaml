@@ -42,3 +42,8 @@ longhorn:
       - key: "game"
         operator: "Exists"
         effect: "NoExecute"
+  longhornManager:
+    tolerations:
+      - key: "game"
+        operator: "Exists"
+        effect: "NoExecute"
