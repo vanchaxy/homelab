@@ -16,3 +16,13 @@ spec:
   addresses:
     - 192.168.8.107/32
   autoAssign: false
+---
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: game
+  namespace: {{ .Release.Namespace }}
+spec:
+  addresses:
+    - 116.203.39.125/32
+  autoAssign: false
