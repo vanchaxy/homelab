@@ -53,6 +53,9 @@ enshrouded:
     config:
       enabled: true
       size: 30000Mi
+      labels:
+        recurring-job.longhorn.io/source: enabled
+        recurring-job-group.longhorn.io/enshrouded: enabled
       advancedMounts:
         main:
           main:
