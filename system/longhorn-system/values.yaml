@@ -37,3 +37,8 @@ longhorn:
       gethomepage.dev/group: "Dynamic"
       gethomepage.dev/icon: "longhorn.png"
       gethomepage.dev/pod-selector: ""
+  longhornDriver:
+    tolerations:
+      - key: "game"
+        operator: "Exists"
+        effect: "NoExecute"
