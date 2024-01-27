@@ -8,6 +8,12 @@ enshrouded:
   controllers:
     main:
       pod:
+        nodeSelector:
+          topology.kubernetes.io/region: game
+        tolerations:
+          - key: "game"
+            operator: "Exists"
+            effect: "NoExecute"
         securityContext:
           fsGroup: 4711
           fsGroupChangePolicy: "OnRootMismatch"
