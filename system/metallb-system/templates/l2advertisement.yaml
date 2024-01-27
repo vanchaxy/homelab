@@ -7,4 +7,3 @@ spec:
   ipAddressPools:
     - default
     - home
-    - game
