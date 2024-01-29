@@ -4,35 +4,35 @@ version: 0.0.0
 dependencies:
   - name: app-template
     repository: https://bjw-s.github.io/helm-charts
-    version: 2.4.0
+    version: 2.5.0
     alias: qbittorrent
   - name: app-template
     repository: https://bjw-s.github.io/helm-charts
-    version: 2.4.0
+    version: 2.5.0
     alias: rdtclient
   - name: app-template
     repository: https://bjw-s.github.io/helm-charts
-    version: 2.4.0
+    version: 2.5.0
     alias: prowlarr
   - name: app-template
     repository: https://bjw-s.github.io/helm-charts
-    version: 2.4.0
+    version: 2.5.0
     alias: radarr
   - name: app-template
     repository: https://bjw-s.github.io/helm-charts
-    version: 2.4.0
+    version: 2.5.0
     alias: sonarr
   - name: app-template
     repository: https://bjw-s.github.io/helm-charts
-    version: 2.4.0
+    version: 2.5.0
     alias: plex
   - name: app-template
     repository: https://bjw-s.github.io/helm-charts
-    version: 2.4.0
+    version: 2.5.0
     alias: overseerr
   - name: app-template
     repository: https://bjw-s.github.io/helm-charts
-    version: 2.4.0
+    version: 2.5.0
     alias: tautulli
 #  - name: app-template
 #    repository: https://bjw-s.github.io/helm-charts
