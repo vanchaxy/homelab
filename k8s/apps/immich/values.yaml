@@ -12,7 +12,7 @@ immich:
     DB_USERNAME:
       valueFrom:
         secretKeyRef:
-          name: immich-postgres-app
+          name: immich-postgres-user
           key: username
     DB_DATABASE_NAME:
       valueFrom:
@@ -22,7 +22,7 @@ immich:
     DB_PASSWORD:
       valueFrom:
         secretKeyRef:
-          name: immich-postgres-app
+          name: immich-postgres-user
           key: password
 
   image:
