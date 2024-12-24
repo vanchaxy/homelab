@@ -10,9 +10,25 @@ argo-cd:
     cm:
       admin.enabled: true
       resource.ignoreResourceUpdatesEnabled: true
+      dex.config: |
+        connectors:
+        - config:
+            issuer: https://auth.ivanchenko.io/application/o/argocd/
+            clientID: argocd
+            clientSecret: $dex.authentik.clientSecret
+            insecureEnableGroups: true
+            scopes:
+              - openid
+              - profile
+              - email
+          name: authentik
+          type: oidc
+          id: authentik
     rbac:
       policy.csv: |
         g, admins, role:admin
+  dex:
+    enabled: true
   server:
     ingress:
       enabled: true
