@@ -44,13 +44,46 @@ immich:
           nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
           nginx.ingress.kubernetes.io/ssl-passthrough: "true"
         hosts:
-          - host: immich.ivanchenko.io
+          - host: &host immich.ivanchenko.io
             paths:
               - path: "/"
         tls:
           - secretName: immich-tls
             hosts:
-              - immich.ivanchenko.io
+              - *host
+      public:
+        enabled: true
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt
+          nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+          nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+        hosts:
+          - host: &host-public immich-public.ivanchenko.io
+            paths:
+              - path: "/share/"
+              - path: "/_app/immutable/"
+              - path: "/custom.css"
+                pathType: Exact
+              - path: "/light_skeleton.png"
+                pathType: Exact
+              - path: "/dark_skeleton.png"
+                pathType: Exact
+
+              - path: "/api/assets/"
+              - path: "/api/shared-links/me"
+                pathType: Exact
+              - path: "/api/server/config"
+                pathType: Exact
+              - path: "/api/server/features"
+                pathType: Exact
+              - path: "/api/timeline/buckets"
+                pathType: Exact
+              - path: "/api/timeline/bucket"
+                pathType: Exact
+        tls:
+          - secretName: host-public-tls
+            hosts:
+              - *host-public
 
   redis:
     enabled: true
