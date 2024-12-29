@@ -80,6 +80,8 @@ immich:
                 pathType: Exact
               - path: "/api/timeline/bucket"
                 pathType: Exact
+              - path: "/api/download/info"
+                pathType: Exact
         tls:
           - secretName: host-public-tls
             hosts:
