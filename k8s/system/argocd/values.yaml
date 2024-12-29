@@ -57,7 +57,7 @@ argocd-apps:
       generators:
         - git:
             repoURL: &repoURL https://github.com/vanchaxy/homelab
-            revision: &revision feature/add-immich-space
+            revision: &revision main
             directories:
               - path: k8s/system/*
               - path: k8s/platform/*
