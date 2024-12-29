@@ -24,7 +24,7 @@ metadata:
 spec:
   sourcePVC: photo-library
   trigger:
-    schedule: "0 0 * * *"
+    schedule: "20 * * * *"
   restic:
     pruneIntervalDays: 14
     repository: photo-library-restic-config
