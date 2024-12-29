@@ -84,6 +84,8 @@ immich:
                 pathType: Exact
               - path: "/api/download/info"
                 pathType: Exact
+              - path: "/api/download/archive"
+                pathType: Exact
         tls:
           - secretName: host-public-tls
             hosts:
