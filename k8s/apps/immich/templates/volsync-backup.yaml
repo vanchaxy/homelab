@@ -1,0 +1,36 @@
+apiVersion: secrets.infisical.com/v1alpha1
+kind: InfisicalSecret
+metadata:
+  name: photo-library-restic-config
+spec:
+  authentication:
+    universalAuth:
+      secretsScope:
+        projectSlug: homelab-vn-bd
+        envSlug: prod
+        secretsPath: "/immich/restic/photo-library"
+      credentialsRef:
+        secretName: universal-auth-credentials
+        secretNamespace: infisical
+  managedSecretReference:
+    creationPolicy: "Owner"
+    secretName: photo-library-restic-config
+    secretNamespace: immich
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: photo-library-backup
+spec:
+  sourcePVC: photo-library
+  trigger:
+    schedule: "20 * * * *"
+  restic:
+    pruneIntervalDays: 14
+    repository: photo-library-restic-config
+    retain:
+      daily: 5
+      weekly: 4
+      monthly: 2
+      yearly: 1
+    copyMethod: Clone
