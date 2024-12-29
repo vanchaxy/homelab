@@ -54,7 +54,7 @@ immich:
       public:
         enabled: true
         annotations:
-          external-dns.alpha.kubernetes.io/target: "homelab-tunnel.example.com"
+          external-dns.alpha.kubernetes.io/target: "homelab-tunnel.ivanchenko.io"
           external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
           cert-manager.io/cluster-issuer: letsencrypt
           nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
