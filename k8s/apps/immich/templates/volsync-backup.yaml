@@ -19,7 +19,7 @@ spec:
     template:
       includeAllSecrets: true
       data:
-        RESTIC_REPOSITORY: "{{ .RESTIC_BUCKET.Value }}/photo-library"
+        RESTIC_REPOSITORY: '{{ `{{ .RESTIC_BUCKET.Value }}/photo-library` }}'
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
