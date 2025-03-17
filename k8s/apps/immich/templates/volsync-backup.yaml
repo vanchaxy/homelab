@@ -8,7 +8,7 @@ spec:
       secretsScope:
         projectSlug: homelab-vn-bd
         envSlug: prod
-        secretsPath: "/immich/restic/photo-library"
+        secretsPath: "/common/restic"
       credentialsRef:
         secretName: universal-auth-credentials
         secretNamespace: infisical
@@ -16,6 +16,10 @@ spec:
     creationPolicy: "Owner"
     secretName: photo-library-restic-config
     secretNamespace: immich
+    template:
+      includeAllSecrets: true
+      data:
+        RESTIC_REPOSITORY: "{{ .RESTIC_BUCKET.Value }}/photo-library"
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
