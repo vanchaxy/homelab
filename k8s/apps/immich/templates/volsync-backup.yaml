@@ -85,3 +85,8 @@ spec:
     copyMethod: Clone
     storageClassName: longhorn-ssd-backup
     volumeSnapshotClassName: longhorn-snapshot-vsc
+    moverSecurityContext:
+      fsGroup: 26
+      runAsGroup: 26
+      runAsNonRoot: true
+      runAsUser: 26
