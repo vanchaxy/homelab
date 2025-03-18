@@ -43,6 +43,7 @@ pocket-id:
       enabled: true
       storageClass: longhorn-ssd
       size: 1Gi
+      accessMode: ReadWriteOnce
       advancedMounts:
         main:
           main:
