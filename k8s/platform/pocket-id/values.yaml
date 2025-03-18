@@ -25,8 +25,9 @@ pocket-id:
         nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
         nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
         nginx.ingress.kubernetes.io/proxy-body-size: '0'
+        nginx.ingress.kubernetes.io/proxy-buffering: "on"
         nginx.ingress.kubernetes.io/proxy-busy-buffers-size: '512k'
-        nginx.ingress.kubernetes.io/proxy-buffers: '4 512k'
+        nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
         nginx.ingress.kubernetes.io/proxy-buffer-size: '256k'
       hosts:
         - host: &host id.ivanchenko.io
