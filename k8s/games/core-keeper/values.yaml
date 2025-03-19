@@ -7,7 +7,8 @@ core-keeper:
             repository: escaping/core-keeper-dedicated
             tag: v2.5.0
           env:
-            TRUST_PROXY: true
+            GAME_ID: dHiFr72cNwMGU8WjJpm9C2H5F7vt
+            SERVER_PORT: 27777
 
   service:
     main:
@@ -16,8 +17,8 @@ core-keeper:
       ports:
         game:
           protocol: UDP
-          port: 27015
-          targetPort: 27015
+          port: 27777
+          targetPort: 27777
 
   persistence:
     config:
