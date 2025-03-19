@@ -8,6 +8,7 @@ core-keeper:
             tag: v2.5.0
           env:
             GAME_ID: dHiFr72cNwMGU8WjJpm9C2H5F7vt
+            WORLD_INDEX: 1
 
 #  service:
 #    main:
