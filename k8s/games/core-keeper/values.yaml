@@ -1,0 +1,31 @@
+core-keeper:
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: escaping/core-keeper-dedicated
+            tag: v2.5.0
+          env:
+            TRUST_PROXY: true
+
+  service:
+    main:
+      controller: main
+      type: LoadBalancer
+      ports:
+        game:
+          - protocol: UDP
+            port: 27015
+            targetPort: 27015
+
+  persistence:
+    config:
+      enabled: true
+      storageClass: longhorn-ssd
+      size: 2Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        main:
+          main:
+            - path: /home/steam/core-keeper-data
