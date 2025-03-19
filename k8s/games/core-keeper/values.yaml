@@ -15,9 +15,9 @@ core-keeper:
       type: LoadBalancer
       ports:
         game:
-          - protocol: UDP
-            port: 27015
-            targetPort: 27015
+          protocol: UDP
+          port: 27015
+          targetPort: 27015
 
   persistence:
     config:

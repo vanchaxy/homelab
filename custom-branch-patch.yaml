@@ -7,7 +7,7 @@ spec:
           - path: k8s/apps/*
           - path: k8s/games/*
         repoURL: https://github.com/vanchaxy/homelab
-        revision: &revision main # replace
+        revision: &revision feature/core-keeper # replace
   template:
     spec:
       source:
