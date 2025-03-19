@@ -10,25 +10,17 @@ argo-cd:
     cm:
       admin.enabled: true
       resource.ignoreResourceUpdatesEnabled: true
-      dex.config: |
-        connectors:
-        - config:
-            issuer: https://auth.ivanchenko.io/application/o/argocd/
-            clientID: argocd
-            clientSecret: $dex.authentik.clientSecret
-            insecureEnableGroups: true
-            scopes:
-              - openid
-              - profile
-              - email
-          name: authentik
-          type: oidc
-          id: authentik
+      oidc.config: |
+        name: Pocket ID
+        issuer: https://id.ivanchenko.io
+        clientID: 8785dd82-3058-4411-a3ef-d675f9c3e610
+        clientSecret: $oidc.clientSecret
+        logoutURL: https://id.ivanchenko.io/api/oidc/end-session
     rbac:
       policy.csv: |
         g, admins, role:admin
   dex:
-    enabled: true
+    enabled: false
   server:
     ingress:
       enabled: true
