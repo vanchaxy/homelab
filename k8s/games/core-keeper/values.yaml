@@ -9,7 +9,7 @@ core-keeper:
           env:
             GAME_ID: dHiFr72cNwMGU8WjJpm9C2H5F7vt
             SERVER_PORT: 27777
-            SERVER_IP: 192.168.50.231
+            SERVER_IP: 127.0.0.1
 
   service:
     main:
