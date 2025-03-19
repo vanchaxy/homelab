@@ -9,11 +9,13 @@ core-keeper:
           env:
             GAME_ID: dHiFr72cNwMGU8WjJpm9C2H5F7vt
             SERVER_PORT: 27777
+            SERVER_IP: 192.168.50.231
 
   service:
     main:
       controller: main
       type: LoadBalancer
+      loadBalancerIP: 192.168.50.231
       ports:
         game:
           protocol: UDP
