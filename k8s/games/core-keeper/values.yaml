@@ -8,19 +8,17 @@ core-keeper:
             tag: v2.5.0
           env:
             GAME_ID: dHiFr72cNwMGU8WjJpm9C2H5F7vt
-            SERVER_PORT: 27777
-            SERVER_IP: 127.0.0.1
 
-  service:
-    main:
-      controller: main
-      type: LoadBalancer
-      loadBalancerIP: 192.168.50.231
-      ports:
-        game:
-          protocol: UDP
-          port: 27777
-          targetPort: 27777
+#  service:
+#    main:
+#      controller: main
+#      type: LoadBalancer
+#      loadBalancerIP: 192.168.50.231
+#      ports:
+#        game:
+#          protocol: UDP
+#          port: 27777
+#          targetPort: 27777
 
   persistence:
     config:
