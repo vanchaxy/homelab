@@ -6,8 +6,6 @@ core-keeper:
           image:
             repository: escaping/core-keeper-dedicated
             tag: v2.5.0
-          env:
-            WORLD_INDEX: 1
           envFrom:
             - secretRef:
                 name: core-keeper-secret
