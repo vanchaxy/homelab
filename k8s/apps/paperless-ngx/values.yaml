@@ -20,13 +20,6 @@ paperless-ngx:
             - secretRef:
                 name: paperless-secret
 
-    paperless-ai:
-      containers:
-        main:
-          image:
-            repository: clusterzx/paperless-ai
-            tag: 2.7.5
-
     paperless-gpt:
       containers:
         main:
@@ -68,12 +61,6 @@ paperless-ngx:
       ports:
         http:
           port: 8000
-    paperless-ai:
-      controller: paperless-ai
-      type: ClusterIP
-      ports:
-        http:
-          port: 3000
     paperless-gpt:
       controller: paperless-gpt
       type: ClusterIP
@@ -107,13 +94,6 @@ paperless-ngx:
               service:
                 identifier: paperless
                 port: http
-        - host: &host-ai paper-ai.ivanchenko.io
-          paths:
-            - path: /
-              pathType: Prefix
-              service:
-                identifier: paperless-ai
-                port: http
         - host: &host-gpt paper-gpt.ivanchenko.io
           paths:
             - path: /
@@ -125,7 +105,6 @@ paperless-ngx:
         - secretName: paperless-tls
           hosts:
             - *host
-            - *host-ai
             - *host-gpt
 
   persistence:
@@ -165,24 +144,6 @@ paperless-ngx:
         paperless:
           main:
             - path: /usr/src/paperless/consume
-    ai-data:
-      enabled: true
-      storageClass: longhorn-ssd
-      size: 1Gi
-      accessMode: ReadWriteOnce
-      advancedMounts:
-        paperless-ai:
-          main:
-            - path: /app/data
-    gpt-prompts:
-      enabled: true
-      storageClass: longhorn-ssd
-      size: 1Gi
-      accessMode: ReadWriteOnce
-      advancedMounts:
-        paperless-ai:
-          main:
-            - path: /app/prompts
 
 redis:
   enabled: true
