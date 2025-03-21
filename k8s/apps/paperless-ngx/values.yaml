@@ -9,8 +9,8 @@ paperless-ngx:
           env:
             PAPERLESS_REDIS: redis://paperless-ngx-redis-headless:6379
             PAPERLESS_TIKA_ENABLED: 1
-            PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
-            PAPERLESS_TIKA_ENDPOINT: http://tika:9998
+            PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://paperless-ngx-gotenberg:3000
+            PAPERLESS_TIKA_ENDPOINT: http://paperless-ngx-tika:9998
             PAPERLESS_URL: https://paper.ivanchenko.io
             PAPERLESS_APPS: allauth.socialaccount.providers.openid_connect
             PAPERLESS_DISABLE_REGULAR_LOGIN: True
@@ -34,7 +34,7 @@ paperless-ngx:
             repository: icereed/paperless-gpt
             tag: v0.13.0
           env:
-            PAPERLESS_BASE_URL: "http://paperless:8000"
+            PAPERLESS_BASE_URL: "http://paperless-ngx-paperless-gpt:8000"
             PAPERLESS_PUBLIC_URL: "https://paper.ivanchenko.io"
             LLM_PROVIDER: "openai"
             LLM_MODEL: "gpt-4o-mini"
