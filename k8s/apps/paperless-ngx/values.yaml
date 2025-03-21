@@ -12,6 +12,13 @@ paperless-ngx:
             PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
             PAPERLESS_TIKA_ENDPOINT: http://tika:9998
             PAPERLESS_URL: https://paper.ivanchenko.io
+            PAPERLESS_APPS: allauth.socialaccount.providers.openid_connect
+            PAPERLESS_DISABLE_REGULAR_LOGIN: True
+            PAPERLESS_REDIRECT_LOGIN_TO_SSO: True
+            PAPERLESS_SOCIAL_AUTO_SIGNUP: True
+          envFrom:
+            - secretRef:
+                name: paperless-secret
 
     gotenberg:
       containers:
