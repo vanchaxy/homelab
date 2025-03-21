@@ -7,7 +7,7 @@ paperless-ngx:
             repository: ghcr.io/paperless-ngx/paperless-ngx
             tag: 2.14.7
           env:
-            PAPERLESS_REDIS: redis://broker:6379
+            PAPERLESS_REDIS: redis://paperless-ngx-redis-headless:6379
             PAPERLESS_TIKA_ENABLED: 1
             PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
             PAPERLESS_TIKA_ENDPOINT: http://tika:9998
