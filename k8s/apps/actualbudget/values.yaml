@@ -48,6 +48,6 @@ actualbudget:
       size: 1Gi
       accessMode: ReadWriteOnce
       advancedMounts:
-        paperless:
+        actualbudget:
           main:
             - path: /data
