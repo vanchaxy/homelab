@@ -10,6 +10,7 @@ actualbudget:
             ACTUAL_OPENID_SERVER_HOSTNAME: https://budget.ivanchenko.io
             ACTUAL_OPENID_ENFORCE: true
             ACTUAL_TOKEN_EXPIRATION: openid-provider
+            ACTUAL_OPENID_AUTH_METHOD: openid
           envFrom:
             - secretRef:
                 name: actualbudget-secret
