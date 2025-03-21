@@ -1,0 +1,53 @@
+actualbudget:
+  controllers:
+    actualbudget:
+      containers:
+        main:
+          image:
+            repository: actualbudget/actual-server
+            tag: 25.3.1
+          env:
+            ACTUAL_OPENID_SERVER_HOSTNAME: https://budget.ivanchenko.io
+            ACTUAL_OPENID_ENFORCE: true
+            ACTUAL_TOKEN_EXPIRATION: openid-provider
+          envFrom:
+            - secretRef:
+                name: actualbudget-secret
+
+  service:
+    actualbudget:
+      controller: actualbudget
+      type: ClusterIP
+      ports:
+        http:
+          port: 5006
+
+  ingress:
+    actualbudget:
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt
+        nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+        nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
+      hosts:
+        - host: &host budget.ivanchenko.io
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: actualbudget
+                port: http
+      tls:
+        - secretName: actualbudget-tls
+          hosts:
+            - *host
+
+  persistence:
+    data:
+      enabled: true
+      storageClass: longhorn-ssd
+      size: 1Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        paperless:
+          main:
+            - path: /data
