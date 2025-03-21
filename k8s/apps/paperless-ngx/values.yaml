@@ -78,15 +78,15 @@ paperless-ngx:
       hosts:
         - host: &host paper.ivanchenko.io
           paths:
-            - path: /ai/
-              pathType: Prefix
-              service:
-                identifier: paperless-ai
-                port: http
             - path: /
               pathType: Prefix
               service:
                 identifier: paperless
+                port: http
+            - path: /ai
+              pathType: Prefix
+              service:
+                identifier: paperless-ai
                 port: http
       tls:
         - secretName: paperless-tls
