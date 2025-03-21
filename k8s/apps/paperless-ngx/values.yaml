@@ -20,6 +20,13 @@ paperless-ngx:
             - secretRef:
                 name: paperless-secret
 
+    paperless-ai:
+      containers:
+        main:
+          image:
+            repository: clusterzx/paperless-ai
+            tag: 2.7.5
+
     gotenberg:
       containers:
         main:
@@ -43,6 +50,12 @@ paperless-ngx:
       ports:
         http:
           port: 8000
+    paperless-ai:
+      controller: paperless-ai
+      type: ClusterIP
+      ports:
+        http:
+          port: 3000
     gotenberg:
       controller: gotenberg
       type: ClusterIP
@@ -69,6 +82,13 @@ paperless-ngx:
               pathType: Prefix
               service:
                 identifier: paperless
+                port: http
+        - host: *host
+          paths:
+            - path: /ai/
+              pathType: Prefix
+              service:
+                identifier: paperless-ai
                 port: http
       tls:
         - secretName: paperless-tls
@@ -112,6 +132,15 @@ paperless-ngx:
         paperless:
           main:
             - path: /usr/src/paperless/consume
+    ai-data:
+      enabled: true
+      storageClass: longhorn-ssd
+      size: 1Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        paperless-ai:
+          main:
+            - path: /app/data
 
 redis:
   enabled: true
