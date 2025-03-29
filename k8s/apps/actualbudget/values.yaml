@@ -21,8 +21,9 @@ actualbudget:
         schedule: "05 * * * *"
         startingDeadlineSeconds: 120
         backoffLimit: 0
-      imagePullSecrets:
-        - ghcr-login-secret
+      pod:
+        imagePullSecrets:
+          - ghcr-login-secret
       containers:
         main:
           image:
