@@ -23,7 +23,7 @@ actualbudget:
         backoffLimit: 0
       pod:
         imagePullSecrets:
-          - ghcr-login-secret
+          - name: ghcr-login-secret
       containers:
         main:
           image:
