@@ -21,6 +21,8 @@ actualbudget:
         schedule: "05 * * * *"
         startingDeadlineSeconds: 120
         backoffLimit: 0
+        successfulJobsHistory: 21
+        failedJobsHistory: 21
       pod:
         imagePullSecrets:
           - name: ghcr-login-secret
