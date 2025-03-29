@@ -15,6 +15,23 @@ actualbudget:
             - secretRef:
                 name: actualbudget-secret
 
+    bank-sync:
+      type: cronjob
+      cronjob:
+        schedule: "05 * * * *"
+        startingDeadlineSeconds: 120
+        backoffLimit: 0
+      imagePullSecrets:
+        - ghcr-login-secret
+      containers:
+        main:
+          image:
+            repository: ghcr.io/vanchaxy/bank-sync
+            tag: sha-75f0f97
+          envFrom:
+            - secretRef:
+                name: actualbudget-secret
+
   service:
     actualbudget:
       controller: actualbudget
@@ -50,5 +67,14 @@ actualbudget:
       accessMode: ReadWriteOnce
       advancedMounts:
         actualbudget:
+          main:
+            - path: /data
+    bank-sync:
+      enabled: true
+      storageClass: longhorn-ssd
+      size: 1Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        bank-sync:
           main:
             - path: /data
