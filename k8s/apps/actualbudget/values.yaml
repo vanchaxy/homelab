@@ -18,7 +18,7 @@ actualbudget:
     bank-sync:
       type: cronjob
       cronjob:
-        schedule: "10 * * * *"
+        schedule: "0 12,16,21 * * *"
         startingDeadlineSeconds: 120
         backoffLimit: 0
         successfulJobsHistory: 21
