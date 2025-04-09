@@ -1,0 +1,43 @@
+apiVersion: secrets.infisical.com/v1alpha1
+kind: InfisicalSecret
+metadata:
+  name: paperless-ngx-data-config
+spec:
+  authentication:
+    universalAuth:
+      secretsScope:
+        projectSlug: homelab-vn-bd
+        envSlug: prod
+        secretsPath: "/common/restic"
+      credentialsRef:
+        secretName: universal-auth-credentials
+        secretNamespace: infisical
+  managedSecretReference:
+    creationPolicy: "Owner"
+    secretName: paperless-ngx-data-config
+    secretNamespace: paperless-ngx
+    template:
+      includeAllSecrets: true
+      data:
+        RESTIC_REPOSITORY: '{{ `{{ .RESTIC_BUCKET.Value }}/paperless-ngx/data` }}'
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: paperless-ngx-data-backup
+spec:
+  sourcePVC: paperless-ngx-data
+  trigger:
+    schedule: "0 * * * *"
+  restic:
+    pruneIntervalDays: 14
+    repository: paperless-ngx-data-config
+    retain:
+      hourly: 12
+      daily: 7
+      weekly: 4
+      monthly: 2
+      yearly: 1
+    copyMethod: Clone
+    storageClassName: longhorn-ssd-backup
+    volumeSnapshotClassName: longhorn-snapshot-vsc

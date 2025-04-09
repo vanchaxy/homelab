@@ -9,13 +9,31 @@ paperless-ngx:
           env:
             PAPERLESS_REDIS: redis://paperless-ngx-redis-headless:6379
             PAPERLESS_TIKA_ENABLED: 1
-            PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
-            PAPERLESS_TIKA_ENDPOINT: http://tika:9998
+            PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://paperless-ngx-gotenberg:3000
+            PAPERLESS_TIKA_ENDPOINT: http://paperless-ngx-tika:9998
             PAPERLESS_URL: https://paper.ivanchenko.io
             PAPERLESS_APPS: allauth.socialaccount.providers.openid_connect
             PAPERLESS_DISABLE_REGULAR_LOGIN: True
             PAPERLESS_REDIRECT_LOGIN_TO_SSO: True
             PAPERLESS_SOCIAL_AUTO_SIGNUP: True
+          envFrom:
+            - secretRef:
+                name: paperless-secret
+
+    paperless-gpt:
+      containers:
+        main:
+          image:
+            repository: icereed/paperless-gpt
+            tag: v0.13.0
+          env:
+            PAPERLESS_BASE_URL: "https://paper.ivanchenko.io"
+            PAPERLESS_PUBLIC_URL: "https://paper.ivanchenko.io"
+            LLM_PROVIDER: "openai"
+            LLM_MODEL: "gpt-4o-mini"
+            OCR_PROVIDER: "llm"
+            VISION_LLM_PROVIDER: "openai"
+            VISION_LLM_MODEL: "gpt-4o-mini"
           envFrom:
             - secretRef:
                 name: paperless-secret
@@ -43,6 +61,12 @@ paperless-ngx:
       ports:
         http:
           port: 8000
+    paperless-gpt:
+      controller: paperless-gpt
+      type: ClusterIP
+      ports:
+        http:
+          port: 8080
     gotenberg:
       controller: gotenberg
       type: ClusterIP
@@ -70,10 +94,18 @@ paperless-ngx:
               service:
                 identifier: paperless
                 port: http
+        - host: &host-gpt paper-gpt.ivanchenko.io
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: paperless-gpt
+                port: http
       tls:
         - secretName: paperless-tls
           hosts:
             - *host
+            - *host-gpt
 
   persistence:
     data:
@@ -85,33 +117,13 @@ paperless-ngx:
         paperless:
           main:
             - path: /usr/src/paperless/data
-    media:
-      enabled: true
-      storageClass: longhorn-ssd
-      size: 1Gi
-      accessMode: ReadWriteOnce
-      advancedMounts:
-        paperless:
-          main:
+              subPath: data
             - path: /usr/src/paperless/media
-    export:
-      enabled: true
-      storageClass: longhorn-ssd
-      size: 1Gi
-      accessMode: ReadWriteOnce
-      advancedMounts:
-        paperless:
-          main:
+              subPath: media
             - path: /usr/src/paperless/export
-    consume:
-      enabled: true
-      storageClass: longhorn-ssd
-      size: 1Gi
-      accessMode: ReadWriteOnce
-      advancedMounts:
-        paperless:
-          main:
+              subPath: export
             - path: /usr/src/paperless/consume
+              subPath: consume
 
 redis:
   enabled: true
