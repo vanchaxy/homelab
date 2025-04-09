@@ -3,7 +3,7 @@ name: volsync
 version: 0.0.0
 dependencies:
   - name: volsync
-    version: 0.11.0
+    version: 0.12.1
     repository: https://backube.github.io/helm-charts
   - name: snapshot-controller
     version: 2.2.2
