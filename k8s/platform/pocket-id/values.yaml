@@ -5,7 +5,7 @@ pocket-id:
         main:
           image:
             repository: ghcr.io/pocket-id/pocket-id
-            tag: v0.40.1
+            tag: v0.45.0
           env:
             PUBLIC_APP_URL: https://id.ivanchenko.io
             TRUST_PROXY: true
