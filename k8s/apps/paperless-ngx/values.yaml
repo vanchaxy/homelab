@@ -117,13 +117,12 @@ paperless-ngx:
         paperless:
           main:
             - path: /usr/src/paperless/data
-              subPath: data
-            - path: /usr/src/paperless/media
-              subPath: media
-            - path: /usr/src/paperless/export
-              subPath: export
-            - path: /usr/src/paperless/consume
-              subPath: consume
+#            - path: /usr/src/paperless/media
+#              subPath: media
+#            - path: /usr/src/paperless/export
+#              subPath: export
+#            - path: /usr/src/paperless/consume
+#              subPath: consume
 
 redis:
   enabled: true
