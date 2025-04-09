@@ -28,7 +28,7 @@ immich:
   image:
     # repository for renovate, not used in chart
     repository: ghcr.io/immich-app/immich-server
-    tag: v1.129.0
+    tag: v1.131.3
 
   immich:
     persistence:
