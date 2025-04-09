@@ -13,7 +13,7 @@ paperless-ngx:
             PAPERLESS_TIKA_ENDPOINT: http://paperless-ngx-tika:9998
             PAPERLESS_URL: https://paper.ivanchenko.io
             PAPERLESS_APPS: allauth.socialaccount.providers.openid_connect
-            PAPERLESS_DISABLE_REGULAR_LOGIN: True
+#            PAPERLESS_DISABLE_REGULAR_LOGIN: True
             PAPERLESS_REDIRECT_LOGIN_TO_SSO: True
             PAPERLESS_SOCIAL_AUTO_SIGNUP: True
           envFrom:
