@@ -117,33 +117,13 @@ paperless-ngx:
         paperless:
           main:
             - path: /usr/src/paperless/data
-    media:
-      enabled: true
-      storageClass: longhorn-ssd
-      size: 1Gi
-      accessMode: ReadWriteOnce
-      advancedMounts:
-        paperless:
-          main:
+              subPath: data
             - path: /usr/src/paperless/media
-    export:
-      enabled: true
-      storageClass: longhorn-ssd
-      size: 1Gi
-      accessMode: ReadWriteOnce
-      advancedMounts:
-        paperless:
-          main:
+              subPath: media
             - path: /usr/src/paperless/export
-    consume:
-      enabled: true
-      storageClass: longhorn-ssd
-      size: 1Gi
-      accessMode: ReadWriteOnce
-      advancedMounts:
-        paperless:
-          main:
+              subPath: export
             - path: /usr/src/paperless/consume
+              subPath: consume
 
 redis:
   enabled: true
