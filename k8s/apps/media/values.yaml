@@ -1,0 +1,86 @@
+media:
+  defaultPodOptions:
+    automountServiceAccountToken: false
+    securityContext:
+      fsGroup: 568
+      fsGroupChangePolicy: "OnRootMismatch"
+      runAsUser: 0
+      runAsGroup: 0
+
+  controllers:
+    qbittorrent:
+      containers:
+        main:
+          image:
+            repository: linuxserver/qbittorrent
+            tag: 5.0.4
+          env:
+            PUID: 568
+            PGID: 568
+            TZ: Etc/UTC
+            WEBUI_PORT: 8080
+
+        gluetun:
+          dependsOn: main
+          image:
+            repository: ghcr.io/qdm12/gluetun
+            tag: v3.40.0
+          env:
+            VPN_SERVICE_PROVIDER: protonvpn
+            VPN_TYPE: wireguard
+            VPN_PORT_FORWARDING: on
+            VPN_PORT_FORWARDING_UP_COMMAND: >-
+              /bin/sh -c 'wget -O- --retry-connrefused --post-data "json={\"listen_port\":{{PORTS}}}" http://127.0.0.1:8080/api/v2/app/setPreferences 2>&1'
+          envFrom:
+            - secretRef:
+                name: media-secret
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+
+  service:
+    qbittorrent:
+      controller: qbittorrent
+      type: ClusterIP
+      ports:
+        http:
+          port: 8000
+
+  ingress:
+    main:
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt
+        nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+      hosts:
+        - host: &host qbittorrent.ivanchenko.io
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: qbittorrent
+                port: http
+      tls:
+        - secretName: main-tls
+          hosts:
+            - *host
+
+  persistence:
+    qbittorrent:
+      storageClass: longhorn-ssd
+      size: 200Mi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        qbittorrent:
+          main:
+            - path: /config
+
+    data:
+      storageClass: longhorn-hdd
+      size: 1Ti
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        qbittorrent:
+          main:
+            - path: /data/downloads
+              subPath: data/downloads
