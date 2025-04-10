@@ -74,6 +74,7 @@ kube-prometheus-stack:
                 storage: 10Gi
 loki:
   loki:
+    useTestSchema: true
     auth_enabled: false
     commonConfig:
       replication_factor: 1
