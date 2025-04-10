@@ -62,6 +62,7 @@ kube-prometheus-stack:
       serviceMonitorSelectorNilUsesHelmValues: false
       podMonitorSelectorNilUsesHelmValues: false
       probeSelectorNilUsesHelmValues: false
+      retention: 10d
       storageSpec:
         volumeClaimTemplate:
           spec:
