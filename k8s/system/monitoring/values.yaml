@@ -79,27 +79,26 @@ loki:
       replication_factor: 1
     storage:
       type: 'filesystem'
+    compactor:
+      working_directory: /var/loki/compactor
+      compaction_interval: 10m
+      retention_enabled: true
+      retention_delete_delay: 2h
+      retention_delete_worker_count: 150
+      delete_request_store: filesystem
+    limits_config:
+      retention_period: 1d
 
+  write:
+    replicas: 0
+  read:
+    replicas: 0
+  backend:
+    replicas: 0
   singleBinary:
     replicas: 1
     persistence:
       size: 10Gi
-
-  monitoring:
-    selfMonitoring:
-      enabled: false
-      grafanaAgent:
-        installOperator: false
-    lokiCanary:
-      enabled: false
-
-  test:
-    enabled: false
-
-  compactor:
-    shared_store: filesystem
-    retention_enabled: true
-    retention_delete_delay: 1h
 
   limits_config:
     retention_period: 240h
