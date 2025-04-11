@@ -27,10 +27,8 @@ media:
             tag: v3.40.0
           env:
             FIREWALL_INPUT_PORTS: 8081
-            VPN_SERVICE_PROVIDER: custom
-            VPN_TYPE: wireguard
+            VPN_SERVICE_PROVIDER: protonvpn
             VPN_PORT_FORWARDING: on
-            VPN_PORT_FORWARDING_PROVIDER: protonvpn
             VPN_PORT_FORWARDING_UP_COMMAND: >-
               /bin/sh -c 'wget -O- --retry-connrefused --post-data "json={\"listen_port\":{{ `{{PORTS}}` }}}" http://127.0.0.1:8081/api/v2/app/setPreferences 2>&1'
           envFrom:
