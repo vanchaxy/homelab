@@ -28,7 +28,7 @@ media:
               custom: true
               spec:
                 exec:
-                  command: ["/bin/ping", "-qc", "2", "1.1.1.1", "||", "exit", "1"]
+                  command: ["/bin/sh", "-c", "/bin/ping -qc 2 1.1.1.1 || exit 1"]
                 initialDelaySeconds: 60
                 periodSeconds: 15
                 timeoutSeconds: 3
