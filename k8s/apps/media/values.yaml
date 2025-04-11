@@ -74,7 +74,7 @@ media:
             - *host
 
   persistence:
-    qbittorrent:
+    config:
       storageClass: longhorn-ssd
       size: 1Gi
       accessMode: ReadWriteMany
