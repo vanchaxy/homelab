@@ -46,6 +46,17 @@ media:
             limits:
               squat.ai/tun: "1"
 
+    prowlarr:
+      containers:
+        main:
+          image:
+            repository: linuxserver/prowlarr
+            tag: 1.33.3
+          env:
+            PUID: 568
+            PGID: 568
+            TZ: Etc/UTC
+
   service:
     qbittorrent:
       controller: qbittorrent
@@ -53,6 +64,12 @@ media:
       ports:
         http:
           port: 8081
+    prowlarr:
+      controller: prowlarr
+      type: ClusterIP
+      ports:
+        http:
+          port: 9696
 
   ingress:
     main:
@@ -60,17 +77,25 @@ media:
         cert-manager.io/cluster-issuer: letsencrypt
         nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
       hosts:
-        - host: &host qbittorrent.ivanchenko.io
+        - host: &qbittorrent-host qbittorrent.ivanchenko.io
           paths:
             - path: /
               pathType: Prefix
               service:
                 identifier: qbittorrent
                 port: http
+        - host: &prowlarr-host prowlarr.ivanchenko.io
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: prowlarr
+                port: http
       tls:
         - secretName: main-tls
           hosts:
-            - *host
+            - *qbittorrent-host
+            - *prowlarr-host
 
   persistence:
     config:
@@ -82,7 +107,10 @@ media:
           main:
             - path: /config
               subPath: qbittorrent-config
-
+        prowlarr:
+          main:
+            - path: /config
+              subPath: prowlarr-config
     data:
       storageClass: longhorn-hdd
       size: 1Ti
