@@ -82,6 +82,7 @@ media:
         qbittorrent:
           main:
             - path: /config
+              subPath: /qbittorrent-config
 
     data:
       storageClass: longhorn-hdd
@@ -91,4 +92,4 @@ media:
         qbittorrent:
           main:
             - path: /data/downloads
-              subPath: data/downloads
+              subPath: /data/downloads
