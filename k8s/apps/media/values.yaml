@@ -76,8 +76,8 @@ media:
   persistence:
     qbittorrent:
       storageClass: longhorn-ssd
-      size: 200Mi
-      accessMode: ReadWriteOnce
+      size: 1Gi
+      accessMode: ReadWriteMany
       advancedMounts:
         qbittorrent:
           main:
@@ -86,7 +86,7 @@ media:
     data:
       storageClass: longhorn-hdd
       size: 1Ti
-      accessMode: ReadWriteOnce
+      accessMode: ReadWriteMany
       advancedMounts:
         qbittorrent:
           main:
