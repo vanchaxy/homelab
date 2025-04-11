@@ -30,7 +30,7 @@ media:
             tag: v3.40.0
           env:
             FIREWALL_INPUT_PORTS: 8081
-            HEALTH_VPN_DURATION_INITIAL: 30
+            HEALTH_VPN_DURATION_INITIAL: 30s
             VPN_SERVICE_PROVIDER: protonvpn
             VPN_PORT_FORWARDING: on
             VPN_PORT_FORWARDING_UP_COMMAND: >-
