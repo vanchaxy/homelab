@@ -19,6 +19,9 @@ media:
             PGID: 568
             TZ: Etc/UTC
             WEBUI_PORT: 8081
+          resources:
+            limits:
+              squat.ai/tun: "1"
 
         gluetun:
           dependsOn: main
