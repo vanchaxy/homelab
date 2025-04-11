@@ -13,7 +13,7 @@ media:
         main:
           image:
             repository: linuxserver/qbittorrent
-            tag: 5.0.4
+            tag: 4.6.3
           env:
             PUID: 568
             PGID: 568
