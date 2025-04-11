@@ -68,6 +68,17 @@ media:
             PGID: 568
             TZ: Etc/UTC
 
+    sonarr:
+      containers:
+        main:
+          image:
+            repository: linuxserver/sonarr
+            tag: 4.0.14
+          env:
+            PUID: 568
+            PGID: 568
+            TZ: Etc/UTC
+
   service:
     qbittorrent:
       controller: qbittorrent
@@ -87,6 +98,12 @@ media:
       ports:
         http:
           port: 7878
+    sonarr:
+      controller: sonarr
+      type: ClusterIP
+      ports:
+        http:
+          port: 8989
 
   ingress:
     main:
@@ -115,12 +132,20 @@ media:
               service:
                 identifier: radarr
                 port: http
+        - host: &sonarr-host sonarr.ivanchenko.io
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: sonarr
+                port: http
       tls:
         - secretName: main-tls
           hosts:
             - *qbittorrent-host
             - *prowlarr-host
             - *radarr-host
+            - *sonarr-host
 
   persistence:
     config:
@@ -140,6 +165,10 @@ media:
           main:
             - path: /config
               subPath: radarr-config
+        sonarr:
+          main:
+            - path: /config
+              subPath: sonarr-config
     data:
       storageClass: longhorn-hdd
       size: 1Ti
@@ -150,6 +179,10 @@ media:
             - path: /data/downloads
               subPath: data/downloads
         radarr:
+          main:
+            - path: /data
+              subPath: data
+        sonarr:
           main:
             - path: /data
               subPath: data
