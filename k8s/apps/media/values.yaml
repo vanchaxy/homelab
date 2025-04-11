@@ -19,6 +19,7 @@ media:
             PGID: 568
             TZ: Etc/UTC
             WEBUI_PORT: 8081
+            DOCKER_MODS: ghcr.io/vuetorrent/vuetorrent-lsio-mod:latest
           resources:
             limits:
               squat.ai/tun: "1"
