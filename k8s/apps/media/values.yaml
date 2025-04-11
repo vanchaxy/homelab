@@ -79,6 +79,18 @@ media:
             PGID: 568
             TZ: Etc/UTC
 
+    jellyfin:
+      containers:
+        main:
+          image:
+            repository: linuxserver/jellyfin
+            tag: 10.10.7
+          env:
+            PUID: 568
+            PGID: 568
+            TZ: Etc/UTC
+            JELLYFIN_PublishedServerUrl: https://jellyfin.ivanchenko.io
+
   service:
     qbittorrent:
       controller: qbittorrent
@@ -104,6 +116,12 @@ media:
       ports:
         http:
           port: 8989
+    jellyfin:
+      controller: jellyfin
+      type: ClusterIP
+      ports:
+        http:
+          port: 8096
 
   ingress:
     main:
@@ -139,6 +157,13 @@ media:
               service:
                 identifier: sonarr
                 port: http
+        - host: &jellyfin-host jellyfin.ivanchenko.io
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: jellyfin
+                port: http
       tls:
         - secretName: main-tls
           hosts:
@@ -146,6 +171,7 @@ media:
             - *prowlarr-host
             - *radarr-host
             - *sonarr-host
+            - *jellyfin-host
 
   persistence:
     config:
@@ -169,6 +195,10 @@ media:
           main:
             - path: /config
               subPath: sonarr-config
+        jellyfin:
+          main:
+            - path: /config
+              subPath: jellyfin-config
     data:
       storageClass: longhorn-hdd
       size: 1Ti
@@ -186,3 +216,7 @@ media:
           main:
             - path: /data
               subPath: data
+        jellyfin:
+          main:
+            - path: /data/media
+              subPath: data/media
