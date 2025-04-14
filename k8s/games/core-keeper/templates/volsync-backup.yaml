@@ -54,8 +54,8 @@ spec:
     # Use an existing PVC, don't provision a new one
     destinationPVC: core-keeper-config
     copyMethod: Direct
-  moverSecurityContext:
-    fsGroup: 1000
-    fsGroupChangePolicy: "OnRootMismatch"
-    runAsUser: 1000
-    runAsGroup: 1000
+    moverSecurityContext:
+      fsGroup: 1000
+      fsGroupChangePolicy: "OnRootMismatch"
+      runAsUser: 1000
+      runAsGroup: 1000
