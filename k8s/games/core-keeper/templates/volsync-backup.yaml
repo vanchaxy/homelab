@@ -53,4 +53,4 @@ spec:
     repository: core-keeper-restic-config
     # Use an existing PVC, don't provision a new one
     destinationPVC: core-keeper-config
-    copyMethod: Direct
+    copyMethod: Clone
