@@ -41,21 +41,3 @@ spec:
     copyMethod: Clone
     storageClassName: longhorn-ssd-backup
     volumeSnapshotClassName: longhorn-snapshot-vsc
----
-apiVersion: volsync.backube/v1alpha1
-kind: ReplicationDestination
-metadata:
-  name: datavol-dest
-spec:
-  trigger:
-    manual: restore-once
-  restic:
-    repository: core-keeper-restic-config
-    # Use an existing PVC, don't provision a new one
-    destinationPVC: core-keeper-config
-    copyMethod: Direct
-    moverSecurityContext:
-      fsGroup: 1000
-      fsGroupChangePolicy: "OnRootMismatch"
-      runAsUser: 1000
-      runAsGroup: 1000
