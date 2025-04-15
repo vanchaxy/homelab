@@ -213,7 +213,7 @@ media:
               subPath: jellyfin-config
     data:
       storageClass: longhorn-hdd
-      size: 1Ti
+      size: 10Ti
       accessMode: ReadWriteMany
       advancedMounts:
         qbittorrent:
