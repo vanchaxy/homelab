@@ -188,7 +188,7 @@ media:
   persistence:
     config:
       storageClass: longhorn-ssd
-      size: 1Gi
+      size: 5Gi
       accessMode: ReadWriteMany
       advancedMounts:
         qbittorrent:
