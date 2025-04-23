@@ -89,9 +89,7 @@ media:
             - '--duplicate-categories'
             - '--match-mode'
             - 'partial'
-            - '--data-dirs'
-            - '/data/downloads'
-            - '--link-dir'
+            - '--link-dirs'
             - '/data/x-seed'
 
     prowlarr:
