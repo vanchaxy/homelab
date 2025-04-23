@@ -40,8 +40,9 @@ media:
             tag: v3.40.0
           env:
             FIREWALL_INPUT_PORTS: 8081
-            FIREWALL_OUTBOUND_SUBNETS: 192.168.50.0/24
+            FIREWALL_OUTBOUND_SUBNETS: "192.168.50.0/24,10.244.0.0/16,10.96.0.0/12"
             DOT: off
+            DNS_KEEP_NAMESERVER: on
             HEALTH_VPN_DURATION_INITIAL: 30s
             VPN_SERVICE_PROVIDER: protonvpn
             VPN_PORT_FORWARDING: on
