@@ -58,6 +58,42 @@ media:
             limits:
               squat.ai/tun: "1"
 
+    cross-seed:
+      pod:
+        securityContext:
+          fsGroup: 568
+          fsGroupChangePolicy: "OnRootMismatch"
+          runAsUser: 568
+          runAsGroup: 568
+
+      containers:
+        main:
+          image:
+            repository: ghcr.io/cross-seed/cross-seed
+            tag: 6.11.2
+          env:
+            PUID: 568
+            PGID: 568
+            TZ: Etc/UTC
+          args:
+            - daemon
+            - '-T'
+            - http://media-prowlarr:9696/1/api?apikey=6e4a625420f84dd38d474f3b9664ea1a
+            - http://media-prowlarr:9696/2/api?apikey=6e4a625420f84dd38d474f3b9664ea1a
+            - http://media-prowlarr:9696/3/api?apikey=6e4a625420f84dd38d474f3b9664ea1a
+            - http://media-prowlarr:9696/4/api?apikey=6e4a625420f84dd38d474f3b9664ea1a
+            - '-A'
+            - inject
+            - '--qbittorrent-url'
+            - 'http://media-qbittorrent:8081'
+            - '--duplicate-categories'
+            - '--match-mode'
+            - 'partial'
+            - '--data-dirs'
+            - '/data/downloads'
+            - '--link-dir'
+            - '/data/x-seed'
+
     prowlarr:
       containers:
         main:
@@ -110,6 +146,12 @@ media:
       ports:
         http:
           port: 8081
+    cross-seed:
+      controller: cross-seed
+      type: ClusterIP
+      ports:
+        http:
+          port: 2468
     prowlarr:
       controller: prowlarr
       type: ClusterIP
@@ -148,6 +190,13 @@ media:
               service:
                 identifier: qbittorrent
                 port: http
+        - host: &cross-seed-host cross-seed.ivanchenko.io
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: cross-seed
+                port: http
         - host: &prowlarr-host prowlarr.ivanchenko.io
           paths:
             - path: /
@@ -180,6 +229,7 @@ media:
         - secretName: main-tls
           hosts:
             - *qbittorrent-host
+            - *cross-seed-host
             - *prowlarr-host
             - *radarr-host
             - *sonarr-host
@@ -195,6 +245,10 @@ media:
           main:
             - path: /config
               subPath: qbittorrent-config
+        cross-seed:
+          main:
+            - path: /config
+              subPath: cross-seed-config
         prowlarr:
           main:
             - path: /config
@@ -218,8 +272,12 @@ media:
       advancedMounts:
         qbittorrent:
           main:
-            - path: /data/downloads
-              subPath: data/downloads
+            - path: /data
+              subPath: data
+        cross-seed:
+          main:
+            - path: /data
+              subPath: data
         radarr:
           main:
             - path: /data
