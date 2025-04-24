@@ -143,6 +143,7 @@ media:
           env:
             PUID: 568
             PGID: 568
+            GITSYNC_ADD_USER: "true"
             GITSYNC_REPO: "git@github.com:vanchaxy/utp-script.git"
             GITSYNC_REF: "main"
             GITSYNC_ROOT: "/tmp/git-root/"
