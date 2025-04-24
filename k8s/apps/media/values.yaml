@@ -233,6 +233,13 @@ media:
               service:
                 identifier: sonarr
                 port: http
+        - host: &profilarr-host profilarr.ivanchenko.io
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: profilarr
+                port: http
         - host: &jellyfin-host jellyfin.ivanchenko.io
           paths:
             - path: /
@@ -248,6 +255,7 @@ media:
             - *prowlarr-host
             - *radarr-host
             - *sonarr-host
+            - *profilarr-host
             - *jellyfin-host
 
   persistence:
