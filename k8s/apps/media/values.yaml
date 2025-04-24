@@ -146,11 +146,14 @@ media:
             GITSYNC_ADD_USER: "true"
             GITSYNC_REPO: "https://github.com/vanchaxy/utp-script.git"
             GITSYNC_REF: "main"
-            GITSYNC_ROOT: "/tmp/git-root/"
+            GITSYNC_ROOT: "/git/"
             GITSYNC_ONE_TIME: "true"
             GITSYNC_DEPTH: "1"
-#            GITSYNC_EXECHOOK_COMMAND: 'cp -a "/tmp/git-root/custom-format/." "/config"'
-            GITSYNC_EXECHOOK_COMMAND: '/bin/ls /'
+        copy:
+          image:
+            repository: busybox
+            tag: stable
+          command: ["/bin/sh", "-c", "cp -a /git/custom-format/. /config/"]
       containers:
         main:
           image:
@@ -270,6 +273,14 @@ media:
             - *jellyfin-host
 
   persistence:
+    recyclarr-tmp:
+      type: emptyDir
+      advancedMounts:
+        recyclarr:
+          sync:
+            - path: /git
+          copy:
+            - path: /git
     config:
       storageClass: longhorn-ssd
       size: 5Gi
@@ -299,7 +310,7 @@ media:
           main:
             - path: /config
               subPath: recyclarr-config
-          sync:
+          copy:
             - path: /config
               subPath: recyclarr-config
         jellyfin:
