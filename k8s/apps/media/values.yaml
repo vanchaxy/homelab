@@ -127,39 +127,16 @@ media:
             PGID: 568
             TZ: Etc/UTC
 
-    recyclarr:
-      pod:
-        securityContext:
-          fsGroup: 568
-          fsGroupChangePolicy: "OnRootMismatch"
-          runAsUser: 568
-          runAsGroup: 568
-
-      initContainers:
-        sync:
-          image:
-            repository: registry.k8s.io/git-sync/git-sync
-            tag: v4.4.0
-          env:
-            GITSYNC_REPO: "https://github.com/vanchaxy/utp-script.git"
-            GITSYNC_REF: "main"
-            GITSYNC_ROOT: "/git/"
-            GITSYNC_ONE_TIME: "true"
-            GITSYNC_DEPTH: "1"
-        copy:
-          dependsOn:
-            - sync
-          image:
-            repository: busybox
-            tag: stable
-          command: ["/bin/sh", "-c", "cp -rL /git/utp-script.git/custom-format/. /config/"]
+    profilarr:
       containers:
         main:
           image:
-            repository: ghcr.io/recyclarr/recyclarr
-            tag: 7.4.1
+            repository: linuxserver/sonarr
+            tag: v1.0.1
           env:
-            TZ: Etc/UTC
+            PUID: 568
+            PGID: 568
+            TZ: Etc/UT
 
     jellyfin:
       containers:
@@ -204,6 +181,12 @@ media:
       ports:
         http:
           port: 8989
+    profilarr:
+      controller: sonarr
+      type: ClusterIP
+      ports:
+        http:
+          port: 6868
     jellyfin:
       controller: jellyfin
       type: ClusterIP
@@ -270,27 +253,6 @@ media:
             - *jellyfin-host
 
   persistence:
-    recyclarr-tmp:
-      type: emptyDir
-      advancedMounts:
-        recyclarr:
-          sync:
-            - path: /git
-          copy:
-            - path: /git
-    # need separate ReadWriteOnce until https://github.com/longhorn/longhorn/issues/10621 fixed
-    recyclarr-config:
-      storageClass: longhorn-ssd
-      size: 1Gi
-      accessMode: ReadWriteOnce
-      advancedMounts:
-        recyclarr:
-          main:
-            - path: /config
-              subPath: recyclarr-config
-          copy:
-            - path: /config
-              subPath: recyclarr-config
     config:
       storageClass: longhorn-ssd
       size: 5Gi
@@ -316,6 +278,10 @@ media:
           main:
             - path: /config
               subPath: sonarr-config
+        profilarr:
+          main:
+            - path: /config
+              subPath: profilarr-config
         jellyfin:
           main:
             - path: /config
