@@ -127,6 +127,36 @@ media:
             PGID: 568
             TZ: Etc/UTC
 
+    recyclarr:
+      pod:
+        securityContext:
+          fsGroup: 568
+          fsGroupChangePolicy: "OnRootMismatch"
+          runAsUser: 568
+          runAsGroup: 568
+
+      initContainers:
+        sync:
+          image:
+            repository: k8s.gcr.io/git-sync
+            tag: v4.4.0
+          env:
+            GITSYNC_REPO: "git@github.com:vanchaxy/utp-script.git"
+            GITSYNC_REF: "main"
+            GITSYNC_ROOT: "/tmp/git-root/"
+            GITSYNC_ONE_TIME: "true"
+            GITSYNC_DEPTH: "1"
+            GITSYNC_EXECHOOK_COMMAND: 'cp -a "/tmp/git-root/custom-format/." "/config"'
+      containers:
+        main:
+          image:
+            repository: ghcr.io/recyclarr/recyclarr
+            tag: 7.4.1
+          env:
+            PUID: 568
+            PGID: 568
+            TZ: Etc/UTC
+
     jellyfin:
       containers:
         main:
@@ -261,6 +291,13 @@ media:
           main:
             - path: /config
               subPath: sonarr-config
+        recyclarr:
+          main:
+            - path: /config
+              subPath: recyclarr-config
+          sync:
+            - path: /config
+              subPath: recyclarr-config
         jellyfin:
           main:
             - path: /config
