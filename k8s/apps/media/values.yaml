@@ -180,7 +180,7 @@ media:
         http:
           port: 8989
     profilarr:
-      controller: sonarr
+      controller: profilarr
       type: ClusterIP
       ports:
         http:
