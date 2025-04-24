@@ -288,6 +288,9 @@ media:
           main:
             - path: /config
               subPath: recyclarr-config
+          copy:
+            - path: /config
+              subPath: recyclarr-config
     config:
       storageClass: longhorn-ssd
       size: 5Gi
@@ -313,9 +316,6 @@ media:
           main:
             - path: /config
               subPath: sonarr-config
-          copy:
-            - path: /config
-              subPath: recyclarr-config
         jellyfin:
           main:
             - path: /config
