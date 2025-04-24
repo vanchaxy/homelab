@@ -138,7 +138,7 @@ media:
       initContainers:
         sync:
           image:
-            repository: k8s.gcr.io/git-sync
+            repository: registry.k8s.io/git-sync/git-sync
             tag: v4.4.0
           env:
             GITSYNC_REPO: "git@github.com:vanchaxy/utp-script.git"
