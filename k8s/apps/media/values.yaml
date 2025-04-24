@@ -149,7 +149,8 @@ media:
             GITSYNC_ROOT: "/tmp/git-root/"
             GITSYNC_ONE_TIME: "true"
             GITSYNC_DEPTH: "1"
-            GITSYNC_EXECHOOK_COMMAND: 'cp -a "/tmp/git-root/custom-format/." "/config"'
+#            GITSYNC_EXECHOOK_COMMAND: 'cp -a "/tmp/git-root/custom-format/." "/config"'
+            GITSYNC_EXECHOOK_COMMAND: 'ls /tmp/git-root && ls / && ls /config'
       containers:
         main:
           image:
