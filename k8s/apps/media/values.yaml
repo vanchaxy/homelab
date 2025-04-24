@@ -152,7 +152,7 @@ media:
           image:
             repository: busybox
             tag: stable
-          command: ["/bin/sh", "-c", "ls /git/"]
+          command: ["/bin/sh", "-c", "ls /git/utp-script.git"]
       containers:
         main:
           image:
