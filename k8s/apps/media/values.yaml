@@ -135,6 +135,9 @@ media:
             tag: v1.0.1
           env:
             TZ: Europe/Kyiv
+          envFrom:
+            - secretRef:
+                name: media-secret
 
     jellyfin:
       containers:
