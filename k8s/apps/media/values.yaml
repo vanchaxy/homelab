@@ -146,13 +146,13 @@ media:
             GITSYNC_ROOT: "/git/"
             GITSYNC_ONE_TIME: "true"
             GITSYNC_DEPTH: "1"
-#        copy:
-#          dependsOn:
-#            - sync
-#          image:
-#            repository: busybox
-#            tag: stable
-#          command: ["/bin/sh", "-c", "cp -rL /git/utp-script.git/custom-format/. /config/"]
+        copy:
+          dependsOn:
+            - sync
+          image:
+            repository: busybox
+            tag: stable
+          command: ["/bin/sh", "-c", "cp -rL /git/utp-script.git/custom-format/. /config/"]
       containers:
         main:
           image:
