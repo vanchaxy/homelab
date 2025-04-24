@@ -141,6 +141,8 @@ media:
             repository: registry.k8s.io/git-sync/git-sync
             tag: v4.4.0
           env:
+            PUID: 568
+            PGID: 568
             GITSYNC_REPO: "git@github.com:vanchaxy/utp-script.git"
             GITSYNC_REF: "main"
             GITSYNC_ROOT: "/tmp/git-root/"
