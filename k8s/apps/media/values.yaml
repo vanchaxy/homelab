@@ -283,10 +283,11 @@ media:
       storageClass: longhorn-ssd
       size: 1Gi
       accessMode: ReadWriteOnce
-      recyclarr:
-        main:
-          - path: /config
-            subPath: recyclarr-config
+      advancedMounts:
+        recyclarr:
+          main:
+            - path: /config
+              subPath: recyclarr-config
     config:
       storageClass: longhorn-ssd
       size: 5Gi
