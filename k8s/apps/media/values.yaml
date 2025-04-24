@@ -159,8 +159,6 @@ media:
             repository: ghcr.io/recyclarr/recyclarr
             tag: 7.4.1
           env:
-            PUID: 568
-            PGID: 568
             TZ: Etc/UTC
 
     jellyfin:
