@@ -133,6 +133,8 @@ media:
           image:
             repository: santiagosayshey/profilarr
             tag: v1.0.1
+          env:
+            TZ: Europe/Kyiv
 
     jellyfin:
       containers:
