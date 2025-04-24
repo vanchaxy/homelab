@@ -150,7 +150,7 @@ media:
             GITSYNC_ONE_TIME: "true"
             GITSYNC_DEPTH: "1"
             GITSYNC_EXECHOOK_COMMAND: 'cp -a "/tmp/git-root/custom-format/." "/config"'
-            GIT_SSH_COMMAND: "ssh -i /etc/git-secret/ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=no"
+            GITSYNC_SSH_KNOWN_HOSTS: "false"
       containers:
         main:
           image:
