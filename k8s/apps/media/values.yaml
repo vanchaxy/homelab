@@ -152,7 +152,7 @@ media:
           image:
             repository: busybox
             tag: stable
-          command: ["/bin/sh", "-c", "cp -a /git/custom-format/. /config/"]
+          command: ["/bin/sh", "-c", "ls /git/"]
       containers:
         main:
           image:
