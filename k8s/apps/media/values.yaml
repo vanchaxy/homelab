@@ -133,10 +133,6 @@ media:
           image:
             repository: santiagosayshey/profilarr
             tag: v1.0.1
-          env:
-            PUID: 568
-            PGID: 568
-            TZ: Etc/UT
 
     jellyfin:
       containers:
