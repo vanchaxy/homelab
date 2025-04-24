@@ -131,7 +131,7 @@ media:
       containers:
         main:
           image:
-            repository: linuxserver/sonarr
+            repository: santiagosayshey/profilarr
             tag: v1.0.1
           env:
             PUID: 568
