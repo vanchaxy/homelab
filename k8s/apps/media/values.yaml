@@ -99,7 +99,7 @@ media:
         main:
           image:
             repository: linuxserver/prowlarr
-            tag: 1.33.3
+            tag: 1.35.1
           env:
             PUID: 568
             PGID: 568
