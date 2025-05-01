@@ -1,0 +1,322 @@
+media:
+  defaultPodOptions:
+    automountServiceAccountToken: false
+    securityContext:
+      fsGroup: 568
+      fsGroupChangePolicy: "OnRootMismatch"
+      runAsUser: 0
+      runAsGroup: 0
+
+  controllers:
+    qbittorrent:
+      containers:
+        main:
+          image:
+            repository: linuxserver/qbittorrent
+            tag: libtorrentv1
+          env:
+            PUID: 568
+            PGID: 568
+            TZ: Etc/UTC
+            WEBUI_PORT: 8081
+          resources:
+            limits:
+              squat.ai/tun: "1"
+          probes:
+            liveness:
+              enabled: true
+              custom: true
+              spec:
+                exec:
+                  command: ["/bin/sh", "-c", "/bin/ping -qc 2 1.1.1.1 || exit 1"]
+                initialDelaySeconds: 60
+                periodSeconds: 15
+                timeoutSeconds: 3
+                failureThreshold: 3
+        gluetun:
+          dependsOn: main
+          image:
+            repository: ghcr.io/qdm12/gluetun
+            tag: v3.40.0
+          env:
+            FIREWALL_INPUT_PORTS: 8081
+            FIREWALL_OUTBOUND_SUBNETS: "192.168.50.0/24,10.244.0.0/16,10.96.0.0/12"
+            DOT: off
+            DNS_KEEP_NAMESERVER: on
+            HEALTH_VPN_DURATION_INITIAL: 30s
+            VPN_SERVICE_PROVIDER: protonvpn
+            VPN_PORT_FORWARDING: on
+            VPN_PORT_FORWARDING_UP_COMMAND: >-
+              /bin/sh -c 'wget -O- --retry-connrefused --post-data "json={\"listen_port\":{{ `{{PORTS}}` }}}" http://127.0.0.1:8081/api/v2/app/setPreferences 2>&1'
+          envFrom:
+            - secretRef:
+                name: media-secret
+          securityContext:
+            privileged: true
+            capabilities:
+              add:
+                - NET_ADMIN
+          resources:
+            limits:
+              squat.ai/tun: "1"
+
+    cross-seed:
+      pod:
+        securityContext:
+          fsGroup: 568
+          fsGroupChangePolicy: "OnRootMismatch"
+          runAsUser: 568
+          runAsGroup: 568
+
+      containers:
+        main:
+          image:
+            repository: ghcr.io/cross-seed/cross-seed
+            tag: 6.11.2
+          env:
+            PUID: 568
+            PGID: 568
+            TZ: Etc/UTC
+          args:
+            - daemon
+            - '-T'
+            - http://media-prowlarr:9696/1/api?apikey=6e4a625420f84dd38d474f3b9664ea1a
+            - http://media-prowlarr:9696/2/api?apikey=6e4a625420f84dd38d474f3b9664ea1a
+            - http://media-prowlarr:9696/3/api?apikey=6e4a625420f84dd38d474f3b9664ea1a
+            - http://media-prowlarr:9696/4/api?apikey=6e4a625420f84dd38d474f3b9664ea1a
+            - '-A'
+            - inject
+            - '--qbittorrent-url'
+            - 'http://media-qbittorrent:8081'
+            - '--duplicate-categories'
+            - '--match-mode'
+            - 'partial'
+            - '--link-dirs'
+            - '/data/x-seed'
+
+    prowlarr:
+      containers:
+        main:
+          image:
+            repository: linuxserver/prowlarr
+            tag: 1.33.3
+          env:
+            PUID: 568
+            PGID: 568
+            TZ: Etc/UTC
+
+    radarr:
+      containers:
+        main:
+          image:
+            repository: linuxserver/radarr
+            tag: 5.21.1
+          env:
+            PUID: 568
+            PGID: 568
+            TZ: Etc/UTC
+
+    sonarr:
+      containers:
+        main:
+          image:
+            repository: linuxserver/sonarr
+            tag: 4.0.14
+          env:
+            PUID: 568
+            PGID: 568
+            TZ: Etc/UTC
+
+    profilarr:
+      containers:
+        main:
+          image:
+            repository: santiagosayshey/profilarr
+            tag: v1.0.1
+          env:
+            TZ: Europe/Kyiv
+          envFrom:
+            - secretRef:
+                name: media-secret
+
+    jellyfin:
+      containers:
+        main:
+          image:
+            repository: linuxserver/jellyfin
+            tag: 10.10.7
+          env:
+            PUID: 568
+            PGID: 568
+            TZ: Etc/UTC
+            JELLYFIN_PublishedServerUrl: https://jellyfin.ivanchenko.io
+
+  service:
+    qbittorrent:
+      controller: qbittorrent
+      type: ClusterIP
+      ports:
+        http:
+          port: 8081
+    cross-seed:
+      controller: cross-seed
+      type: ClusterIP
+      ports:
+        http:
+          port: 2468
+    prowlarr:
+      controller: prowlarr
+      type: ClusterIP
+      ports:
+        http:
+          port: 9696
+    radarr:
+      controller: radarr
+      type: ClusterIP
+      ports:
+        http:
+          port: 7878
+    sonarr:
+      controller: sonarr
+      type: ClusterIP
+      ports:
+        http:
+          port: 8989
+    profilarr:
+      controller: profilarr
+      type: ClusterIP
+      ports:
+        http:
+          port: 6868
+    jellyfin:
+      controller: jellyfin
+      type: ClusterIP
+      ports:
+        http:
+          port: 8096
+
+  ingress:
+    main:
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt
+        nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+      hosts:
+        - host: &qbittorrent-host qbittorrent.ivanchenko.io
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: qbittorrent
+                port: http
+        - host: &cross-seed-host cross-seed.ivanchenko.io
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: cross-seed
+                port: http
+        - host: &prowlarr-host prowlarr.ivanchenko.io
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: prowlarr
+                port: http
+        - host: &radarr-host radarr.ivanchenko.io
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: radarr
+                port: http
+        - host: &sonarr-host sonarr.ivanchenko.io
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: sonarr
+                port: http
+        - host: &profilarr-host profilarr.ivanchenko.io
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: profilarr
+                port: http
+        - host: &jellyfin-host jellyfin.ivanchenko.io
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: jellyfin
+                port: http
+      tls:
+        - secretName: main-tls
+          hosts:
+            - *qbittorrent-host
+            - *cross-seed-host
+            - *prowlarr-host
+            - *radarr-host
+            - *sonarr-host
+            - *profilarr-host
+            - *jellyfin-host
+
+  persistence:
+    config:
+      storageClass: longhorn-ssd
+      size: 5Gi
+      accessMode: ReadWriteMany
+      advancedMounts:
+        qbittorrent:
+          main:
+            - path: /config
+              subPath: qbittorrent-config
+        cross-seed:
+          main:
+            - path: /config
+              subPath: cross-seed-config
+        prowlarr:
+          main:
+            - path: /config
+              subPath: prowlarr-config
+        radarr:
+          main:
+            - path: /config
+              subPath: radarr-config
+        sonarr:
+          main:
+            - path: /config
+              subPath: sonarr-config
+        profilarr:
+          main:
+            - path: /config
+              subPath: profilarr-config
+        jellyfin:
+          main:
+            - path: /config
+              subPath: jellyfin-config
+    data:
+      storageClass: longhorn-hdd
+      size: 10Ti
+      accessMode: ReadWriteMany
+      advancedMounts:
+        qbittorrent:
+          main:
+            - path: /data
+              subPath: data
+        cross-seed:
+          main:
+            - path: /data
+              subPath: data
+        radarr:
+          main:
+            - path: /data
+              subPath: data
+        sonarr:
+          main:
+            - path: /data
+              subPath: data
+        jellyfin:
+          main:
+            - path: /data/media
+              subPath: data/media
