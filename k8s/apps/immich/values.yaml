@@ -36,6 +36,8 @@ immich:
         existingClaim: photo-library
 
   server:
+    controller:
+      strategy: Recreate
     ingress:
       main:
         enabled: true
