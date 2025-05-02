@@ -4,9 +4,12 @@ version: 0.0.0
 dependencies:
   - name: app-template
     version: 3.7.3
-    repository: https://bjw-s.github.io/helm-charts
+    repository: https://bjw-s-labs.github.io/helm-charts
     alias: paperless-ngx
   - name: redis
     repository: https://charts.bitnami.com/bitnami
     version: 20.13.4
     condition: redis.enabled
+  - name: helpers
+    version: 0.1.0
+    repository: file://../../../k8s/_helpers
