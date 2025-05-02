@@ -328,3 +328,6 @@ helpers:
       namespace: media
       infisical:
         path: "/media"
+  backups:
+    - pvcName: media-config
+      resticRepoSuffix: media/config
