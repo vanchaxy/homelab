@@ -33,58 +33,56 @@ global:
     # -- Default backup schedule (cron format)
     schedule: "0 * * * *"
 
-# -- Configuration specific to the helpers chart functionalities.
-helpers:
-  # -- Configuration for the GHCR image pull secret.
-  ghcrSecret:
-    # -- Enable creation of the GHCR secret.
-    enabled: false
-    # -- Name of the Kubernetes secret to create.
-    name: ghcr-login-secret
-    # -- Infisical path for GHCR credentials.
-    infisicalPath: "/ghcr-login"
+# -- Configuration for the GHCR image pull secret.
+ghcrSecret:
+  # -- Enable creation of the GHCR secret.
+  enabled: false
+  # -- Name of the Kubernetes secret to create.
+  name: ghcr-login-secret
+  # -- Infisical path for GHCR credentials.
+  infisicalPath: "/ghcr-login"
 
-  # -- List of Infisical secrets to manage.
-  infisicalSecrets: []
-  # Example:
-  # - name: my-app-secret # Kubernetes Secret name
-  #   infisical:
-  #     # path: "/my-app" # Required: Infisical secret path
-  #     # projectSlug: "override-project" # Optional: Override global projectSlug
-  #     # envSlug: "override-env" # Optional: Override global envSlug
-  #   # Optional: Custom Go template for the managedSecretReference.template.data field
-  #   template: |
-  #     MY_VAR: '{{ `{{ .MY_INFISICAL_VAR.Value }}` }}'
-  #   # Optional: Kubernetes Secret type (e.g., Opaque, kubernetes.io/dockerconfigjson)
-  #   type: Opaque
-  #   # Optional: Namespace for the secret (defaults to Release.Namespace)
-  #   namespace: ""
+# -- List of Infisical secrets to manage.
+infisicalSecrets: []
+# Example:
+# - name: my-app-secret # Kubernetes Secret name
+#   infisical:
+#     # path: "/my-app" # Required: Infisical secret path
+#     # projectSlug: "override-project" # Optional: Override global projectSlug
+#     # envSlug: "override-env" # Optional: Override global envSlug
+#   # Optional: Custom Go template for the managedSecretReference.template.data field
+#   template: |
+#     MY_VAR: '{{ `{{ .MY_INFISICAL_VAR.Value }}` }}'
+#   # Optional: Kubernetes Secret type (e.g., Opaque, kubernetes.io/dockerconfigjson)
+#   type: Opaque
+#   # Optional: Namespace for the secret (defaults to Release.Namespace)
+#   namespace: ""
 
-  # -- List of PVCs to back up using VolSync/Restic.
-  backups: []
-  # Example:
-  # - pvcName: my-app-data # Required: Name of the PVC to back up
-  #   # Optional: Suffix for the Restic repository path (defaults to pvcName)
-  #   resticRepoSuffix: my-app-data-backup
-  #   # Optional: Override backup schedule
-  #   schedule: "0 2 * * *"
-  #   # Optional: Override retention policy
-  #   retain:
-  #     hourly: 6
-  #     daily: 3
-  #   # Optional: Override prune interval
-  #   pruneIntervalDays: 7
-  #   # Optional: Override copy method
-  #   copyMethod: Snapshot
-  #   # Optional: Override storage class for backup volume
-  #   storageClassName: longhorn-hdd-backup
-  #   # Optional: Override volume snapshot class
-  #   volumeSnapshotClassName: my-custom-vsc
-  #   # Optional: Security context for the VolSync mover container (e.g., for databases)
-  #   moverSecurityContext: {}
-  #     # fsGroup: 26
-  #     # runAsGroup: 26
-  #     # runAsNonRoot: true
-  #     # runAsUser: 26
-  #   # Optional: Namespace for the backup resources (defaults to Release.Namespace)
-  #   namespace: ""
+# -- List of PVCs to back up using VolSync/Restic.
+backups: []
+# Example:
+# - pvcName: my-app-data # Required: Name of the PVC to back up
+#   # Optional: Suffix for the Restic repository path (defaults to pvcName)
+#   resticRepoSuffix: my-app-data-backup
+#   # Optional: Override backup schedule
+#   schedule: "0 2 * * *"
+#   # Optional: Override retention policy
+#   retain:
+#     hourly: 6
+#     daily: 3
+#   # Optional: Override prune interval
+#   pruneIntervalDays: 7
+#   # Optional: Override copy method
+#   copyMethod: Snapshot
+#   # Optional: Override storage class for backup volume
+#   storageClassName: longhorn-hdd-backup
+#   # Optional: Override volume snapshot class
+#   volumeSnapshotClassName: my-custom-vsc
+#   # Optional: Security context for the VolSync mover container (e.g., for databases)
+#   moverSecurityContext: {}
+#     # fsGroup: 26
+#     # runAsGroup: 26
+#     # runAsNonRoot: true
+#     # runAsUser: 26
+#   # Optional: Namespace for the backup resources (defaults to Release.Namespace)
+#   namespace: ""
