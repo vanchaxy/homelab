@@ -4,3 +4,9 @@ cert-manager:
     enabled: true
     servicemonitor:
       enabled: true
+
+helpers:
+  infisicalSecrets:
+    - name: cloudflare-api-token
+      infisical:
+        path: "/cloudflare"

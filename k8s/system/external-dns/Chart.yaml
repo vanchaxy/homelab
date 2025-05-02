@@ -5,3 +5,6 @@ dependencies:
   - name: external-dns
     version: 1.16.1
     repository: https://kubernetes-sigs.github.io/external-dns
+  - name: helpers
+    version: 0.1.0
+    repository: file://../../../k8s/_helpers
