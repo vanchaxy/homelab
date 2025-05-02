@@ -4,3 +4,11 @@ volsync:
   replicaCount: 2
   podLabels:
     qwe: 123
+app-template:
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: lscr.io/linuxserver/librespeed
+            tag: 5.4.1
