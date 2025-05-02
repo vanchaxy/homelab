@@ -1,4 +1,4 @@
-{{- range $backup := .Values.helpers.backups }}
+{{- range $backup := .Values.backups }}
 {{- $resticSecretName := printf "%s-restic-config" $backup.pvcName }}
 {{- $resticRepoSuffix := $backup.resticRepoSuffix | default $backup.pvcName }}
 apiVersion: secrets.infisical.com/v1alpha1
