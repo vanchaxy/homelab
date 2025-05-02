@@ -1,5 +1,4 @@
 volsync:
   metrics:
     disableAuth: true
-  podLabels:
-    q: 1
+  replicaCount: 2
