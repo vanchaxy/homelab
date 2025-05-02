@@ -42,3 +42,11 @@ app-template:
       globalMounts:
         - path: /etc/cloudflared/credentials.json
           subPath: credentials.json
+
+helpers:
+  infisicalSecrets:
+    - name: cloudflared-credentials
+      infisical:
+        path: "/cloudflare"
+      template: |
+        credentials.json: '{{ `{{ .credentialsjson.Value }}` }}'
