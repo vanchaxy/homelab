@@ -91,6 +91,6 @@ helpers:
         path: "/actualbudget"
   backups:
     - pvcName: actualbudget-data
-      resticRepoSuffix: data
+      resticRepoSuffix: actualbudget/data
     - pvcName: actualbudget-bank-sync
-      resticRepoSuffix: bank-sync
+      resticRepoSuffix: actualbudget/bank-sync

@@ -143,4 +143,4 @@ helpers:
         path: "/paperless-ngx"
   backups:
     - pvcName: paperless-ngx-data
-      resticRepoSuffix: data
+      resticRepoSuffix: paperless-ngx/data

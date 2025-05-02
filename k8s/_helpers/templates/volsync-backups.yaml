@@ -22,7 +22,7 @@ spec:
     template:
       includeAllSecrets: true
       data:
-        RESTIC_REPOSITORY: '{{ `{{ .RESTIC_BUCKET.Value }}` }}/{{ $.Release.Name }}/{{ $resticRepoSuffix }}'
+        RESTIC_REPOSITORY: '{{ `{{ .RESTIC_BUCKET.Value }}` }}/{{ $resticRepoSuffix }}'
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
