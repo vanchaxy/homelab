@@ -81,3 +81,16 @@ actualbudget:
         bank-sync:
           main:
             - path: /data
+
+helpers:
+  ghcrSecret:
+    enabled: true
+  infisicalSecrets:
+    - name: actualbudget-secret
+      infisical:
+        path: "/actualbudget"
+  backups:
+    - pvcName: actualbudget-data
+      resticRepoSuffix: data
+    - pvcName: actualbudget-bank-sync
+      resticRepoSuffix: bank-sync
