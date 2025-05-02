@@ -28,7 +28,7 @@ helpers:
         path: "/core-keeper"
   backups:
     - pvcName: core-keeper-config
-      resticRepoSuffix: core-keeper/core-keeper
+      resticRepoSuffix: core-keeper
       retain:
         hourly: 12
         daily: 7
