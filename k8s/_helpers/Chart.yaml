@@ -1,5 +1,3 @@
 apiVersion: v2
 name: helpers
-description: A library chart for common Kubernetes manifests like InfisicalSecrets and VolSync Backups
-type: library
 version: 0.1.0
