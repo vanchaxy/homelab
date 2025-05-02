@@ -8,3 +8,6 @@ dependencies:
   - name: snapshot-controller
     version: 4.0.2
     repository: https://piraeus.io/helm-charts
+  - name: app-template
+    version: 3.7.3
+    repository: https://bjw-s-labs.github.io/helm-charts
