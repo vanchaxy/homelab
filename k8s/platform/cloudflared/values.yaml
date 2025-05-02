@@ -49,5 +49,5 @@ helpers:
       infisical:
         path: "/cloudflare"
       template:
-        data: |
+        data:
           credentials.json: '{{ `{{ .credentialsjson.Value }}` }}'
