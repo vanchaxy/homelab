@@ -8,4 +8,4 @@ dependencies:
     alias: actualbudget
   - name: helpers
     version: 0.1.0
-    repository: file://../../../k8s/_helpers
+    repository: file://../../../k8s/_helpersqq
