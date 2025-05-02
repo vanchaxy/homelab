@@ -1,88 +1,29 @@
-# Default values for helpers chart.
-# These values are meant to be overridden by the parent chart.
-
-# -- Global settings, often overridden by parent charts but provide defaults.
 global:
   infisical:
-    # -- Default Infisical Project Slug
     projectSlug: homelab-vn-bd
-    # -- Default Infisical Environment Slug
     envSlug: prod
-    # -- Default reference to the Infisical Universal Auth credentials secret
     credentialsRef:
       secretName: universal-auth-credentials
       secretNamespace: infisical
   restic:
-    # -- Default Infisical path for the secret containing the RESTIC_BUCKET value
     bucketSecretPath: "/common/restic"
-    # -- Default StorageClass for VolSync temporary backup volumes
     storageClassName: longhorn-ssd-backup
-    # -- Default VolumeSnapshotClass for VolSync
     volumeSnapshotClassName: longhorn-snapshot-vsc
-    # -- Default copy method for VolSync (Clone or Snapshot)
     copyMethod: Clone
-    # -- Default prune interval in days for Restic backups
     pruneIntervalDays: 14
-    # -- Default Restic retention policy
     retain:
       hourly: 12
       daily: 7
       weekly: 4
       monthly: 2
       yearly: 1
-    # -- Default backup schedule (cron format)
     schedule: "0 * * * *"
 
-# -- Configuration for the GHCR image pull secret.
 ghcrSecret:
-  # -- Enable creation of the GHCR secret.
   enabled: false
-  # -- Name of the Kubernetes secret to create.
   name: ghcr-login-secret
-  # -- Infisical path for GHCR credentials.
   infisicalPath: "/ghcr-login"
 
-# -- List of Infisical secrets to manage.
 infisicalSecrets: []
-# Example:
-# - name: my-app-secret # Kubernetes Secret name
-#   infisical:
-#     # path: "/my-app" # Required: Infisical secret path
-#     # projectSlug: "override-project" # Optional: Override global projectSlug
-#     # envSlug: "override-env" # Optional: Override global envSlug
-#   # Optional: Custom Go template for the managedSecretReference.template.data field
-#   template: |
-#     MY_VAR: '{{ `{{ .MY_INFISICAL_VAR.Value }}` }}'
-#   # Optional: Kubernetes Secret type (e.g., Opaque, kubernetes.io/dockerconfigjson)
-#   type: Opaque
-#   # Optional: Namespace for the secret (defaults to Release.Namespace)
-#   namespace: ""
 
-# -- List of PVCs to back up using VolSync/Restic.
 backups: []
-# Example:
-# - pvcName: my-app-data # Required: Name of the PVC to back up
-#   # Optional: Suffix for the Restic repository path (defaults to pvcName)
-#   resticRepoSuffix: my-app-data-backup
-#   # Optional: Override backup schedule
-#   schedule: "0 2 * * *"
-#   # Optional: Override retention policy
-#   retain:
-#     hourly: 6
-#     daily: 3
-#   # Optional: Override prune interval
-#   pruneIntervalDays: 7
-#   # Optional: Override copy method
-#   copyMethod: Snapshot
-#   # Optional: Override storage class for backup volume
-#   storageClassName: longhorn-hdd-backup
-#   # Optional: Override volume snapshot class
-#   volumeSnapshotClassName: my-custom-vsc
-#   # Optional: Security context for the VolSync mover container (e.g., for databases)
-#   moverSecurityContext: {}
-#     # fsGroup: 26
-#     # runAsGroup: 26
-#     # runAsNonRoot: true
-#     # runAsUser: 26
-#   # Optional: Namespace for the backup resources (defaults to Release.Namespace)
-#   namespace: ""
