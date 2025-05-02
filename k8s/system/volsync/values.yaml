@@ -2,3 +2,5 @@ volsync:
   metrics:
     disableAuth: true
   replicaCount: 2
+  podLabels:
+    qwe: 123
