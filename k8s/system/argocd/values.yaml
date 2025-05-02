@@ -84,3 +84,9 @@ argocd-apps:
             managedNamespaceMetadata:
               labels:
                 pod-security.kubernetes.io/enforce: privileged
+
+helpers:
+  infisicalSecrets:
+    - name: argocd-secret
+      infisical:
+        path: "/argocd/argocd-secret"

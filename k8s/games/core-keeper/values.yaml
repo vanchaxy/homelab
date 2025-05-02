@@ -20,3 +20,18 @@ core-keeper:
         main:
           main:
             - path: /home/steam/core-keeper-data
+
+helpers:
+  infisicalSecrets:
+    - name: core-keeper-secret
+      infisical:
+        path: "/core-keeper"
+  backups:
+    - pvcName: core-keeper-config
+      resticRepoSuffix: core-keeper
+      retain:
+        hourly: 12
+        daily: 7
+        weekly: 4
+        monthly: 2
+        yearly: 1

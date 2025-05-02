@@ -135,3 +135,12 @@ redis:
       enabled: true
   replica:
     replicaCount: 0
+
+helpers:
+  infisicalSecrets:
+    - name: paperless-secret
+      infisical:
+        path: "/paperless-ngx"
+  backups:
+    - pvcName: paperless-ngx-data
+      resticRepoSuffix: paperless-ngx/data

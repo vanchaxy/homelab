@@ -19,3 +19,9 @@ longhorn:
     tlsSecret: longhorn-tls
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt
+
+helpers:
+  infisicalSecrets:
+    - name: b2-secret
+      infisical:
+        path: "/longhorn/b2"

@@ -320,3 +320,11 @@ media:
           main:
             - path: /data/media
               subPath: data/media
+
+
+helpers:
+  infisicalSecrets:
+    - name: media-secret
+      namespace: media
+      infisical:
+        path: "/media"

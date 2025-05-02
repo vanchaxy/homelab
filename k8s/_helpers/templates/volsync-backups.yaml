@@ -1,0 +1,48 @@
+{{- range $backup := .Values.backups }}
+{{- $resticSecretName := printf "%s-restic-config" $backup.pvcName }}
+{{- $resticRepoSuffix := $backup.resticRepoSuffix | default $backup.pvcName }}
+apiVersion: secrets.infisical.com/v1alpha1
+kind: InfisicalSecret
+metadata:
+  name: {{ $resticSecretName }}
+spec:
+  authentication:
+    universalAuth:
+      secretsScope:
+        projectSlug: {{ $.Values.global.infisical.projectSlug }}
+        envSlug: {{ $.Values.global.infisical.envSlug }}
+        secretsPath: {{ $.Values.global.restic.bucketSecretPath | quote }}
+      credentialsRef:
+        secretName: {{ $.Values.global.infisical.credentialsRef.secretName }}
+        secretNamespace: {{ $.Values.global.infisical.credentialsRef.secretNamespace }}
+  managedSecretReference:
+    creationPolicy: "Owner"
+    secretName: {{ $resticSecretName }}
+    secretNamespace: {{ $.Release.Namespace }}
+    template:
+      includeAllSecrets: true
+      data:
+        RESTIC_REPOSITORY: '{{ `{{ .RESTIC_BUCKET.Value }}` }}/{{ $resticRepoSuffix }}'
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: {{ printf "%s-backup" $backup.pvcName }}
+spec:
+  sourcePVC: {{ $backup.pvcName }}
+  trigger:
+    schedule: {{ $backup.schedule | default $.Values.global.restic.schedule | quote }}
+  restic:
+    pruneIntervalDays: {{ $backup.pruneIntervalDays | default $.Values.global.restic.pruneIntervalDays }}
+    repository: {{ $resticSecretName }}
+    retain:
+      {{- toYaml ($backup.retain | default $.Values.global.restic.retain) | nindent 6 }}
+    copyMethod: {{ $backup.copyMethod | default $.Values.global.restic.copyMethod }}
+    storageClassName: {{ $backup.storageClassName | default $.Values.global.restic.storageClassName }}
+    volumeSnapshotClassName: {{ $backup.volumeSnapshotClassName | default $.Values.global.restic.volumeSnapshotClassName }}
+    {{- with $backup.moverSecurityContext }}
+    moverSecurityContext:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+---
+{{- end }}

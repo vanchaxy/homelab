@@ -25,3 +25,9 @@ app-template:
           resources:
             limits:
               squat.ai/tun: "1"
+
+helpers:
+  infisicalSecrets:
+    - name: tailscale-auth
+      infisical:
+        path: "/tailscale"

@@ -1,0 +1,29 @@
+global:
+  infisical:
+    projectSlug: homelab-vn-bd
+    envSlug: prod
+    credentialsRef:
+      secretName: universal-auth-credentials
+      secretNamespace: infisical
+  restic:
+    bucketSecretPath: "/common/restic"
+    storageClassName: longhorn-ssd-backup
+    volumeSnapshotClassName: longhorn-snapshot-vsc
+    copyMethod: Clone
+    pruneIntervalDays: 14
+    retain:
+      hourly: 12
+      daily: 7
+      weekly: 4
+      monthly: 2
+      yearly: 1
+    schedule: "0 * * * *"
+
+ghcrSecret:
+  enabled: false
+  name: ghcr-login-secret
+  infisicalPath: "/ghcr-login"
+
+infisicalSecrets: []
+
+backups: []
