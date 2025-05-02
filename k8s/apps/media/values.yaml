@@ -144,7 +144,7 @@ media:
         main:
           image:
             repository: linuxserver/jellyfin
-            tag: 10.10.7
+            tag: 2021.12.16
           env:
             PUID: 568
             PGID: 568
