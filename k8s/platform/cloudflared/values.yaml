@@ -48,5 +48,6 @@ helpers:
     - name: cloudflared-credentials
       infisical:
         path: "/cloudflare"
-      template: |
-        credentials.json: '{{ `{{ .credentialsjson.Value }}` }}'
+      template:
+        data: |
+          credentials.json: '{{ `{{ .credentialsjson.Value }}` }}'
