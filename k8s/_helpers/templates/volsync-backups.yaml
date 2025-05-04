@@ -44,5 +44,6 @@ spec:
     moverSecurityContext:
       {{- toYaml . | nindent 6 }}
     {{- end }}
+    unlock: {{ $backup.unlock | default "" }}
 ---
 {{- end }}
