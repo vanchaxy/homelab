@@ -140,6 +140,9 @@ media:
                 name: media-secret
 
     jellyfin:
+      pod:
+        nodeSelector:
+          amd.com/gpu.vram: 2G
       containers:
         main:
           image:
@@ -150,6 +153,9 @@ media:
             PGID: 568
             TZ: Etc/UTC
             JELLYFIN_PublishedServerUrl: https://jellyfin.ivanchenko.io
+          resources:
+            limits:
+              amd.com/gpu: 1
 
   service:
     qbittorrent:
