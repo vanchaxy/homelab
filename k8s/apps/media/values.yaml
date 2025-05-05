@@ -146,9 +146,13 @@ media:
       containers:
         main:
           image:
-            repository: jellyfin/jellyfin
+            repository: linuxserver/jellyfin
             tag: 10.10.7
           env:
+            PUID: 568
+            PGID: 568
+            TZ: Etc/UTC
+            DOCKER_MODS: linuxserver/mods:jellyfin-amd
             JELLYFIN_PublishedServerUrl: https://jellyfin.ivanchenko.io
           resources:
             limits:
