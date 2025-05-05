@@ -21,9 +21,3 @@ resource "local_file" "talos_config" {
   filename        = "../output/talos-config.yaml"
   file_permission = "0600"
 }
-
-resource "local_file" "kubeconfig" {
-  content         = module.talos.kubeconfig_raw
-  filename        = "../output/kube-config.yaml"
-  file_permission = "0600"
-}
