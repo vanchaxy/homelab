@@ -1,22 +1,11 @@
-
-
 variable "node" {
   type = object({
-    name          = string
-    ip            = string
-    cpu           = string
-    ram_dedicated = number
-    mac_address   = string
-    disk_size_gb  = number
-    ssd_pci_id    = string
-    ssd_disk_id   = string
-    usb_id        = string
-    usb_disk_id   = string
+    name            = string
+    ip              = string
+    ssd_disk_id     = string
+    usb_disk_id     = string
+    install_disk_id = string
   })
-}
-
-variable "talos_iso_url" {
-  type = string
 }
 
 variable "machine_secrets" {

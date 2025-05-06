@@ -140,6 +140,9 @@ media:
                 name: media-secret
 
     jellyfin:
+      pod:
+        nodeSelector:
+          amd.com/gpu.vram: 2G
       containers:
         main:
           image:
@@ -149,7 +152,11 @@ media:
             PUID: 568
             PGID: 568
             TZ: Etc/UTC
+            DOCKER_MODS: linuxserver/mods:jellyfin-amd
             JELLYFIN_PublishedServerUrl: https://jellyfin.ivanchenko.io
+          resources:
+            limits:
+              amd.com/gpu: 1
 
   service:
     qbittorrent:
@@ -328,3 +335,6 @@ helpers:
       namespace: media
       infisical:
         path: "/media"
+  backups:
+    - pvcName: media-config
+      resticRepoSuffix: media/config

@@ -1,0 +1,3 @@
+amd-gpu:
+  labeller:
+    enabled: true

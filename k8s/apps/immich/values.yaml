@@ -108,6 +108,7 @@ helpers:
     - pvcName: photo-library
       resticRepoSuffix: photo-library
       schedule: "0 0 * * *"
+      unlock: "unlock1"
       retain:
         daily: 5
         weekly: 4

@@ -13,18 +13,11 @@ machine:
       ))
     }'
   install:
-    disk: /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi0
+    disk: /dev/disk/by-id/${install_disk_id}
     image: ${install_image}
-    wipe: false
+    wipe: true
   kubelet:
     extraMounts:
-      - destination: /var/lib/longhorn
-        type: bind
-        source: /var/lib/longhorn
-        options:
-          - bind
-          - rshared
-          - rw
       - destination: /var/mnt/storage
         type: bind
         source: /var/mnt/storage
