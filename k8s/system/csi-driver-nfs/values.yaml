@@ -1,0 +1,20 @@
+csi-driver-nfs:
+  controller:
+    runOnControlPlane: true
+  storageClass:
+    create: true
+    name: nfs-csi
+    parameters:
+      server: 192.168.50.210
+      share: /nfs-csi/
+      mountPermissions: "0"
+    reclaimPolicy: Delete
+    volumeBindingMode: Immediate
+    mountOptions:
+      - nfsvers=4.1
+      - hard
+      - timeo=50
+      - retrans=5
+      - relatime
+      - rsize=1048576
+      - wsize=1048576
