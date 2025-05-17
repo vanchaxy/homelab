@@ -310,23 +310,23 @@ media:
         qbittorrent:
           main:
             - path: /data
-              subPath: arr/data
+              subPath: data
         cross-seed:
           main:
             - path: /data
-              subPath: arr/data
+              subPath: data
         radarr:
           main:
             - path: /data
-              subPath: arr/data
+              subPath: data
         sonarr:
           main:
             - path: /data
-              subPath: arr/data
+              subPath: data
         jellyfin:
           main:
             - path: /data/media
-              subPath: arr/data/media
+              subPath: data/media
 
 
 helpers:
