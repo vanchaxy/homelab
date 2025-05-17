@@ -304,6 +304,7 @@ media:
               subPath: jellyfin-config
     data:
       storageClass: nfs-csi
+      size: 10Ti
       accessMode: ReadWriteMany
       advancedMounts:
         qbittorrent:
