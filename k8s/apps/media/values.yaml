@@ -9,6 +9,7 @@ media:
 
   controllers:
     qbittorrent:
+      enabled: false
       containers:
         main:
           image:
