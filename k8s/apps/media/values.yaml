@@ -302,31 +302,31 @@ media:
           main:
             - path: /config
               subPath: jellyfin-config
-    data:
-      storageClass: nfs-csi
-      size: 10Ti
-      accessMode: ReadWriteMany
-      advancedMounts:
-        qbittorrent:
-          main:
-            - path: /data
-              subPath: data
-        cross-seed:
-          main:
-            - path: /data
-              subPath: data
-        radarr:
-          main:
-            - path: /data
-              subPath: data
-        sonarr:
-          main:
-            - path: /data
-              subPath: data
-        jellyfin:
-          main:
-            - path: /data/media
-              subPath: data/media
+#    data:
+#      storageClass: nfs-csi
+#      size: 10Ti
+#      accessMode: ReadWriteMany
+#      advancedMounts:
+#        qbittorrent:
+#          main:
+#            - path: /data
+#              subPath: data
+#        cross-seed:
+#          main:
+#            - path: /data
+#              subPath: data
+#        radarr:
+#          main:
+#            - path: /data
+#              subPath: data
+#        sonarr:
+#          main:
+#            - path: /data
+#              subPath: data
+#        jellyfin:
+#          main:
+#            - path: /data/media
+#              subPath: data/media
 
 
 helpers:
