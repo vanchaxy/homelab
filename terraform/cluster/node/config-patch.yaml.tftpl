@@ -7,10 +7,8 @@ machine:
     node.longhorn.io/create-default-disk: 'config'
   nodeAnnotations:
     node.longhorn.io/default-disks-config: '${
-      jsonencode(concat(
-        [{name="nmve", path="/var/mnt/storage", allowScheduling=true, tags=["ssd"]}],
-        usb_disk_id != "" ? [{name="usb-hdd", path="/var/mnt/storage-usb", allowScheduling=true, tags=["hdd", "usb"]}]: []
-      ))
+      jsonencode(
+        [{name="nmve", path="/var/mnt/storage", allowScheduling=true, tags=["ssd"]}])
     }'
   install:
     disk: /dev/disk/by-id/${install_disk_id}
@@ -25,25 +23,10 @@ machine:
           - bind
           - rshared
           - rw
-      %{ if usb_disk_id != "" }
-      - destination: /var/mnt/storage-usb
-        type: bind
-        source: /var/mnt/storage-usb
-        options:
-          - bind
-          - rshared
-          - rw
-      %{ endif }
   disks:
     - device: /dev/disk/by-id/${ssd_disk_id}
       partitions:
         - mountpoint: /var/mnt/storage
-    %{ if usb_disk_id != "" }
-    - device: /dev/disk/by-id/${usb_disk_id}
-      partitions:
-        - mountpoint: /var/mnt/storage-usb
-    %{ endif }
-
 cluster:
   allowSchedulingOnControlPlanes: true
   apiServer:
