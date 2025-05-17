@@ -303,7 +303,7 @@ media:
             - path: /config
               subPath: jellyfin-config
     data:
-      storageClass: longhorn-hdd
+      storageClass: nfs-csi
       size: 10Ti
       accessMode: ReadWriteMany
       advancedMounts:
