@@ -1,4 +1,7 @@
 app-template:
+  serviceAccount:
+    tailscale:
+      staticToken: true
   controllers:
     tailscale:
       containers:
