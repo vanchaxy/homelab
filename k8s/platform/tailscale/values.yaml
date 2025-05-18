@@ -5,6 +5,8 @@ app-template:
       staticToken: true
   controllers:
     tailscale:
+      serviceAccount:
+        name: tailscale
       containers:
         app:
           image:
