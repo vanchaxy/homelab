@@ -1,6 +1,6 @@
 app-template:
   serviceAccount:
-    name: tailscale
+    forceRename: tailscale
     staticToken: true
   controllers:
     tailscale:
