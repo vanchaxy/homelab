@@ -45,6 +45,7 @@ pocket-id:
   persistence:
     config:
       enabled: true
+      suffix: config
       storageClass: longhorn-ssd
       size: 1Gi
       accessMode: ReadWriteOnce
