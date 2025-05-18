@@ -13,6 +13,7 @@ core-keeper:
   persistence:
     config:
       enabled: true
+      suffix: config
       storageClass: longhorn-ssd
       size: 2Gi
       accessMode: ReadWriteOnce

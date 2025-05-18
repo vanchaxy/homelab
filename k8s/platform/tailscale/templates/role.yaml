@@ -8,6 +8,6 @@ rules:
   resources: ["secrets"]
   verbs: ["create"]
 - apiGroups: [""]
-  resourceNames: ["tailscale"]
+  resourceNames: ["tailscale-tailscale-sa-token"]
   resources: ["secrets"]
   verbs: ["get", "update", "patch"]

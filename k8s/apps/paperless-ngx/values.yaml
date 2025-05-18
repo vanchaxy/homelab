@@ -110,6 +110,7 @@ paperless-ngx:
   persistence:
     data:
       enabled: true
+      suffix: data
       storageClass: longhorn-ssd
       size: 1Gi
       accessMode: ReadWriteOnce
