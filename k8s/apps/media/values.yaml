@@ -303,30 +303,26 @@ media:
             - path: /config
               subPath: jellyfin-config
     data:
-      storageClass: longhorn-hdd
+      storageClass: nfs-csi
       size: 10Ti
       accessMode: ReadWriteMany
       advancedMounts:
         qbittorrent:
           main:
             - path: /data
-              subPath: data
         cross-seed:
           main:
             - path: /data
-              subPath: data
         radarr:
           main:
             - path: /data
-              subPath: data
         sonarr:
           main:
             - path: /data
-              subPath: data
         jellyfin:
           main:
             - path: /data/media
-              subPath: data/media
+              subPath: media
 
 
 helpers:

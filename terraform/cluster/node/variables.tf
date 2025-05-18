@@ -3,7 +3,6 @@ variable "node" {
     name            = string
     ip              = string
     ssd_disk_id     = string
-    usb_disk_id     = string
     install_disk_id = string
   })
 }

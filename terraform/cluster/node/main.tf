@@ -13,7 +13,6 @@ data "talos_machine_configuration" "this" {
       cilium_values = yamlencode(yamldecode(file("${path.module}/../../../k8s/system/cilium/values.yaml")).cilium)
       cilium_install = file("${path.module}/manifests/cilium-install.yaml")
       ssd_disk_id     = var.node.ssd_disk_id
-      usb_disk_id     = var.node.usb_disk_id
       install_disk_id = var.node.install_disk_id
     })
   ]
