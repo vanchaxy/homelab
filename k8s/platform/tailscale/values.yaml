@@ -1,7 +1,7 @@
 app-template:
   serviceAccount:
     tailscale:
-      identifier: tailscale
+      forceRename: tailscale
       staticToken: true
   controllers:
     tailscale:
@@ -13,7 +13,7 @@ app-template:
           env:
             TS_HOSTNAME: homelab-router
             TS_USERSPACE: false
-            TS_KUBE_SECRET: tailscale
+            TS_KUBE_SECRET: tailscale-tailscale-sa-token
             TS_ROUTES: 192.168.50.224/27
             TS_AUTHKEY:
               valueFrom:
