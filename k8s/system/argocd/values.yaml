@@ -49,7 +49,7 @@ argocd-apps:
       generators:
         - git:
             repoURL: &repoURL https://github.com/vanchaxy/homelab
-            revision: &revision main
+            revision: &revision feature/add-mkv-tools
             directories:
               - path: k8s/system/*
               - path: k8s/platform/*

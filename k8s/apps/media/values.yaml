@@ -158,6 +158,19 @@ media:
             limits:
               amd.com/gpu: 1
 
+    mkvtools:
+      pod:
+        securityContext:
+          fsGroup: 568
+          fsGroupChangePolicy: "OnRootMismatch"
+          runAsUser: 568
+          runAsGroup: 568
+      containers:
+        main:
+          image:
+            repository: maksii/utopia-upload-assistant
+            tag: latest
+
   service:
     qbittorrent:
       controller: qbittorrent
@@ -323,7 +336,9 @@ media:
           main:
             - path: /data/media
               subPath: media
-
+        mkvtools:
+          main:
+            - path: /data
 
 helpers:
   infisicalSecrets:
