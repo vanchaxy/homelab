@@ -170,6 +170,10 @@ media:
           image:
             repository: maksii/utopia-upload-assistant
             tag: latest
+          env:
+            PUID: 568
+            PGID: 568
+            TZ: Etc/UTC
 
   service:
     qbittorrent:
@@ -315,6 +319,10 @@ media:
           main:
             - path: /config
               subPath: jellyfin-config
+        mkvtools:
+          main:
+            - path: /UTOPIA-Upload-Assistant/data
+              subPath: mkvtools-config
     data:
       storageClass: nfs-csi
       size: 10Ti
