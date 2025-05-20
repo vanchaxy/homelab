@@ -168,8 +168,8 @@ media:
       containers:
         main:
           image:
-            repository: maksii/utopia-upload-assistant
-            tag: latest
+            repository: ghcr.io/vanchaxy/mkvtool
+            tag: sha-238c97d
           env:
             PUID: 568
             PGID: 568
