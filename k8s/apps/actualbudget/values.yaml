@@ -29,7 +29,7 @@ actualbudget:
         main:
           image:
             repository: ghcr.io/vanchaxy/bank-sync
-            tag: sha-4b86801
+            tag: sha-db944d2
           envFrom:
             - secretRef:
                 name: actualbudget-secret
