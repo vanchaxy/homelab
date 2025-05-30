@@ -25,7 +25,7 @@ paperless-ngx:
         main:
           image:
             repository: icereed/paperless-gpt
-            tag: v0.18.0
+            tag: v0.20.0
           env:
             PAPERLESS_BASE_URL: "https://paper.ivanchenko.io"
             PAPERLESS_PUBLIC_URL: "https://paper.ivanchenko.io"
