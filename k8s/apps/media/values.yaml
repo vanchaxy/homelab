@@ -158,6 +158,23 @@ media:
             limits:
               amd.com/gpu: 1
 
+    mkvtools:
+      pod:
+        securityContext:
+          fsGroup: 568
+          fsGroupChangePolicy: "OnRootMismatch"
+          runAsUser: 568
+          runAsGroup: 568
+      containers:
+        main:
+          image:
+            repository: ghcr.io/vanchaxy/mkvtool
+            tag: sha-238c97d
+          env:
+            PUID: 568
+            PGID: 568
+            TZ: Etc/UTC
+
   service:
     qbittorrent:
       controller: qbittorrent
@@ -302,6 +319,16 @@ media:
           main:
             - path: /config
               subPath: jellyfin-config
+        mkvtools:
+          main:
+            - path: /UTOPIA-Upload-Assistant/data
+              subPath: mkvtools-config
+    tmp:
+      type: emptyDir
+      advancedMounts:
+        mkvtools:
+          main:
+            - path: /UTOPIA-Upload-Assistant/tmp
     data:
       storageClass: nfs-csi
       size: 10Ti
@@ -323,7 +350,9 @@ media:
           main:
             - path: /data/media
               subPath: media
-
+        mkvtools:
+          main:
+            - path: /data
 
 helpers:
   infisicalSecrets:
