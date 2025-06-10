@@ -26,8 +26,8 @@ satisfactory:
               memory: 16Gi
 
   service:
-    qbittorrent:
-      controller: qbittorrent
+    main:
+      controller: main
       type: ClusterIP
       ports:
         api:
