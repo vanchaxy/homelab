@@ -56,13 +56,13 @@ satisfactory:
         main:
           main:
             - path: /config/gamefiles
-#helpers:
-#  backups:
-#    - pvcName: satisfactory-config
-#      resticRepoSuffix: satisfactory
-#      retain:
-#        hourly: 12
-#        daily: 7
-#        weekly: 4
-#        monthly: 2
-#        yearly: 1
+helpers:
+  backups:
+    - pvcName: satisfactory-config
+      resticRepoSuffix: satisfactory
+      retain:
+        hourly: 12
+        daily: 7
+        weekly: 4
+        monthly: 2
+        yearly: 1
