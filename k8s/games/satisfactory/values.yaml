@@ -18,7 +18,7 @@ satisfactory:
       type: LoadBalancer
       loadBalancerIP: 192.168.50.235
       annotations:
-        external-dns.alpha.kubernetes.io/target: "satisfactory.ivanchenko.io"
+        external-dns.alpha.kubernetes.io/hostname: "satisfactory.ivanchenko.io"
       ports:
         api:
           port: 7777
