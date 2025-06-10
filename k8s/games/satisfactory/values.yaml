@@ -50,8 +50,13 @@ satisfactory:
       advancedMounts:
         main:
           main:
-            - path: /config
-    data:
+            - path: /config/backups
+              subPath: backups
+            - path: /config/logs
+              subPath: logs
+            - path: /config/saved
+              subPath: saved
+    gamefiles:
       enabled: true
       suffix: data
       storageClass: longhorn-ssd
