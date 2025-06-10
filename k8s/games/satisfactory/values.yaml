@@ -6,19 +6,6 @@ satisfactory:
           image:
             repository: wolveix/satisfactory-server
             tag: v1.9.8
-          env:
-            - name: DEBUG
-              value: "false"
-            - name: MAXPLAYERS
-              value: "8"
-            - name: PGID
-              value: "1000"
-            - name: PUID
-              value: "1000"
-            - name: SKIPUPDATE
-              value: "false"
-            - name: STEAMBETA
-              value: "false"
           resources:
             requests:
               memory: 16Gi
