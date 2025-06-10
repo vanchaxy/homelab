@@ -58,7 +58,7 @@ satisfactory:
               subPath: saved
     gamefiles:
       enabled: true
-      suffix: data
+      suffix: gamefiles
       storageClass: longhorn-ssd
       size: 20Gi
       accessMode: ReadWriteOnce
