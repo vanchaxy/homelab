@@ -1,0 +1,73 @@
+satisfactory:
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: wolveix/satisfactory-server
+            tag: v1.9.8
+          env:
+            - name: DEBUG
+              value: "false"
+            - name: MAXPLAYERS
+              value: "8"
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+            - name: SKIPUPDATE
+              value: "false"
+            - name: STEAMBETA
+              value: "false"
+          resources:
+            requests:
+              memory: 16Gi
+            limits:
+              memory: 16Gi
+
+  service:
+    qbittorrent:
+      controller: qbittorrent
+      type: ClusterIP
+      ports:
+        api:
+          port: 7777
+          protocol: TCP
+        game:
+          port: 7777
+          protocol: UDP
+        messaging:
+          port: 8888
+          protocol: TCP
+
+  persistence:
+    config:
+      enabled: true
+      suffix: config
+      storageClass: longhorn-ssd
+      size: 1Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        main:
+          main:
+            - path: /config
+    data:
+      enabled: true
+      suffix: data
+      storageClass: longhorn-ssd
+      size: 20Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        main:
+          main:
+            - path: /config/gamefiles
+#helpers:
+#  backups:
+#    - pvcName: satisfactory-config
+#      resticRepoSuffix: satisfactory
+#      retain:
+#        hourly: 12
+#        daily: 7
+#        weekly: 4
+#        monthly: 2
+#        yearly: 1
