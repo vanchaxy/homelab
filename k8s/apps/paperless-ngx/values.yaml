@@ -43,7 +43,7 @@ paperless-ngx:
         main:
           image:
             repository: docker.io/gotenberg/gotenberg
-            tag: 8.19
+            tag: 8.21
           command:
             - "gotenberg"
             - "--chromium-disable-javascript=true"
