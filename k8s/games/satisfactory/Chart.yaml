@@ -1,0 +1,11 @@
+apiVersion: v2
+name: satisfactory
+version: 0.0.0
+dependencies:
+  - name: app-template
+    version: 4.0.1
+    repository: https://bjw-s-labs.github.io/helm-charts
+    alias: satisfactory
+  - name: helpers
+    version: 0.1.0
+    repository: file://../../../k8s/_helpers
