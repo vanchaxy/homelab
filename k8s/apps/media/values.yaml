@@ -61,12 +61,12 @@ media:
               squat.ai/tun: "1"
 
     cross-seed:
-#      pod:
-#        securityContext:
+      pod:
+        securityContext:
 #          fsGroup: 568
 #          fsGroupChangePolicy: "OnRootMismatch"
-#          runAsUser: 568
-#          runAsGroup: 568
+          runAsUser: 568
+          runAsGroup: 568
 
       containers:
         main:
