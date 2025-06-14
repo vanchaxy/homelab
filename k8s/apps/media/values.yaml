@@ -63,8 +63,8 @@ media:
     cross-seed:
       pod:
         securityContext:
-#          fsGroup: 568
-#          fsGroupChangePolicy: "OnRootMismatch"
+          fsGroup: 568
+          fsGroupChangePolicy: "OnRootMismatch"
           runAsUser: 568
           runAsGroup: 568
 
