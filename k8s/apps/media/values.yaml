@@ -1,11 +1,11 @@
 media:
   defaultPodOptions:
     automountServiceAccountToken: false
-    securityContext:
-      fsGroup: 568
-      fsGroupChangePolicy: "OnRootMismatch"
-      runAsUser: 0
-      runAsGroup: 0
+#    securityContext:
+#      fsGroup: 568
+#      fsGroupChangePolicy: "OnRootMismatch"
+#      runAsUser: 0
+#      runAsGroup: 0
 
   controllers:
     qbittorrent:
@@ -61,12 +61,12 @@ media:
               squat.ai/tun: "1"
 
     cross-seed:
-      pod:
-        securityContext:
-          fsGroup: 568
-          fsGroupChangePolicy: "OnRootMismatch"
-          runAsUser: 568
-          runAsGroup: 568
+#      pod:
+#        securityContext:
+#          fsGroup: 568
+#          fsGroupChangePolicy: "OnRootMismatch"
+#          runAsUser: 568
+#          runAsGroup: 568
 
       containers:
         main:
@@ -159,12 +159,12 @@ media:
               amd.com/gpu: 1
 
     mkvtools:
-      pod:
-        securityContext:
-          fsGroup: 568
-          fsGroupChangePolicy: "OnRootMismatch"
-          runAsUser: 568
-          runAsGroup: 568
+#      pod:
+#        securityContext:
+#          fsGroup: 568
+#          fsGroupChangePolicy: "OnRootMismatch"
+#          runAsUser: 568
+#          runAsGroup: 568
       containers:
         main:
           image:
