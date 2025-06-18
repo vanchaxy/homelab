@@ -9,7 +9,6 @@ pocket-id:
           env:
             APP_URL: https://id.ivanchenko.io
             TRUST_PROXY: true
-            DB_CONNECTION_STRING: 'file:data/pocket-id.db?_pragma=journal_mode(WAL)&_pragma=busy_timeout(2500)&_txlock=immediate'
 
   service:
     main:
@@ -53,4 +52,4 @@ pocket-id:
       advancedMounts:
         main:
           main:
-            - path: /app/backend/data
+            - path: /app/data
