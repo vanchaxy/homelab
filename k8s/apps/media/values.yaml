@@ -110,7 +110,7 @@ media:
         main:
           image:
             repository: linuxserver/radarr
-            tag: 5.25.0
+            tag: 5.26.2
           env:
             PUID: 568
             PGID: 568
