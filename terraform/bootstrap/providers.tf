@@ -10,7 +10,7 @@ terraform {
   required_providers {
     helm = {
       source  = "hashicorp/helm"
-      version = "2.17.0"
+      version = "3.0.1"
     }
     null = {
       source  = "hashicorp/null"
