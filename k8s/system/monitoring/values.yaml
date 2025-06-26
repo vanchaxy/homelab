@@ -43,9 +43,9 @@ kube-prometheus-stack:
         client_id: $__env{OAUTH_CLIENT_ID}
         client_secret: $__env{OAUTH_CLIENT_SECRET}
         scopes: "openid profile email groups"
-        auth_url: "https://id.ivanchenko.io/authorize/"
-        token_url: "https://id.ivanchenko.io/api/oidc/token/"
-        api_url: "https://id.ivanchenko.io/api/oidc/userinfo/"
+        auth_url: "https://id.ivanchenko.io/authorize"
+        token_url: "https://id.ivanchenko.io/api/oidc/token"
+        api_url: "https://id.ivanchenko.io/api/oidc/userinfo"
         role_attribute_path: contains(groups[*], 'admins') && 'GrafanaAdmin' || 'Viewer'
         allow_assign_grafana_admin: true
     deploymentStrategy:
