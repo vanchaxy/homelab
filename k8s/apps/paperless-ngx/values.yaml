@@ -53,7 +53,7 @@ paperless-ngx:
         main:
           image:
             repository: docker.io/apache/tika
-            tag: 3.2.0.0
+            tag: 3.2.1.0
   service:
     paperless:
       controller: paperless
