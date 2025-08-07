@@ -4,5 +4,5 @@ version: 0.0.0
 
 dependencies:
   - name: amd-gpu
-    version: 0.19.0
+    version: 0.20.0
     repository: https://rocm.github.io/k8s-device-plugin/
