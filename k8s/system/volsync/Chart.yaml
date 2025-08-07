@@ -6,7 +6,7 @@ dependencies:
     version: 0.12.1
     repository: https://backube.github.io/helm-charts
   - name: snapshot-controller
-    version: 4.0.2
+    version: 4.1.0
     repository: https://piraeus.io/helm-charts
   - name: app-template
     version: 4.1.1
