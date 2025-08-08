@@ -142,7 +142,7 @@ media:
     jellyfin:
       pod:
         nodeSelector:
-          amd.com/gpu.vram: 2G
+          amd.com/gpu.device-id: 15d8
       containers:
         main:
           image:
