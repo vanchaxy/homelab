@@ -7,7 +7,7 @@ dependencies:
     repository: https://prometheus-community.github.io/helm-charts
   - name: loki
     repository: https://grafana.github.io/helm-charts
-    version: 6.35.1
+    version: 6.37.0
   - name: fluent-bit
     repository: https://grafana.github.io/helm-charts
     version: 2.6.0
