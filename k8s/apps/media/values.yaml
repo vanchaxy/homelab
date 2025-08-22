@@ -132,7 +132,7 @@ media:
         main:
           image:
             repository: santiagosayshey/profilarr
-            tag: v1.0.1
+            tag: v1.1.2
           env:
             TZ: Europe/Kyiv
           envFrom:
