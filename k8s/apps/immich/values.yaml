@@ -66,6 +66,8 @@ immich:
             paths:
               - path: "/share/"
               - path: "/_app/immutable/"
+              - path: "/service-worker.js"
+                pathType: Exact
               - path: "/custom.css"
                 pathType: Exact
               - path: "/light_skeleton.png"
