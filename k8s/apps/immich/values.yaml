@@ -61,6 +61,7 @@ immich:
           cert-manager.io/cluster-issuer: letsencrypt
           nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
           nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+          nginx.ingress.kubernetes.io/proxy-body-size: '0'
         hosts:
           - host: &host-public immich-public.ivanchenko.io
             paths:
