@@ -73,7 +73,7 @@ immich:
               - path: "/dark_skeleton.png"
                 pathType: Exact
 
-              - path: "/api/assets/"
+              - path: "/api/assets"
               - path: "/api/albums/"
               - path: "/api/server/media-types"
                 pathType: Exact
