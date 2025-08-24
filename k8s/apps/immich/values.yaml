@@ -64,35 +64,36 @@ immich:
         hosts:
           - host: &host-public immich-public.ivanchenko.io
             paths:
-              - path: "/share/"
-              - path: "/_app/immutable/"
-              - path: "/service-worker.js"
-                pathType: Exact
-              - path: "/custom.css"
-                pathType: Exact
-              - path: "/light_skeleton.png"
-                pathType: Exact
-              - path: "/dark_skeleton.png"
-                pathType: Exact
+              - path: "/"
+              # - path: "/share/"
+              # - path: "/_app/immutable/"
+              # - path: "/service-worker.js"
+              #   pathType: Exact
+              # - path: "/custom.css"
+              #   pathType: Exact
+              # - path: "/light_skeleton.png"
+              #   pathType: Exact
+              # - path: "/dark_skeleton.png"
+              #   pathType: Exact
 
-              - path: "/api/assets"
-              - path: "/api/albums/"
-              - path: "/api/server/media-types"
-                pathType: Exact
-              - path: "/api/shared-links/me"
-                pathType: Exact
-              - path: "/api/server/config"
-                pathType: Exact
-              - path: "/api/server/features"
-                pathType: Exact
-              - path: "/api/timeline/buckets"
-                pathType: Exact
-              - path: "/api/timeline/bucket"
-                pathType: Exact
-              - path: "/api/download/info"
-                pathType: Exact
-              - path: "/api/download/archive"
-                pathType: Exact
+              # - path: "/api/assets"
+              # - path: "/api/albums/"
+              # - path: "/api/server/media-types"
+              #   pathType: Exact
+              # - path: "/api/shared-links/me"
+              #   pathType: Exact
+              # - path: "/api/server/config"
+              #   pathType: Exact
+              # - path: "/api/server/features"
+              #   pathType: Exact
+              # - path: "/api/timeline/buckets"
+              #   pathType: Exact
+              # - path: "/api/timeline/bucket"
+              #   pathType: Exact
+              # - path: "/api/download/info"
+              #   pathType: Exact
+              # - path: "/api/download/archive"
+              #   pathType: Exact
         tls:
           - secretName: host-public-tls
             hosts:
