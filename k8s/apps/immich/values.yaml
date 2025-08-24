@@ -74,6 +74,9 @@ immich:
                 pathType: Exact
 
               - path: "/api/assets/"
+              - path: "/api/albums/"
+              - path: "/api/server/media-types"
+                pathType: Exact
               - path: "/api/shared-links/me"
                 pathType: Exact
               - path: "/api/server/config"
