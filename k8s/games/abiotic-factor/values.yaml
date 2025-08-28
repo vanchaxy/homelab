@@ -45,7 +45,7 @@ abiotic-factor:
 
 helpers:
   backups:
-    - pvcName: abiotic-factor-server
+    - pvcName: abiotic-factor
       resticRepoSuffix: abiotic-factor
       retain:
         hourly: 12
@@ -53,3 +53,4 @@ helpers:
         weekly: 4
         monthly: 2
         yearly: 1
+
