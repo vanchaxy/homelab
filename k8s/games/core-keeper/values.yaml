@@ -30,6 +30,7 @@ helpers:
   backups:
     - pvcName: core-keeper-config
       resticRepoSuffix: core-keeper
+      unlock: "unlock1"
       retain:
         hourly: 12
         daily: 7
