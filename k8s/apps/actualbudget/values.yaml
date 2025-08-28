@@ -29,7 +29,28 @@ actualbudget:
         main:
           image:
             repository: ghcr.io/vanchaxy/bank-sync
-            tag: sha-9ab7650
+            tag: sha-4a3e7ce
+          envFrom:
+            - secretRef:
+                name: actualbudget-secret
+
+    bank-sync-skip-download:
+      type: cronjob
+      cronjob:
+        schedule: "0 0-10,12-14,16-19,21-23 * * *"
+        startingDeadlineSeconds: 120
+        backoffLimit: 0
+        successfulJobsHistory: 21
+        failedJobsHistory: 21
+      pod:
+        imagePullSecrets:
+          - name: ghcr-login-secret
+      containers:
+        main:
+          image:
+            repository: ghcr.io/vanchaxy/bank-sync
+            tag: sha-4a3e7ce
+          args: ['--skip-download']
           envFrom:
             - secretRef:
                 name: actualbudget-secret
