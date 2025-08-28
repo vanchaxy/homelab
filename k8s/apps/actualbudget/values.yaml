@@ -101,6 +101,9 @@ actualbudget:
         bank-sync:
           main:
             - path: /data
+        bank-sync-skip-download:
+          main:
+            - path: /data
 
 helpers:
   ghcrSecret:
