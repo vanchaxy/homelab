@@ -117,4 +117,3 @@ helpers:
       resticRepoSuffix: actualbudget/data
     - pvcName: actualbudget-bank-sync
       resticRepoSuffix: actualbudget/bank-sync
-      unlock: "unlock1"
