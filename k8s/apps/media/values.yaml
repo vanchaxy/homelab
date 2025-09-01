@@ -363,4 +363,3 @@ helpers:
   backups:
     - pvcName: media-config
       resticRepoSuffix: media/config
-      unlock: "unlock1"
