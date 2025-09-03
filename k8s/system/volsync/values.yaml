@@ -1,3 +1,5 @@
 volsync:
   metrics:
     disableAuth: true
+  image:
+    tag: "release-0.13"
