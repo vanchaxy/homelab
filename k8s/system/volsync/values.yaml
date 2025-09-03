@@ -1,5 +1,5 @@
 volsync:
   metrics:
     disableAuth: true
-  image:
+  restic:
     tag: "release-0.13"
