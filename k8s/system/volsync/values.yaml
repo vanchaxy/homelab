@@ -1,5 +1,3 @@
 volsync:
   metrics:
     disableAuth: true
-  restic:
-    tag: "release-0.13"
