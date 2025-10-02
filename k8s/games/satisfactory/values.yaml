@@ -5,7 +5,7 @@ satisfactory:
         main:
           image:
             repository: wolveix/satisfactory-server
-            tag: v1.9.9
+            tag: v1.9.10
           resources:
             requests:
               memory: 16Gi
