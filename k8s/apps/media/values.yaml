@@ -72,7 +72,7 @@ media:
         main:
           image:
             repository: ghcr.io/cross-seed/cross-seed
-            tag: 6.13.2
+            tag: 6.13.5
           env:
             PUID: 568
             PGID: 568
