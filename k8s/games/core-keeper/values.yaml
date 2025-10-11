@@ -5,7 +5,7 @@ core-keeper:
         main:
           image:
             repository: escaping/core-keeper-dedicated
-            tag: v2.6.0
+            tag: v2.7.0
           envFrom:
             - secretRef:
                 name: core-keeper-secret
