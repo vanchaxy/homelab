@@ -4,9 +4,8 @@ abiotic-factor:
       containers:
         main:
           image:
-            repository: corfr/tcpdump
+            repository: ghcr.io/pleut/abiotic-factor-linux-docker
             tag: latest
-          args: ["-nni", "any", "port", "7777", "-vv"]
           env:
             MaxServerPlayers: 6
             Port: 7777
