@@ -27,7 +27,7 @@ cmd = ["server", "--reverse"]
     port = 7777
 
 [[services]]
-  protocol = 'udp'
+  protocol = 'tcp'
   internal_port = 27015
 
   [[services.ports]]
