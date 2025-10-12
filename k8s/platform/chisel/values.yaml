@@ -1,0 +1,8 @@
+chisel-operator:
+  loadBalancerClass: chisel
+
+helpers:
+  infisicalSecrets:
+    - name: chisel-auth
+      infisical:
+        path: "/chisel"
