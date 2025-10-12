@@ -1,0 +1,10 @@
+apiVersion: v2
+name: cloudflared
+version: 0.0.0
+dependencies:
+  - name: chisel-operator
+    version: 0.1.0
+    repository: oci://ghcr.io/fyralabs/chisel-operator
+  - name: helpers
+    version: 0.1.0
+    repository: file://../../../k8s/_helpers
