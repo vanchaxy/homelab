@@ -7,3 +7,4 @@ spec:
   port: 8080
   auth: chisel-auth
   fingerprint: jYSBJebDnMT+Z3dItSyEOphtnyhTNZEKImqw1LTOyXk=
+  chisel_image: jpillora/chisel:1.11.3

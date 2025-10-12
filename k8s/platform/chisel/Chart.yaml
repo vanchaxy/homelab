@@ -1,5 +1,5 @@
 apiVersion: v2
-name: cloudflared
+name: chisel
 version: 0.0.0
 dependencies:
   - name: chisel-operator
