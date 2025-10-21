@@ -9,15 +9,14 @@ media:
 
   controllers:
     vuetorrent:
-      qbittorrent:
-        containers:
-          main:
-            image:
-              repository: nukecat/vuetorrent-standalone
-              tag: 2.30.2
-            env:
-              QB_HOST: htttp://media-qbittorrent
-              QB_PORT: 8081
+      containers:
+        main:
+          image:
+            repository: nukecat/vuetorrent-standalone
+            tag: 2.30.2
+          env:
+            QB_HOST: htttp://media-qbittorrent
+            QB_PORT: 8081
     qbittorrent:
       containers:
         main:
