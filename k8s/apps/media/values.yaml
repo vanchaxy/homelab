@@ -93,6 +93,8 @@ media:
             - 'partial'
             - '--link-dirs'
             - '/data/x-seed'
+            - '--season-from-episodes' 
+            - '0.8'
 
     prowlarr:
       containers:
