@@ -8,6 +8,16 @@ media:
 #      runAsGroup: 0
 
   controllers:
+    vuetorrent:
+      qbittorrent:
+        containers:
+          main:
+            image:
+              repository: nukecat/vuetorrent-standalone
+              tag: 2.30.2
+            env:
+              QB_HOST: htttp://media-qbittorrent
+              QB_PORT: 8081
     qbittorrent:
       containers:
         main:
@@ -19,7 +29,6 @@ media:
             PGID: 568
             TZ: Etc/UTC
             WEBUI_PORT: 8081
-            DOCKER_MODS: ghcr.io/vuetorrent/vuetorrent-lsio-mod:latest
           resources:
             limits:
               squat.ai/tun: "1"
@@ -179,6 +188,12 @@ media:
             TZ: Etc/UTC
 
   service:
+    vuetorrent:
+      controller: vuetorrent
+      type: ClusterIP
+      ports:
+        http:
+          port: 80
     qbittorrent:
       controller: qbittorrent
       type: ClusterIP
@@ -228,6 +243,13 @@ media:
         cert-manager.io/cluster-issuer: letsencrypt
         nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
       hosts:
+        - host: &vuetorrent-host vuetorrent.ivanchenko.io
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: vuetorrent
+                port: http
         - host: &qbittorrent-host qbittorrent.ivanchenko.io
           paths:
             - path: /
@@ -280,6 +302,7 @@ media:
       tls:
         - secretName: main-tls
           hosts:
+            - *vuetorrent-host
             - *qbittorrent-host
             - *cross-seed-host
             - *prowlarr-host
