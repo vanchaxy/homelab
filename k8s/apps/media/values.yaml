@@ -15,7 +15,7 @@ media:
             repository: nukecat/vuetorrent-standalone
             tag: 2.30.2
           env:
-            QB_HOST: htttp://media-qbittorrent
+            QB_HOST: http://media-qbittorrent
             QB_PORT: 8081
     qbittorrent:
       containers:
