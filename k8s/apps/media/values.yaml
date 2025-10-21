@@ -104,6 +104,8 @@ media:
             - '/data/x-seed'
             - '--season-from-episodes' 
             - '0.8'
+            - '--rss-cadence'
+            - '15min'
 
     prowlarr:
       containers:
