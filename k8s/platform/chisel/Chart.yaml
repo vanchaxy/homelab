@@ -3,7 +3,7 @@ name: chisel
 version: 0.0.0
 dependencies:
   - name: chisel-operator
-    version: 0.1.0
+    version: 0.6.0
     repository: oci://ghcr.io/fyralabs/chisel-operator
   - name: helpers
     version: 0.1.0
