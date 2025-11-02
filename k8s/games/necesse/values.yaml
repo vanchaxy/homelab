@@ -9,7 +9,7 @@ necesse:
           env:
             OWNER: vanchaxy
             GIVE_CLIENTS_POWER: 1
-            PAUSE: 0
+            PAUSE: 1
 
   service:
     main:
