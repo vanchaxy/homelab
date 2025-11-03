@@ -160,7 +160,7 @@ media:
         main:
           image:
             repository: linuxserver/jellyfin
-            tag: 10.10.7
+            tag: 10.11.2
           env:
             PUID: 568
             PGID: 568
