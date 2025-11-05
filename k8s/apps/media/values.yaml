@@ -134,7 +134,7 @@ media:
         main:
           image:
             repository: linuxserver/sonarr
-            tag: 4.0.15
+            tag: 4.0.16
           env:
             PUID: 568
             PGID: 568
