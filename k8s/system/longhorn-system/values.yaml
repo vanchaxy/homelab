@@ -7,7 +7,7 @@ longhorn:
     backupTarget: s3://longhorn-vanchaxy@dummyregion/
     backupTargetCredentialSecret: b2-secret
     createDefaultDiskLabeledNodes: true
-    storageOverProvisioningPercentage: 100
+    storageOverProvisioningPercentage: '100'
     defaultReplicaCount: 2
     autoDeletePodWhenVolumeDetachedUnexpectedly: true
     nodeDownPodDeletionPolicy: delete-both-statefulset-and-deployment-pod
