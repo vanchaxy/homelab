@@ -2,6 +2,7 @@ longhorn:
   persistence:
     defaultClass: false
   preUpgradeChecker:
+    upgradeVersionCheck: false
     jobEnabled: false
   defaultSettings:
     backupTarget: s3://longhorn-vanchaxy@dummyregion/
