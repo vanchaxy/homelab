@@ -1,0 +1,10 @@
+apiVersion: v2
+name: frp-operator
+version: 0.0.0
+dependencies:
+  - name: frp-operator
+    version: 1.2.0
+    repository: https://zufardhiyaulhaq.com/frp-operator/charts/releases/
+  - name: helpers
+    version: 0.1.0
+    repository: file://../../../k8s/_helpers
