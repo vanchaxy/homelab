@@ -1,0 +1,11 @@
+apiVersion: frp.zufardhiyaulhaq.com/v1alpha1
+kind: Upstream
+metadata:
+  name: necesse
+spec:
+  client: frp-client
+  udp:
+    host: necesse.necesse.svc.cluster.local
+    port: 14159
+    server:
+      port: 14159

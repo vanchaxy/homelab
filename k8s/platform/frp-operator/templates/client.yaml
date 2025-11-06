@@ -1,0 +1,13 @@
+apiVersion: frp.zufardhiyaulhaq.com/v1alpha1
+kind: Client
+metadata:
+  name: frp-client
+spec:
+  server:
+    host: 109.105.222.227
+    port: 7000
+    authentication:
+      token:
+        secret:
+          name: frp
+          key: FRP_TOKEN
