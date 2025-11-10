@@ -2,7 +2,7 @@ argo-cd:
   global:
     image:
       repository: quay.io/argoproj/argocd
-      tag: v3.20.0
+      tag: v3.2.0
     domain: argocd.ivanchenko.io
   configs:
     params:
