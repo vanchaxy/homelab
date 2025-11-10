@@ -1,0 +1,15 @@
+apiVersion: v2
+name: yamtrack
+version: 0.0.0
+dependencies:
+  - name: app-template
+    version: 4.4.0
+    repository: https://bjw-s-labs.github.io/helm-charts
+    alias: yamtrack
+  - name: redis
+    repository: https://charts.bitnami.com/bitnami
+    version: 23.2.6
+    condition: redis.enabled
+  - name: helpers
+    version: 0.1.0
+    repository: file://../../../k8s/_helpers

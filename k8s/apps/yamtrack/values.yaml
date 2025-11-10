@@ -1,0 +1,71 @@
+yamtrack:
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: ghcr.io/fuzzygrim/yamtrack
+            tag: 0.24.7
+          env:
+            REDIS_URL: redis://yamtrack-redis-headless:6379
+            SOCIAL_PROVIDERS: allauth.socialaccount.providers.openid_connect
+            SOCIALACCOUNT_ONLY: True
+            REDIRECT_LOGIN_TO_SSO: True
+          envFrom:
+            - secretRef:
+                name: yamtrack-secret
+  service:
+    main:
+      controller: main
+      type: ClusterIP
+      ports:
+        http:
+          port: 8000
+
+  ingress:
+    main:
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt
+        nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+      hosts:
+        - host: &host yamtrack.ivanchenko.io
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: main
+                port: http
+      tls:
+        - secretName: yamtrack-tls
+          hosts:
+            - *host
+
+  persistence:
+    data:
+      enabled: true
+      suffix: data
+      storageClass: longhorn-ssd
+      size: 5Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        main:
+          main:
+            - path: /yamtrack/db
+
+redis:
+  enabled: true
+  auth:
+    enabled: false
+    username: ""
+  master:
+    persistence:
+      enabled: true
+  replica:
+    replicaCount: 0
+
+helpers:
+  infisicalSecrets:
+    - name: yamtrack-secret
+      namespace: yamtrack
+      infisical:
+        path: "/yamtrack"

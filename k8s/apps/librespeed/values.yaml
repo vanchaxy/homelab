@@ -31,6 +31,6 @@ librespeed:
                 identifier: main
                 port: http
       tls:
-        - secretName: immich-tls
+        - secretName: librespeed-tls
           hosts:
             - *host
