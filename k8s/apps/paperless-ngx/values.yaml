@@ -5,7 +5,7 @@ paperless-ngx:
         main:
           image:
             repository: ghcr.io/paperless-ngx/paperless-ngx
-            tag: 2.19.4
+            tag: 2.19.4@sha256:7ec0797af256194f6e117d1b7ed3ef91ad31b4a14bf3092abdee6bb74f6b3656
           env:
             PAPERLESS_REDIS: redis://paperless-ngx-redis-headless:6379
             PAPERLESS_TIKA_ENABLED: 1
@@ -25,7 +25,7 @@ paperless-ngx:
         main:
           image:
             repository: icereed/paperless-gpt
-            tag: v0.23.0
+            tag: v0.23.0@sha256:90766d15d541162129d0fa47dad5ffb33a02a0c77cbc4cee9007b24b656ba6ce
           env:
             PAPERLESS_BASE_URL: "https://paper.ivanchenko.io"
             PAPERLESS_PUBLIC_URL: "https://paper.ivanchenko.io"
@@ -43,7 +43,7 @@ paperless-ngx:
         main:
           image:
             repository: docker.io/gotenberg/gotenberg
-            tag: 8.24
+            tag: 8.24@sha256:b116a40a1c24917e2bf3e153692da5acd2e78e7cd67e1b2d243b47c178f31c90
           command:
             - "gotenberg"
             - "--chromium-disable-javascript=true"
@@ -53,7 +53,7 @@ paperless-ngx:
         main:
           image:
             repository: docker.io/apache/tika
-            tag: 3.2.3.0
+            tag: 3.2.3.0@sha256:c0154cb95587cde64be74f35ada1a2bd7892219f3f0ac3c9dc6cab34046b3573
   service:
     paperless:
       controller: paperless

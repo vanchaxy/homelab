@@ -5,7 +5,7 @@ yamtrack:
         main:
           image:
             repository: ghcr.io/fuzzygrim/yamtrack
-            tag: 0.24.7
+            tag: 0.24.7@sha256:376ee712d72a21a366c34b8034e7af91ac408c4f49720f9a9cfd8ce9ca628cac
           env:
             REDIS_URL: redis://yamtrack-redis-headless:6379
             SOCIAL_PROVIDERS: allauth.socialaccount.providers.openid_connect
