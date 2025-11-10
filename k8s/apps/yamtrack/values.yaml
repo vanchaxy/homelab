@@ -7,7 +7,7 @@ yamtrack:
             repository: ghcr.io/fuzzygrim/yamtrack
             tag: 0.24.7
           env:
-            PAPERLESS_REDIS: redis://yamtrack-redis-headless:6379
+            REDIS_URL: redis://yamtrack-redis-headless:6379
           envFrom:
             - secretRef:
                 name: yamtrack-secret
