@@ -8,6 +8,9 @@ yamtrack:
             tag: 0.24.7
           env:
             REDIS_URL: redis://yamtrack-redis-headless:6379
+            SOCIAL_PROVIDERS: allauth.socialaccount.providers.openid_connect
+            SOCIALACCOUNT_ONLY: True
+            REDIRECT_LOGIN_TO_SSO: True
           envFrom:
             - secretRef:
                 name: yamtrack-secret
