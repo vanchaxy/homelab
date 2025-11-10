@@ -5,7 +5,7 @@ abiotic-factor:
         main:
           image:
             repository: ghcr.io/dvanderveer/abiotic-factor-linux-docker
-            tag: latest
+            tag: latest@sha256:b96c684cf5c2ed89c56345d12e09416596aff9ab87720ece6eb1617ca310862a
           env:
             MaxServerPlayers: 6
             Port: 7777

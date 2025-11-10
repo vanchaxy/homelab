@@ -5,7 +5,7 @@ actualbudget:
         main:
           image:
             repository: actualbudget/actual-server
-            tag: 25.11.0
+            tag: 25.11.0@sha256:8f72d73e68958566850325c1f9fe780a4477340979969bd6979649dc519723ab
           env:
             ACTUAL_OPENID_SERVER_HOSTNAME: https://budget.ivanchenko.io
             ACTUAL_OPENID_ENFORCE: true
