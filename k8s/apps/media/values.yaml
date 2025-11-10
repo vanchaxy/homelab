@@ -37,7 +37,7 @@ media:
               custom: true
               spec:
                 exec:
-                  command: ["/bin/sh", "-c", "/bin/ping -qc 2 1.1.1.1 || exit 1"]
+                  command: ["/bin/sh", "-c", "/bin/ping -qc 2 1.1.1.1 && /bin/ls /data/ || exit 1"]
                 initialDelaySeconds: 60
                 periodSeconds: 15
                 timeoutSeconds: 3
@@ -106,6 +106,17 @@ media:
             - '0.8'
             - '--rss-cadence'
             - '15min'
+          probes:
+            liveness:
+              enabled: true
+              custom: true
+              spec:
+                exec:
+                  command: ["/bin/sh", "-c", "/bin/ls /data/ || exit 1"]
+                initialDelaySeconds: 60
+                periodSeconds: 15
+                timeoutSeconds: 3
+                failureThreshold: 3
 
     prowlarr:
       containers:
@@ -128,6 +139,17 @@ media:
             PUID: 568
             PGID: 568
             TZ: Etc/UTC
+          probes:
+            liveness:
+              enabled: true
+              custom: true
+              spec:
+                exec:
+                  command: ["/bin/sh", "-c", "/bin/ls /data/ || exit 1"]
+                initialDelaySeconds: 60
+                periodSeconds: 15
+                timeoutSeconds: 3
+                failureThreshold: 3
 
     sonarr:
       containers:
@@ -139,6 +161,17 @@ media:
             PUID: 568
             PGID: 568
             TZ: Etc/UTC
+          probes:
+            liveness:
+              enabled: true
+              custom: true
+              spec:
+                exec:
+                  command: ["/bin/sh", "-c", "/bin/ls /data/ || exit 1"]
+                initialDelaySeconds: 60
+                periodSeconds: 15
+                timeoutSeconds: 3
+                failureThreshold: 3
 
     profilarr:
       containers:
@@ -170,6 +203,17 @@ media:
           resources:
             limits:
               amd.com/gpu: 1
+          probes:
+            liveness:
+              enabled: true
+              custom: true
+              spec:
+                exec:
+                  command: ["/bin/sh", "-c", "/bin/ls /data/ || exit 1"]
+                initialDelaySeconds: 60
+                periodSeconds: 15
+                timeoutSeconds: 3
+                failureThreshold: 3
 
     mkvtools:
 #      pod:
@@ -187,6 +231,17 @@ media:
             PUID: 568
             PGID: 568
             TZ: Etc/UTC
+          probes:
+            liveness:
+              enabled: true
+              custom: true
+              spec:
+                exec:
+                  command: ["/bin/sh", "-c", "/bin/ls /data/ || exit 1"]
+                initialDelaySeconds: 60
+                periodSeconds: 15
+                timeoutSeconds: 3
+                failureThreshold: 3
 
   service:
     vuetorrent:
