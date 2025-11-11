@@ -1,3 +1,14 @@
+redis:
+  enabled: true
+  auth:
+    enabled: false
+    username: ""
+  master:
+    persistence:
+      enabled: true
+  replica:
+    replicaCount: 0
+
 cloudnative-pg:
   config:
     clusterWide: false
@@ -8,6 +19,7 @@ immich:
       containers:
         main:
           env:
+            REDIS_URL: redis://immich-redis-headless:6379
             DB_HOSTNAME:
               valueFrom:
                 secretKeyRef:
@@ -35,7 +47,7 @@ immich:
         existingClaim: photo-library
 
   valkey:
-    enabled: true
+    enabled: false
     persistence:
       data:
         enabled: true
