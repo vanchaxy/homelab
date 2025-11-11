@@ -19,6 +19,7 @@ immich:
       containers:
         main:
           env:
+            REDIS_HOSTNAME: immich-redis-headless
             REDIS_URL: redis://immich-redis-headless:6379
             DB_HOSTNAME:
               valueFrom:
