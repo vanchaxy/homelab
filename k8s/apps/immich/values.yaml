@@ -35,7 +35,7 @@ immich:
         existingClaim: photo-library
 
   valkey:
-    enabled: false
+    enabled: true
     persistence:
       data:
         enabled: true
