@@ -3,41 +3,55 @@ cloudnative-pg:
     clusterWide: false
 
 immich:
-  env:
-    DB_HOSTNAME:
-      valueFrom:
-        secretKeyRef:
-          name: immich-postgres-app
-          key: host
-    DB_USERNAME:
-      valueFrom:
-        secretKeyRef:
-          name: immich-postgres-user
-          key: username
-    DB_DATABASE_NAME:
-      valueFrom:
-        secretKeyRef:
-          name: immich-postgres-app
-          key: dbname
-    DB_PASSWORD:
-      valueFrom:
-        secretKeyRef:
-          name: immich-postgres-user
-          key: password
-
-  image:
-    # repository for renovate, not used in chart
-    repository: ghcr.io/immich-app/immich-server
-    tag: v2.2.3
+  controllers:
+    main:
+      containers:
+        main:
+          env:
+            DB_HOSTNAME:
+              valueFrom:
+                secretKeyRef:
+                  name: immich-postgres-app
+                  key: host
+            DB_USERNAME:
+              valueFrom:
+                secretKeyRef:
+                  name: immich-postgres-user
+                  key: username
+            DB_DATABASE_NAME:
+              valueFrom:
+                secretKeyRef:
+                  name: immich-postgres-app
+                  key: dbname
+            DB_PASSWORD:
+              valueFrom:
+                secretKeyRef:
+                  name: immich-postgres-user
+                  key: password
 
   immich:
     persistence:
       library:
         existingClaim: photo-library
 
+  valkey:
+    enabled: true
+    persistence:
+      data:
+        enabled: true
+        size: 1Gi
+        storageClass: longhorn-ssd
+        accessMode: ReadWriteOnce
+
   server:
-    controller:
-      strategy: Recreate
+    controllers:
+      main:
+        strategy: Recreate
+        containers:
+          main:
+            image:
+              repository: ghcr.io/immich-app/immich-server
+              tag: v2.2.3
     ingress:
       main:
         enabled: true
@@ -45,6 +59,7 @@ immich:
           cert-manager.io/cluster-issuer: letsencrypt
           nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
           nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+          nginx.ingress.kubernetes.io/proxy-body-size: "0"
         hosts:
           - host: &host immich.ivanchenko.io
             paths:
@@ -99,11 +114,15 @@ immich:
             hosts:
               - *host-public
 
-  redis:
+  machine-learning:
     enabled: true
-    master:
-      persistence:
-        existingClaim: redis-data
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: ghcr.io/immich-app/immich-machine-learning
+              tag: v2.2.3
 
 helpers:
   infisicalSecrets:
