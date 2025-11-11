@@ -45,8 +45,8 @@ immich:
 
   server:
     controller:
-      strategy: Recreate
       main:
+        strategy: Recreate
         containers:
           main:
             image:
