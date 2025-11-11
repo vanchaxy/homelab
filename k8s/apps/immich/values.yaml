@@ -18,6 +18,8 @@ immich:
     main:
       containers:
         main:
+          image:
+            tag: v2.2.3
           env:
             REDIS_HOSTNAME: immich-redis-headless
             REDIS_URL: redis://immich-redis-headless:6379
@@ -64,7 +66,6 @@ immich:
           main:
             image:
               repository: ghcr.io/immich-app/immich-server
-              tag: v2.2.3
     ingress:
       main:
         enabled: true
@@ -135,7 +136,6 @@ immich:
           main:
             image:
               repository: ghcr.io/immich-app/immich-machine-learning
-              tag: v2.2.3
 
 helpers:
   infisicalSecrets:
