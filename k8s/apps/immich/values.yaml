@@ -7,8 +7,6 @@ immich:
     main:
       containers:
         main:
-          image:
-            tag: v2.2.3
           env:
             DB_HOSTNAME:
               valueFrom:
@@ -47,11 +45,13 @@ immich:
 
   server:
     controller:
+      strategy: Recreate
       main:
         containers:
           main:
             image:
               repository: ghcr.io/immich-app/immich-server
+              tag: v2.2.3
     ingress:
       main:
         enabled: true
@@ -122,6 +122,7 @@ immich:
           main:
             image:
               repository: ghcr.io/immich-app/immich-machine-learning
+              tag: v2.2.3
 
 helpers:
   infisicalSecrets:
