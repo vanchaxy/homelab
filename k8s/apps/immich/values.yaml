@@ -44,7 +44,7 @@ immich:
         accessMode: ReadWriteOnce
 
   server:
-    controller:
+    controllers:
       main:
         strategy:
           type: Recreate
