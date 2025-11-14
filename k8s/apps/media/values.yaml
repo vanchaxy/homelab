@@ -470,6 +470,7 @@ media:
           main:
             - path: /data
         trailarr:
+          main:
             - path: /data/media
               subPath: media
         jellyfin:
