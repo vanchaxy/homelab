@@ -173,6 +173,29 @@ media:
                 timeoutSeconds: 3
                 failureThreshold: 3
 
+    trailarr:
+      containers:
+        main:
+          image:
+            repository: nandyalu/trailarr
+            tag: 0.5.6
+          env:
+            PUID: 568
+            PGID: 568
+            TZ: Etc/UTC
+            WEBUI_DISABLE_AUTH: 'True'
+          probes:
+            liveness:
+              enabled: true
+              custom: true
+              spec:
+                exec:
+                  command: ["/bin/sh", "-c", "/bin/ls /data/media || exit 1"]
+                initialDelaySeconds: 60
+                periodSeconds: 15
+                timeoutSeconds: 3
+                failureThreshold: 3
+
     profilarr:
       containers:
         main:
@@ -280,6 +303,12 @@ media:
       ports:
         http:
           port: 8989
+    trailarr:
+      controller: trailarr
+      type: ClusterIP
+      ports:
+        http:
+          port: 7889
     profilarr:
       controller: profilarr
       type: ClusterIP
@@ -341,6 +370,13 @@ media:
               service:
                 identifier: sonarr
                 port: http
+        - host: &trailarr-host trailarr.ivanchenko.io
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: trailarr
+                port: http
         - host: &profilarr-host profilarr.ivanchenko.io
           paths:
             - path: /
@@ -364,6 +400,7 @@ media:
             - *prowlarr-host
             - *radarr-host
             - *sonarr-host
+            - *trailarr-host
             - *profilarr-host
             - *jellyfin-host
 
@@ -393,6 +430,10 @@ media:
           main:
             - path: /config
               subPath: sonarr-config
+        trailarr:
+          main:
+            - path: /config
+              subPath: trailarr-config
         profilarr:
           main:
             - path: /config
@@ -428,6 +469,9 @@ media:
         sonarr:
           main:
             - path: /data
+        trailarr:
+            - path: /data/media
+              subPath: media
         jellyfin:
           main:
             - path: /data/media

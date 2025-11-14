@@ -52,7 +52,7 @@ argocd-apps:
       generators:
         - git:
             repoURL: &repoURL https://github.com/vanchaxy/homelab
-            revision: &revision main
+            revision: &revision feature/add-trailarr
             directories:
               - path: k8s/system/*
               - path: k8s/platform/*
