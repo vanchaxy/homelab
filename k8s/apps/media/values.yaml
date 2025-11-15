@@ -46,7 +46,7 @@ media:
           dependsOn: main
           image:
             repository: ghcr.io/qdm12/gluetun
-            tag: v3.40.0@sha256:2b42bfa046757145a5155acece417b65b4443c8033fb88661a8e9dcf7fda5a00
+            tag: v3.40.1@sha256:dc38bac12b40bb935e477f0dbd88adf174001c84b144c86648b25ff5f14ef54a
           env:
             FIREWALL_INPUT_PORTS: 8081
             FIREWALL_OUTBOUND_SUBNETS: "192.168.50.0/24,10.244.0.0/16,10.96.0.0/12"
