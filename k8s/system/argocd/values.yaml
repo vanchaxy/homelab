@@ -61,6 +61,8 @@ argocd-apps:
       template:
         metadata:
           name: '{{path.basename}}'
+          annotations:
+            argocd.argoproj.io/compare-options: ServerSideDiff=true
         spec:
           destination:
             name: in-cluster
