@@ -4,8 +4,10 @@ librespeed:
       containers:
         main:
           image:
-            repository: lscr.io/linuxserver/librespeed
-            tag: 5.4.1@sha256:9abcf58a1b916df6557caf04882a8a0fb3aa1780187c77d57f0b200b3f22c802
+            repository: ghcr.io/librespeed/speedtest
+            tag: 5.4.1
+          env:
+            MODE: standalone
 
   service:
     main:
