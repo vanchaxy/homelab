@@ -5,7 +5,7 @@ librespeed:
         main:
           image:
             repository: ghcr.io/librespeed/speedtest
-            tag: 5.4.1
+            tag: 5.4.1@sha256:0e0d9c8c2e5aa362164cf0bf25a48a606b5701f6bc7fa1695975b687aaec26a9
           env:
             MODE: standalone
 
