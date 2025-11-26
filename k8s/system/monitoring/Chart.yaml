@@ -3,7 +3,7 @@ name: kube-prometheus-stack
 version: 0.0.0
 dependencies:
   - name: kube-prometheus-stack
-    version: 79.7.1
+    version: 79.8.2
     repository: https://prometheus-community.github.io/helm-charts
   - name: loki
     repository: https://grafana.github.io/helm-charts
