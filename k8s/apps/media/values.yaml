@@ -193,7 +193,7 @@ media:
         main:
           image:
             repository: linuxserver/jellyfin
-            tag: 10.11.3@sha256:367630b4e4e643c3c1d00bb76f13f3dbe318ad817c01256c358316c7acc3919b
+            tag: 10.11.4@sha256:234ea8d508b2cba26054d0dac9d4c0353435dce483e8b266947d473629774559
           env:
             PUID: 568
             PGID: 568
