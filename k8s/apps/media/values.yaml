@@ -415,6 +415,7 @@ media:
       storageClass: nfs-csi
       size: 10Ti
       accessMode: ReadWriteMany
+      retain: true
       advancedMounts:
         qbittorrent:
           main:
