@@ -22,9 +22,24 @@ librespeed:
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt
         nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
-        nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
+        nginx.ingress.kubernetes.io/ssl-passthrough: 'false'
         nginx.ingress.kubernetes.io/proxy-body-size: '0'
         nginx.ingress.kubernetes.io/proxy-buffering: 'off'
+        nginx.ingress.kubernetes.io/proxy-request-buffering: 'off'
+        nginx.ingress.kubernetes.io/proxy-read-timeout: '3600'
+        nginx.ingress.kubernetes.io/proxy-send-timeout: '3600'
+        nginx.ingress.kubernetes.io/proxy-connect-timeout: '300'
+        nginx.ingress.kubernetes.io/proxy-max-temp-file-size: '0'
+        nginx.ingress.kubernetes.io/proxy-http-version: '1.1'
+        nginx.ingress.kubernetes.io/configuration-snippet: |
+          proxy_set_header Host $http_host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-Host $http_host;
+          proxy_set_header X-Forwarded-Server $http_host;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          gzip off;
+          proxy_redirect off;
       hosts:
         - host: &host speed.ivanchenko.io
           paths:
