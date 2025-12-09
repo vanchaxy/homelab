@@ -22,6 +22,7 @@ librespeed:
       className: cilium
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt
+        ingress.cilium.io/loadbalancer-mode: shared
       hosts:
         - host: &host speed.ivanchenko.io
           paths:
