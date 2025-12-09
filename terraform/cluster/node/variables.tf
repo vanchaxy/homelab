@@ -20,6 +20,7 @@ variable "cluster" {
     name          = string
     endpoint      = string
     talos_version = string
+    kubernetes_version = string
   })
   sensitive = true
 }

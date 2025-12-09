@@ -1,8 +1,9 @@
 locals {
   cluster = {
-    name          = "talos-homelab"
-    endpoint      = "192.168.50.201"
-    talos_version = "v1.9.5"
+    name               = "talos-homelab"
+    endpoint           = "192.168.50.201"
+    talos_version      = "v1.11.3"
+    kubernetes_version = "v1.34.2"
   }
 
   nodes = {
