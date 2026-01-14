@@ -1,0 +1,69 @@
+icarus:
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: mornedhels/icarus-server
+            tag: dev
+          env:
+            UPDATE_CRON: "*/30 * * * *"
+          envFrom:
+            - secretRef:
+                name: icarus-secret
+          resources:
+            requests:
+              memory: 16Gi
+            limits:
+              memory: 16Gi
+
+  service:
+    main:
+      controller: main
+      type: LoadBalancer
+      loadBalancerIP: 192.168.50.238
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: "icarus.ivanchenko.io"
+      ports:
+        game:
+          port: 17777
+          protocol: UDP
+        steam:
+          port: 27015
+          protocol: UDP
+
+  persistence:
+    config:
+      enabled: true
+      suffix: config
+      storageClass: longhorn-ssd
+      size: 1Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        main:
+          main:
+            - path: /home/icarus/drive_c/icarus
+    gamefiles:
+      enabled: true
+      suffix: gamefiles
+      storageClass: longhorn-ssd
+      size: 40Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        main:
+          main:
+            - path: /opt/icarus
+helpers:
+  infisicalSecrets:
+    - name: icarus-secret
+      infisical:
+        path: "/icarus"
+  backups:
+    - pvcName: icarus-config
+      resticRepoSuffix: icarus
+      retain:
+        hourly: 12
+        daily: 7
+        weekly: 4
+        monthly: 2
+        yearly: 1

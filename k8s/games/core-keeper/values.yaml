@@ -1,15 +1,15 @@
 core-keeper:
-  controllers:
-    main:
-      containers:
-        main:
-          image:
-            repository: escaping/core-keeper-dedicated
-            tag: v2.7.1@sha256:a0d5af053ccb3a183c06463fc2912ef61475f6bf36f587d2983e55faebcfdf9d
-          envFrom:
-            - secretRef:
-                name: core-keeper-secret
-
+#  controllers:
+#    main:
+#      containers:
+#        main:
+#          image:
+#            repository: escaping/core-keeper-dedicated
+#            tag: v2.7.1@sha256:a0d5af053ccb3a183c06463fc2912ef61475f6bf36f587d2983e55faebcfdf9d
+#          envFrom:
+#            - secretRef:
+#                name: core-keeper-secret
+#
   persistence:
     config:
       enabled: true
@@ -17,10 +17,10 @@ core-keeper:
       storageClass: longhorn-ssd
       size: 2Gi
       accessMode: ReadWriteOnce
-      advancedMounts:
-        main:
-          main:
-            - path: /home/steam/core-keeper-data
+#      advancedMounts:
+#        main:
+#          main:
+#            - path: /home/steam/core-keeper-data
 
 helpers:
   infisicalSecrets:
@@ -28,7 +28,8 @@ helpers:
       infisical:
         path: "/core-keeper"
   backups:
-    - pvcName: core-keeper-config
+    - enabled: false
+      pvcName: core-keeper-config
       resticRepoSuffix: core-keeper
       retain:
         hourly: 12

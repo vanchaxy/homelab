@@ -1,27 +1,28 @@
 necesse:
-  controllers:
-    main:
-      containers:
-        main:
-          image:
-            repository: brammys/necesse-server
-            tag: latest@sha256:1426ad38cd35c7284b6f2e1c39245d35442ffc0a6d8097c2c72f01a0d653b0a7
-          env:
-            OWNER: vanchaxy
-            GIVE_CLIENTS_POWER: 1
-            PAUSE: 1
-
-  service:
-    main:
-      controller: main
-      type: LoadBalancer
-      loadBalancerIP: 192.168.50.237
-      annotations:
-        external-dns.alpha.kubernetes.io/hostname: "necesse.ivanchenko.io"
-      ports:
-        game:
-          port: 14159
-          protocol: UDP
+#  controllers:
+#    main:
+#      enabled: false
+#      containers:
+#        main:
+#          image:
+#            repository: brammys/necesse-server
+#            tag: latest@sha256:1426ad38cd35c7284b6f2e1c39245d35442ffc0a6d8097c2c72f01a0d653b0a7
+#          env:
+#            OWNER: vanchaxy
+#            GIVE_CLIENTS_POWER: 1
+#            PAUSE: 1
+#
+#  service:
+#    main:
+#      controller: main
+#      type: LoadBalancer
+#      loadBalancerIP: 192.168.50.237
+#      annotations:
+#        external-dns.alpha.kubernetes.io/hostname: "necesse.ivanchenko.io"
+#      ports:
+#        game:
+#          port: 14159
+#          protocol: UDP
 
   persistence:
     config:
@@ -30,13 +31,14 @@ necesse:
       storageClass: longhorn-ssd
       size: 5Gi
       accessMode: ReadWriteOnce
-      advancedMounts:
-        main:
-          main:
-            - path: /necesse/saves
+#      advancedMounts:
+#        main:
+#          main:
+#            - path: /necesse/saves
 helpers:
   backups:
-    - pvcName: necesse-config
+    - enabled: false
+      pvcName: necesse-config
       resticRepoSuffix: necesse
       retain:
         hourly: 12

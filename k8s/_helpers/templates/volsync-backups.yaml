@@ -30,8 +30,10 @@ metadata:
   name: {{ printf "%s-backup" $backup.pvcName }}
 spec:
   sourcePVC: {{ $backup.pvcName }}
+  {{- if ne $backup.enabled false }}
   trigger:
     schedule: {{ $backup.schedule | default $.Values.global.restic.schedule | quote }}
+  {{- end }}
   restic:
     pruneIntervalDays: {{ $backup.pruneIntervalDays | default $.Values.global.restic.pruneIntervalDays }}
     repository: {{ $resticSecretName }}
