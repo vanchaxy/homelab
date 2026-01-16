@@ -1,0 +1,23 @@
+apiVersion: frp.zufardhiyaulhaq.com/v1alpha1
+kind: Upstream
+metadata:
+  name: icarus
+spec:
+  client: frp-client
+  udp:
+    host: icarus.icarus.svc.cluster.local
+    port: 17777
+    server:
+      port: 17777
+---
+apiVersion: frp.zufardhiyaulhaq.com/v1alpha1
+kind: Upstream
+metadata:
+  name: icarus-steam
+spec:
+  client: frp-client
+  udp:
+    host: icarus.icarus.svc.cluster.local
+    port: 27015
+    server:
+      port: 27015
