@@ -1,0 +1,18 @@
+iperf3:
+  controllers:
+    main:
+      replicas: 0
+      containers:
+        main:
+          image:
+            repository: networkstatic/iperf3
+            tag: latest
+          args: ['-s']
+
+  service:
+    main:
+      controller: main
+      type: LoadBalancer
+      ports:
+        http:
+          port: 5201

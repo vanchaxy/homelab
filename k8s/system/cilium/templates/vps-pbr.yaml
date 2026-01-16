@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: vps-policy-based-routing
+  namespace: kube-system
+  labels:
+    app: vps-pbr
+spec:
+  selector:
+    matchLabels:
+      app: vps-pbr
+  template:
+    metadata:
+      labels:
+        app: vps-pbr
+    spec:
+      hostNetwork: true
+      tolerations:
+        - operator: Exists
+      containers:
+      - name: setup-routes
+        image: alpine:3.23
+        securityContext:
+          privileged: true
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            # --- CONFIGURATION ---
+            VIP="46.38.230.69"
+            TABLE=200
+            PRIO=150
+            # ---------------------
+
+            echo "Starting PBR for $VIP (Table: $TABLE, Prio: $PRIO)..."
+            
+            while true; do
+              if ip link show wg0 > /dev/null 2>&1; then
+                
+                # Ensure the route exists
+                ip route replace default dev wg0 table $TABLE
+
+                # Ensure the rule exists
+                if ! ip rule list | grep -q "$VIP"; then
+                   echo "Adding rule for $VIP"
+                   ip rule add from $VIP/32 table $TABLE priority $PRIO
+                fi
+                
+              else
+                echo "Waiting for wg0..."
+              fi
+
+              sleep 30
+            done

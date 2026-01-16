@@ -1,10 +1,26 @@
 machine:
   network:
     hostname: ${hostname}
+    interfaces:
+      - interface: wg0
+        mtu: 1440
+        addresses:
+          - ${wg_ip}/24
+        wireguard:
+          privateKey: ${wg_private_key}
+          listenPort: 51820
+          peers:
+            - allowedIPs:
+                - 0.0.0.0/0
+              endpoint: ${vps_ip}:${vps_wg_port}
+              publicKey: ${vps_wg_public_key}
+              persistentKeepaliveInterval: 25s
   nodeLabels:
     topology.kubernetes.io/region: ${cluster_name}
     topology.kubernetes.io/zone: ${node_name}
     node.longhorn.io/create-default-disk: 'config'
+    node.kubernetes.io/exclude-from-external-load-balancers:
+      $patch: delete
   nodeAnnotations:
     node.longhorn.io/default-disks-config: '${
       jsonencode(
@@ -43,12 +59,12 @@ cluster:
     disabled: true
   # Optional Gateway API CRDs
   extraManifests:
-  - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_gatewayclasses.yaml
-  - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/experimental/gateway.networking.k8s.io_gateways.yaml
-  - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_httproutes.yaml
-  - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_referencegrants.yaml
-  - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_grpcroutes.yaml
-  - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/experimental/gateway.networking.k8s.io_tlsroutes.yaml
+    - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/tags/v1.4.1/config/crd/standard/gateway.networking.k8s.io_backendtlspolicies.yaml
+    - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/tags/v1.4.1/config/crd/standard/gateway.networking.k8s.io_gatewayclasses.yaml
+    - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/tags/v1.4.1/config/crd/standard/gateway.networking.k8s.io_gateways.yaml
+    - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/tags/v1.4.1/config/crd/standard/gateway.networking.k8s.io_grpcroutes.yaml
+    - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/tags/v1.4.1/config/crd/standard/gateway.networking.k8s.io_httproutes.yaml
+    - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/tags/v1.4.1/config/crd/standard/gateway.networking.k8s.io_referencegrants.yaml
   inlineManifests:
   - name: cilium-values
     contents: |

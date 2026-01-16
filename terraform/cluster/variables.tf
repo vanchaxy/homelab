@@ -1,7 +1,3 @@
-variable "proxmox" {
-  type = object({
-    username = string
-    password = string
-  })
-  sensitive = true
+variable "laptop_public_ed25519" {
+  type = string
 }

@@ -1,0 +1,29 @@
+# step 1 (VNC console)
+set interfaces ethernet eth0 address dhcp
+set system name-server eth0
+set service ssh port '22'
+
+# step 2 (local)
+set system login user vyos authentication public-keys laptop type ssh-ed25519
+set system login user vyos authentication public-keys laptop key ${laptop_public_ed25519}
+set service ssh disable-password-authentication
+
+# step 3 (setup)
+%{ for name, config in nodes ~}
+set interfaces wireguard ${config.node.vps_wg_interface} address '${config.node.vps_wg_ip}/24'
+set interfaces wireguard ${config.node.vps_wg_interface} port '${config.node.vps_wg_port}'
+set interfaces wireguard ${config.node.vps_wg_interface} private-key ${wg_private_key}
+set interfaces wireguard ${config.node.vps_wg_interface} peer ${name} public-key '${config.pubkey}'
+set interfaces wireguard ${config.node.vps_wg_interface} peer ${name} allowed-ips '${forward_ip}/32'
+set interfaces wireguard ${config.node.vps_wg_interface} peer ${name} allowed-ips '${config.node.wg_ip}/32'
+set interfaces wireguard ${config.node.vps_wg_interface} ip adjust-mss 1380
+%{ endfor ~}
+
+set protocols bgp system-as '64512'
+set protocols bgp address-family ipv4-unicast maximum-paths ibgp 3
+
+%{ for name, config in nodes ~}
+set protocols bgp neighbor ${config.node.wg_ip} remote-as '64512'
+set protocols bgp neighbor ${config.node.wg_ip} address-family ipv4-unicast
+set protocols bgp neighbor ${config.node.wg_ip} address-family ipv4-unicast soft-reconfiguration inbound
+%{ endfor ~}

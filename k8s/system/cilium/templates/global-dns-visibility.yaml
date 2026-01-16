@@ -1,0 +1,17 @@
+apiVersion: "cilium.io/v2"
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: "global-dns-visibility"
+spec:
+  endpointSelector:
+    matchLabels: {}
+  egress:
+    - toPorts:
+      - ports:
+        - port: "53"
+          protocol: ANY
+        rules:
+          dns:
+            - matchPattern: "*"
+    - toEntities:
+      - all

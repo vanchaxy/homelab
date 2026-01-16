@@ -1,0 +1,20 @@
+{{- range .Values.ciliumBGP.peers }}
+---
+apiVersion: cilium.io/v2alpha1
+kind: CiliumBGPPeeringPolicy
+metadata:
+  name: vps-peering-{{ .hostname }}
+spec:
+  nodeSelector:
+    matchLabels:
+      kubernetes.io/hostname: {{ .hostname | quote }}
+  virtualRouters:
+    - localASN: 64512
+      exportPodCIDR: false
+      serviceSelector:
+        matchLabels:
+          expose-public: "true"
+      neighbors:
+        - peerAddress: {{ .peerAddress | quote }}
+          peerASN: 64512
+{{- end }}
