@@ -1,7 +1,7 @@
 abiotic-factor:
   controllers:
     main:
-      replicas: 0
+      replicas: null
       containers:
         main:
           image:
@@ -55,3 +55,4 @@ helpers:
         weekly: 4
         monthly: 2
         yearly: 1
+
