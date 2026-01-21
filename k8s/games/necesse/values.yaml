@@ -1,8 +1,7 @@
 necesse:
   controllers:
-    replicas: 0
     main:
-      enabled: false
+      replicas: 0
       containers:
         main:
           image:
