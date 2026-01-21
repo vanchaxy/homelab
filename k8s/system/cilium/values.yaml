@@ -1,29 +1,64 @@
 cilium:
   namespaceOverride: "kube-system"
 
-  cluster:
-    name: talos
-    id: 1
+  k8sServiceHost: localhost
+  k8sServicePort: 7445
 
   kubeProxyReplacement: true
 
-  # Talos specific
-  k8sServiceHost: localhost
-  k8sServicePort: 7445
+  autoDirectNodeRoutes: true
+  ipv4NativeRoutingCIDR: 10.244.0.0/16
+  routingMode: native
+
+  loadBalancer:
+    mode: dsr
+    algorithm: maglev
+
   securityContext:
     capabilities:
-      ciliumAgent: [ CHOWN, KILL, NET_ADMIN, NET_RAW, IPC_LOCK, SYS_ADMIN, SYS_RESOURCE, DAC_OVERRIDE, FOWNER, SETGID, SETUID ]
-      cleanCiliumState: [ NET_ADMIN, SYS_ADMIN, SYS_RESOURCE ]
+      ciliumAgent:
+        - CHOWN
+        - KILL
+        - NET_ADMIN
+        - NET_RAW
+        - IPC_LOCK
+        - SYS_ADMIN
+        - SYS_RESOURCE
+        - DAC_OVERRIDE
+        - FOWNER
+        - SETGID
+        - SETUID
+      cleanCiliumState:
+        - NET_ADMIN
+        - SYS_ADMIN
+        - SYS_RESOURCE
+
+  envoy:
+    securityContext:
+      capabilities:
+        keepCapNetBindService: true
+        envoy:
+         - NET_ADMIN
+         - PERFMON
+         - BPF
 
   cgroup:
     autoMount:
       enabled: false
     hostRoot: /sys/fs/cgroup
 
-  # https://docs.cilium.io/en/stable/network/concepts/ipam/
   ipam:
     mode: kubernetes
     multiPoolPreAllocation: "default=8"
+
+  rollOutCiliumPods: true
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 200m
+      memory: 512Mi
 
   operator:
     rollOutPods: true
@@ -35,60 +70,30 @@ cilium:
         cpu: 50m
         memory: 128Mi
 
-  # Roll out cilium agent pods automatically when ConfigMap is updated.
-  rollOutCiliumPods: true
-  resources:
-    limits:
-      cpu: 1000m
-      memory: 1Gi
-    requests:
-      cpu: 200m
-      memory: 512Mi
-
-  #debug:
-  #  enabled: true
-
-  # Increase rate limit when doing L2 announcements
   k8sClientRateLimit:
-    qps: 20
-    burst: 100
+    qps: 100
+    burst: 500
 
   l2announcements:
     enabled: true
 
-  externalIPs:
+  bgpControlPlane:
     enabled: true
-
-  loadBalancer:
-    # https://docs.cilium.io/en/stable/network/kubernetes/kubeproxy-free/#maglev-consistent-hashing
-    algorithm: maglev
-
-  gatewayAPI:
-    enabled: true
-  envoy:
-    securityContext:
-      capabilities:
-        keepCapNetBindService: true
-        envoy: [ NET_ADMIN, PERFMON, BPF ]
-
-  ingressController:
-    enabled: true
-    default: true
-    loadbalancerMode: shared
-    service:
-      insecureNodePort: 30080
-      secureNodePort: 30443
-      annotations:
-        io.cilium/lb-ipam-ips: 192.168.50.233
 
   hubble:
     enabled: true
-    tls:
-      auto:
-        method: cronJob
     relay:
       enabled: true
       rollOutPods: true
     ui:
       enabled: true
       rollOutPods: true
+
+ciliumBGP:
+  peers:
+    - hostname: mars
+      peerAddress: "10.100.0.1/32"
+    - hostname: jupiter
+      peerAddress: "10.100.1.1/32"
+    - hostname: saturn
+      peerAddress: "10.100.2.1/32"

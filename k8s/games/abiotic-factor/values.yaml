@@ -1,36 +1,37 @@
 abiotic-factor:
-#  controllers:
-#    main:
-#      containers:
-#        main:
-#          image:
-#            repository: ghcr.io/dvanderveer/abiotic-factor-linux-docker
-#            tag: latest@sha256:b96c684cf5c2ed89c56345d12e09416596aff9ab87720ece6eb1617ca310862a
-#          env:
-#            MaxServerPlayers: 6
-#            Port: 7777
-#            QueryPort: 27015
-#            ServerPassword: password
-#            SteamServerName: Linux Server
-#            sePerfThreads: 'true'
-#            NoAsyncLoadingThread: 'true'
-#            WorldSaveName: Cascade
-#            AutoUpdate: 'true'
-#
-#  service:
-#    main:
-#      controller: main
-#      type: LoadBalancer
-#      loadBalancerIP: 192.168.50.236
-#      annotations:
-#        external-dns.alpha.kubernetes.io/hostname: "af.ivanchenko.io"
-#      ports:
-#        game:
-#          port: 7777
-#          protocol: UDP
-#        query:
-#          port: 27015
-#          protocol: TCP
+  controllers:
+    main:
+      replicas: 0
+      containers:
+        main:
+          image:
+            repository: ghcr.io/dvanderveer/abiotic-factor-linux-docker
+            tag: latest@sha256:b96c684cf5c2ed89c56345d12e09416596aff9ab87720ece6eb1617ca310862a
+          env:
+            MaxServerPlayers: 6
+            Port: 7777
+            QueryPort: 27015
+            ServerPassword: password
+            SteamServerName: Linux Server
+            sePerfThreads: 'true'
+            NoAsyncLoadingThread: 'true'
+            WorldSaveName: Cascade
+            AutoUpdate: 'true'
+
+  service:
+    main:
+      controller: main
+      type: LoadBalancer
+      loadBalancerIP: 192.168.50.236
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: "af.ivanchenko.io"
+      ports:
+        game:
+          port: 7777
+          protocol: UDP
+        query:
+          port: 27015
+          protocol: TCP
 
   persistence:
     server:
@@ -38,10 +39,10 @@ abiotic-factor:
       storageClass: longhorn-ssd
       size: 20Gi
       accessMode: ReadWriteOnce
-#      advancedMounts:
-#        main:
-#          main:
-#            - path: /server
+      advancedMounts:
+        main:
+          main:
+            - path: /server
 
 helpers:
   backups:
@@ -54,5 +55,3 @@ helpers:
         weekly: 4
         monthly: 2
         yearly: 1
-
-

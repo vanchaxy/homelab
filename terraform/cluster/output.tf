@@ -21,3 +21,9 @@ resource "local_file" "talos_config" {
   filename        = "../output/talos-config.yaml"
   file_permission = "0600"
 }
+
+resource "local_file" "vyos_config" {
+  content         = module.vyos.vyos_config
+  filename        = "../output/vyos-config.sh"
+  file_permission = "0600"
+}
