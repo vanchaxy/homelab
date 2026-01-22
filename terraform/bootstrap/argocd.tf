@@ -65,7 +65,7 @@ resource "kubectl_manifest" "disable-sync" {
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
-  name: default
+  name: system
   namespace: argocd
 spec:
   clusterResourceWhitelist:

@@ -19,6 +19,56 @@ argo-cd:
         clientID: 8785dd82-3058-4411-a3ef-d675f9c3e610
         clientSecret: $oidc.clientSecret
         logoutURL: https://id.ivanchenko.io/api/oidc/end-session
+      resource.customizations.actions.argoproj.io_ApplicationSet: |
+        discovery.lua: |
+          return {
+              ["change-branch"] = {
+                  iconClass = "fa fa-fw fa-code-branch",
+                  displayName = "Change branch",
+                  params = {
+                      { name = "branch" }
+                  }
+              }
+          }
+        definitions:
+        - name: change-branch
+          action.lua: |
+            obj.spec.generators[1].git.revision = actionParams["branch"]
+            obj.spec.template.spec.source.targetRevision = actionParams["branch"]
+            return obj
+      resource.customizations.actions.argoproj.io_AppProject: |
+        discovery.lua: |
+          local actions = {}
+          if obj.spec.syncWindows == nil or #obj.spec.syncWindows == 0 then
+            actions["pause-sync"] = {
+              displayName = "Pause Sync",
+              iconClass = "fa fa-pause-circle"
+            }
+          else
+            actions["unpause-sync"] = {
+              displayName = "Resume Sync",
+              iconClass = "fa fa-play-circle"
+            }
+          end
+          return actions
+        definitions:
+        - name: pause-sync
+          action.lua: |
+            obj.spec.syncWindows = {
+              {
+                applications = {"*"},
+                duration = "1h",
+                kind = "deny",
+                manualSync = true,
+                schedule = "* * * * *",
+                timeZone = "UTC"
+              }
+            }
+            return obj
+        - name: unpause-sync
+          action.lua: |
+            obj.spec.syncWindows = nil
+            return obj
     rbac:
       policy.csv: |
         g, admins, role:admin
@@ -33,60 +83,22 @@ argo-cd:
       tls: true
   redisSecretInit:
     enabled: false
-argocd-apps:
+
+appsSync:
+  repoURL: https://github.com/vanchaxy/homelab
+  targetRevision: main
+  path: k8s/
   projects:
-    default:
-      namespace: argocd
-      description: default
-      sourceRepos:
-        - '*'
-      destinations:
-        - namespace: '*'
-          server: '*'
-      clusterResourceWhitelist:
-        - group: '*'
-          kind: '*'
-  applicationsets:
-    root:
-      namespace: argocd
-      generators:
-        - git:
-            repoURL: &repoURL https://github.com/vanchaxy/homelab
-            revision: &revision main
-            directories:
-              - path: k8s/system/*
-              - path: k8s/platform/*
-              - path: k8s/apps/*
-              - path: k8s/games/*
-      template:
-        metadata:
-          name: '{{path.basename}}'
-        spec:
-          destination:
-            name: in-cluster
-            namespace: '{{path.basename}}'
-          project: default
-          source:
-            repoURL: *repoURL
-            path: '{{path}}'
-            targetRevision: *revision
-          syncPolicy:
-            automated:
-              prune: true
-              selfHeal: true
-            retry:
-              limit: 10
-              backoff:
-                duration: 1m
-                factor: 2
-                maxDuration: 16m
-            syncOptions:
-              - CreateNamespace=true
-              - ApplyOutOfSyncOnly=true
-              - ServerSideApply=true
-            managedNamespaceMetadata:
-              labels:
-                pod-security.kubernetes.io/enforce: privileged
+    - apps
+    - games
+    - platform
+    - system
+  privilegedNamespaces:
+    - amdgpu
+    - csi-driver-nfs
+    - longhorn-system
+    - monitoring
+    - media
 
 helpers:
   infisicalSecrets:
