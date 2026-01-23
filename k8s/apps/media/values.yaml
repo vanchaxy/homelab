@@ -13,7 +13,7 @@ media:
         main:
           image:
             repository: nukecat/vuetorrent-standalone
-            tag: 2.31.2@sha256:6838dbb67faa14dec8172447a2b1661674132df0ecdd9d475cac079e2caee1f4
+            tag: 2.31.3@sha256:26ba878759ea75b13577ad3c6f7ece3ced07e80fc8d406ff05f69bc6b49c2ff2
           env:
             QB_HOST: http://media-qbittorrent
             QB_PORT: 8081
