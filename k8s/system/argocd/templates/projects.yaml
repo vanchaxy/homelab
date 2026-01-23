@@ -1,0 +1,66 @@
+{{ range .Values.appsSync.projects }}
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: {{ . }}
+  namespace: argocd
+spec:
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  destinations:
+    - namespace: '*'
+      server: '*'
+  sourceRepos:
+    - '*'
+---
+{{ end }}
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: root
+  namespace: argocd
+spec:
+  goTemplate: true
+  generators:
+    - git:
+        directories:
+{{ range .Values.appsSync.projects }}
+          - path: {{ $.Values.appsSync.path }}{{ . }}/*
+{{ end }}
+        repoURL: {{ .Values.appsSync.repoURL }}
+        revision: {{ .Values.appsSync.targetRevision }}
+  template:
+    metadata:
+      name: '{{ `{{.path.basename}}` }}'
+    spec:
+      destination:
+        name: in-cluster
+        namespace: '{{ `{{.path.basename}}` }}'
+      project: '{{ `{{ index .path.segments 1 }}` }}'
+      source:
+        path: '{{ `{{.path.path}}` }}'
+        repoURL: {{ .Values.appsSync.repoURL }}
+        targetRevision: {{ .Values.appsSync.targetRevision }}
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        retry:
+          backoff:
+            duration: 1m
+            factor: 2
+            maxDuration: 16m
+          limit: 10
+        syncOptions:
+          - CreateNamespace=true
+          - ApplyOutOfSyncOnly=true
+          - ServerSideApply=true
+  templatePatch: |
+    {{ `{{ if eq .path.basename` }} {{ .Values.appsSync.privilegedNamespaces | toJson | replace "[" "" | replace "," " " | replace "]" "" }}{{ `}}` }}
+    spec:
+      syncPolicy:
+        managedNamespaceMetadata:
+          labels:
+            pod-security.kubernetes.io/enforce: privileged
+    {{ `{{ end }}` }}
