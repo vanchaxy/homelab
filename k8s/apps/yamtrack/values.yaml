@@ -22,23 +22,14 @@ yamtrack:
         http:
           port: 8000
 
-  ingress:
+  route:
     main:
-      annotations:
-        cert-manager.io/cluster-issuer: letsencrypt
-        nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
-      hosts:
-        - host: &host yamtrack.ivanchenko.io
-          paths:
-            - path: /
-              pathType: Prefix
-              service:
-                identifier: main
-                port: http
-      tls:
-        - secretName: yamtrack-tls
-          hosts:
-            - *host
+      hostnames:
+        - yamtrack.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
 
   persistence:
     data:

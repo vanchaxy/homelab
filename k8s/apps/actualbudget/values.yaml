@@ -63,24 +63,14 @@ actualbudget:
         http:
           port: 5006
 
-  ingress:
-    actualbudget:
-      annotations:
-        cert-manager.io/cluster-issuer: letsencrypt
-        nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
-        nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
-      hosts:
-        - host: &host budget.ivanchenko.io
-          paths:
-            - path: /
-              pathType: Prefix
-              service:
-                identifier: actualbudget
-                port: http
-      tls:
-        - secretName: actualbudget-tls
-          hosts:
-            - *host
+  route:
+    main:
+      hostnames:
+        - budget.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
 
   persistence:
     data:

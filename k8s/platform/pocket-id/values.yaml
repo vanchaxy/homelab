@@ -18,29 +18,14 @@ pocket-id:
         http:
           port: 1411
 
-  ingress:
+  route:
     main:
-      annotations:
-        cert-manager.io/cluster-issuer: letsencrypt
-        nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
-        nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
-        nginx.ingress.kubernetes.io/proxy-body-size: '0'
-        nginx.ingress.kubernetes.io/proxy-buffering: "on"
-        nginx.ingress.kubernetes.io/proxy-busy-buffers-size: '512k'
-        nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
-        nginx.ingress.kubernetes.io/proxy-buffer-size: '256k'
-      hosts:
-        - host: &host id.ivanchenko.io
-          paths:
-            - path: /
-              pathType: Prefix
-              service:
-                identifier: main
-                port: http
-      tls:
-        - secretName: pocket-id-tls
-          hosts:
-            - *host
+      hostnames:
+        - id.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
 
   persistence:
     config:

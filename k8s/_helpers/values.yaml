@@ -27,3 +27,10 @@ ghcrSecret:
 infisicalSecrets: []
 
 backups: []
+
+oidcPolicy:
+  routes: []
+  issuer: "https://id.ivanchenko.io"
+  clientSecretName: "oidc-client-secret" # must have client-secret key
+  cookieDomain: "ivanchenko.io"
+#  clientID: ""

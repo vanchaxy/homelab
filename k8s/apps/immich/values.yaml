@@ -52,22 +52,15 @@ immich:
             image:
               repository: ghcr.io/immich-app/immich-server
               tag: v2.4.1@sha256:e6a6298e67ae077808fdb7d8d5565955f60b0708191576143fc02d30ab1389d1
-    ingress:
+    route:
       main:
-        enabled: true
-        annotations:
-          cert-manager.io/cluster-issuer: letsencrypt
-          nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-          nginx.ingress.kubernetes.io/ssl-passthrough: "true"
-          nginx.ingress.kubernetes.io/proxy-body-size: "0"
-        hosts:
-          - host: &host immich.ivanchenko.io
-            paths:
-              - path: "/"
-        tls:
-          - secretName: immich-tls
-            hosts:
-              - *host
+        hostnames:
+          - immich.ivanchenko.io
+        parentRefs:
+          - name: internal-gw
+            namespace: envoy-gateway
+            sectionName: https
+
 
   machine-learning:
     enabled: true

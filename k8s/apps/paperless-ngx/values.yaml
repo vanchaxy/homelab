@@ -19,25 +19,6 @@ paperless-ngx:
           envFrom:
             - secretRef:
                 name: paperless-secret
-
-    paperless-gpt:
-      containers:
-        main:
-          image:
-            repository: icereed/paperless-gpt
-            tag: v0.23.0@sha256:90766d15d541162129d0fa47dad5ffb33a02a0c77cbc4cee9007b24b656ba6ce
-          env:
-            PAPERLESS_BASE_URL: "https://paper.ivanchenko.io"
-            PAPERLESS_PUBLIC_URL: "https://paper.ivanchenko.io"
-            LLM_PROVIDER: "openai"
-            LLM_MODEL: "gpt-4o-mini"
-            OCR_PROVIDER: "llm"
-            VISION_LLM_PROVIDER: "openai"
-            VISION_LLM_MODEL: "gpt-4o-mini"
-          envFrom:
-            - secretRef:
-                name: paperless-secret
-
     gotenberg:
       containers:
         main:
@@ -61,12 +42,6 @@ paperless-ngx:
       ports:
         http:
           port: 8000
-    paperless-gpt:
-      controller: paperless-gpt
-      type: ClusterIP
-      ports:
-        http:
-          port: 8080
     gotenberg:
       controller: gotenberg
       type: ClusterIP
@@ -79,34 +54,17 @@ paperless-ngx:
       ports:
         http:
           port: 9998
-  ingress:
+  route:
     paperless:
-      annotations:
-        cert-manager.io/cluster-issuer: letsencrypt
-        nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
-        nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
-        nginx.ingress.kubernetes.io/proxy-body-size: '0'
-      hosts:
-        - host: &host paper.ivanchenko.io
-          paths:
-            - path: /
-              pathType: Prefix
-              service:
-                identifier: paperless
-                port: http
-        - host: &host-gpt paper-gpt.ivanchenko.io
-          paths:
-            - path: /
-              pathType: Prefix
-              service:
-                identifier: paperless-gpt
-                port: http
-      tls:
-        - secretName: paperless-tls
-          hosts:
-            - *host
-            - *host-gpt
-
+      hostnames:
+        - paper.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      rules:
+        - backendRefs:
+            - identifier: paperless
   persistence:
     data:
       enabled: true

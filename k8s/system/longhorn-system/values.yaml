@@ -12,17 +12,26 @@ longhorn:
     defaultReplicaCount: '2'
     autoDeletePodWhenVolumeDetachedUnexpectedly: 'true'
     nodeDownPodDeletionPolicy: delete-both-statefulset-and-deployment-pod
-  ingress:
+  httproute:
     enabled: true
-    ingressClassName: nginx
-    host: longhorn.ivanchenko.io
-    tls: true
-    tlsSecret: longhorn-tls
-    annotations:
-      cert-manager.io/cluster-issuer: letsencrypt
+    hostnames:
+     - longhorn.ivanchenko.io
+    parentRefs:
+      - name: internal-gw
+        namespace: envoy-gateway
+        sectionName: https
 
 helpers:
   infisicalSecrets:
     - name: b2-secret
       infisical:
         path: "/longhorn/b2"
+    - name: oidc-client-secret
+      infisical:
+        path: "/longhorn/oidc-client-secret"
+  oidcPolicy:
+    routes:
+      - longhorn-httproute
+    clientID: "ad53b7b9-99cd-4399-8967-cee24a505944"
+    clientSecretName: "oidc-client-secret"
+    cookieDomain: "longhorn.ivanchenko.io"
