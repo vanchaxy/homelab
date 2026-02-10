@@ -46,3 +46,13 @@ helpers:
     - name: pocket-id
       infisical:
         path: "/pocket-id"
+  backups:
+    - enabled: true
+      pvcName: pocket-id-config
+      resticRepoSuffix: pocket-id
+      retain:
+        hourly: 12
+        daily: 7
+        weekly: 4
+        monthly: 2
+        yearly: 1
