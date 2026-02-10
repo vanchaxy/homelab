@@ -6,5 +6,4 @@
 *.bak
 output
 
-charts
 Chart.lock
