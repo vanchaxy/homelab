@@ -56,3 +56,8 @@ helpers:
         weekly: 4
         monthly: 2
         yearly: 1
+      moverSecurityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
