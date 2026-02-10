@@ -16,3 +16,12 @@ librespeed:
       ports:
         http:
           port: 8080
+
+  route:
+    main:
+      hostnames:
+        - speed.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https

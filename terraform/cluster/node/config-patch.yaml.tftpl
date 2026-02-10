@@ -57,14 +57,6 @@ cluster:
       name: none
   proxy:
     disabled: true
-  # Optional Gateway API CRDs
-  extraManifests:
-    - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/tags/v1.4.1/config/crd/standard/gateway.networking.k8s.io_backendtlspolicies.yaml
-    - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/tags/v1.4.1/config/crd/standard/gateway.networking.k8s.io_gatewayclasses.yaml
-    - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/tags/v1.4.1/config/crd/standard/gateway.networking.k8s.io_gateways.yaml
-    - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/tags/v1.4.1/config/crd/standard/gateway.networking.k8s.io_grpcroutes.yaml
-    - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/tags/v1.4.1/config/crd/standard/gateway.networking.k8s.io_httproutes.yaml
-    - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/tags/v1.4.1/config/crd/standard/gateway.networking.k8s.io_referencegrants.yaml
   inlineManifests:
   - name: cilium-values
     contents: |

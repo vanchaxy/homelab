@@ -1,22 +1,13 @@
 media:
   defaultPodOptions:
     automountServiceAccountToken: false
-#    securityContext:
-#      fsGroup: 568
-#      fsGroupChangePolicy: "OnRootMismatch"
-#      runAsUser: 0
-#      runAsGroup: 0
+  #    securityContext:
+  #      fsGroup: 568
+  #      fsGroupChangePolicy: "OnRootMismatch"
+  #      runAsUser: 0
+  #      runAsGroup: 0
 
   controllers:
-    vuetorrent:
-      containers:
-        main:
-          image:
-            repository: nukecat/vuetorrent-standalone
-            tag: 2.31.2@sha256:6838dbb67faa14dec8172447a2b1661674132df0ecdd9d475cac079e2caee1f4
-          env:
-            QB_HOST: http://media-qbittorrent
-            QB_PORT: 8081
     qbittorrent:
       containers:
         main:
@@ -37,7 +28,7 @@ media:
               custom: true
               spec:
                 exec:
-                  command: ["/bin/sh", "-c", "/bin/ping -qc 2 1.1.1.1 && /bin/ls /data/media || exit 1"]
+                  command: [ "/bin/sh", "-c", "/bin/ping -qc 2 1.1.1.1 && /bin/ls /data/media || exit 1" ]
                 initialDelaySeconds: 60
                 periodSeconds: 15
                 timeoutSeconds: 3
@@ -100,7 +91,7 @@ media:
             - 'partial'
             - '--link-dirs'
             - '/data/x-seed'
-            - '--season-from-episodes' 
+            - '--season-from-episodes'
             - '0.8'
             - '--rss-cadence'
             - '15min'
@@ -110,7 +101,7 @@ media:
               custom: true
               spec:
                 exec:
-                  command: ["/bin/sh", "-c", "/bin/ls /data/media || exit 1"]
+                  command: [ "/bin/sh", "-c", "/bin/ls /data/media || exit 1" ]
                 initialDelaySeconds: 60
                 periodSeconds: 15
                 timeoutSeconds: 3
@@ -143,7 +134,7 @@ media:
               custom: true
               spec:
                 exec:
-                  command: ["/bin/sh", "-c", "/bin/ls /data/media || exit 1"]
+                  command: [ "/bin/sh", "-c", "/bin/ls /data/media || exit 1" ]
                 initialDelaySeconds: 60
                 periodSeconds: 15
                 timeoutSeconds: 3
@@ -165,7 +156,7 @@ media:
               custom: true
               spec:
                 exec:
-                  command: ["/bin/sh", "-c", "/bin/ls /data/media || exit 1"]
+                  command: [ "/bin/sh", "-c", "/bin/ls /data/media || exit 1" ]
                 initialDelaySeconds: 60
                 periodSeconds: 15
                 timeoutSeconds: 3
@@ -207,19 +198,19 @@ media:
               custom: true
               spec:
                 exec:
-                  command: ["/bin/sh", "-c", "/bin/ls /data/media || exit 1"]
+                  command: [ "/bin/sh", "-c", "/bin/ls /data/media || exit 1" ]
                 initialDelaySeconds: 60
                 periodSeconds: 15
                 timeoutSeconds: 3
                 failureThreshold: 3
 
     mkvtools:
-#      pod:
-#        securityContext:
-#          fsGroup: 568
-#          fsGroupChangePolicy: "OnRootMismatch"
-#          runAsUser: 568
-#          runAsGroup: 568
+      #      pod:
+      #        securityContext:
+      #          fsGroup: 568
+      #          fsGroupChangePolicy: "OnRootMismatch"
+      #          runAsUser: 568
+      #          runAsGroup: 568
       containers:
         main:
           image:
@@ -235,19 +226,13 @@ media:
               custom: true
               spec:
                 exec:
-                  command: ["/bin/sh", "-c", "/bin/ls /data/media || exit 1"]
+                  command: [ "/bin/sh", "-c", "/bin/ls /data/media || exit 1" ]
                 initialDelaySeconds: 60
                 periodSeconds: 15
                 timeoutSeconds: 3
                 failureThreshold: 3
 
   service:
-    vuetorrent:
-      controller: vuetorrent
-      type: ClusterIP
-      ports:
-        http:
-          port: 80
     qbittorrent:
       controller: qbittorrent
       type: ClusterIP
@@ -291,79 +276,77 @@ media:
         http:
           port: 8096
 
-  ingress:
-    main:
-      annotations:
-        cert-manager.io/cluster-issuer: letsencrypt
-        nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
-      hosts:
-        - host: &vuetorrent-host vuetorrent.ivanchenko.io
-          paths:
-            - path: /
-              pathType: Prefix
-              service:
-                identifier: vuetorrent
-                port: http
-        - host: &qbittorrent-host qbittorrent.ivanchenko.io
-          paths:
-            - path: /
-              pathType: Prefix
-              service:
-                identifier: qbittorrent
-                port: http
-        - host: &cross-seed-host cross-seed.ivanchenko.io
-          paths:
-            - path: /
-              pathType: Prefix
-              service:
-                identifier: cross-seed
-                port: http
-        - host: &prowlarr-host prowlarr.ivanchenko.io
-          paths:
-            - path: /
-              pathType: Prefix
-              service:
-                identifier: prowlarr
-                port: http
-        - host: &radarr-host radarr.ivanchenko.io
-          paths:
-            - path: /
-              pathType: Prefix
-              service:
-                identifier: radarr
-                port: http
-        - host: &sonarr-host sonarr.ivanchenko.io
-          paths:
-            - path: /
-              pathType: Prefix
-              service:
-                identifier: sonarr
-                port: http
-        - host: &profilarr-host profilarr.ivanchenko.io
-          paths:
-            - path: /
-              pathType: Prefix
-              service:
-                identifier: profilarr
-                port: http
-        - host: &jellyfin-host jellyfin.ivanchenko.io
-          paths:
-            - path: /
-              pathType: Prefix
-              service:
-                identifier: jellyfin
-                port: http
-      tls:
-        - secretName: main-tls
-          hosts:
-            - *vuetorrent-host
-            - *qbittorrent-host
-            - *cross-seed-host
-            - *prowlarr-host
-            - *radarr-host
-            - *sonarr-host
-            - *profilarr-host
-            - *jellyfin-host
+  route:
+    qbittorrent:
+      hostnames:
+        - qbittorrent.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      rules:
+        - backendRefs:
+            - identifier: qbittorrent
+    cross-seed:
+      hostnames:
+        - cross-seed.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      rules:
+        - backendRefs:
+            - identifier: cross-seed
+    prowlarr:
+      hostnames:
+        - prowlarr.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      rules:
+        - backendRefs:
+            - identifier: prowlarr
+    radarr:
+      hostnames:
+        - radarr.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      rules:
+        - backendRefs:
+            - identifier: radarr
+    sonarr:
+      hostnames:
+        - sonarr.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      rules:
+        - backendRefs:
+            - identifier: sonarr
+    profilarr:
+      hostnames:
+        - profilarr.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      rules:
+        - backendRefs:
+            - identifier: profilarr
+    jellyfin:
+      hostnames:
+        - jellyfin.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      rules:
+        - backendRefs:
+            - identifier: jellyfin
 
   persistence:
     config:
@@ -441,6 +424,19 @@ helpers:
       namespace: media
       infisical:
         path: "/media"
+    - name: oidc-client-secret
+      infisical:
+        path: "/media/oidc-client-secret"
   backups:
     - pvcName: media-config
       resticRepoSuffix: media/config
+  oidcPolicy:
+    routes:
+      - media-qbittorrent
+      - media-cross-seed
+      - media-prowlarr
+      - media-radarr
+      - media-sonarr
+      - media-profilarr
+    clientID: "d404497a-f9a7-4ee4-8856-9a2c7bb0894d"
+    clientSecretName: "oidc-client-secret"

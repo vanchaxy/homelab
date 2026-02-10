@@ -10,17 +10,15 @@ kube-prometheus-stack:
     enabled: false
   grafana:
     enabled: true
-    ingress:
-      enabled: true
-      annotations:
-        cert-manager.io/cluster-issuer: letsencrypt
-        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-      hosts:
-        - &host grafana.ivanchenko.io
-      tls:
-        - secretName: grafana-tls
-          hosts:
-            - *host
+    route:
+      main:
+        enabled: true
+        hostnames:
+         - grafana.ivanchenko.io
+        parentRefs:
+          - name: internal-gw
+            namespace: envoy-gateway
+            sectionName: https
     sidecar:
       datasources:
         alertmanager:

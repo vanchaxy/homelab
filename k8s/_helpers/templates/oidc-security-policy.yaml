@@ -1,0 +1,20 @@
+{{- if .Values.oidcPolicy.routes }}
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: oidc-policy
+spec:
+  targetRefs:
+  {{- range .Values.oidcPolicy.routes }}
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: {{ . }}
+  {{- end }}
+  oidc:
+    provider:
+      issuer: {{ .Values.oidcPolicy.issuer | quote }}
+    clientID: {{ .Values.oidcPolicy.clientID | quote }}
+    clientSecret:
+      name: {{ .Values.oidcPolicy.clientSecretName | quote }}
+    cookieDomain: {{ .Values.oidcPolicy.cookieDomain | quote }}
+{{- end }}
