@@ -5,11 +5,13 @@ pocket-id:
         main:
           image:
             repository: ghcr.io/pocket-id/pocket-id
-            tag: v1.16.0@sha256:f8cde808e8e840acda25683fc2168e0206e3f3fb1a48cca89d211aafd87eaeef
+            tag: v2.2.0@sha256:84d20a801692b9635f481522df2672a7aae522726c30953dae52e17fc2696b27
           env:
             APP_URL: https://id.ivanchenko.io
             TRUST_PROXY: true
-
+          envFrom:
+            - secretRef:
+                name: pocket-id
   service:
     main:
       controller: main
@@ -38,3 +40,24 @@ pocket-id:
         main:
           main:
             - path: /app/data
+
+helpers:
+  infisicalSecrets:
+    - name: pocket-id
+      infisical:
+        path: "/pocket-id"
+  backups:
+    - enabled: true
+      pvcName: pocket-id-config
+      resticRepoSuffix: pocket-id
+      retain:
+        hourly: 12
+        daily: 7
+        weekly: 4
+        monthly: 2
+        yearly: 1
+      moverSecurityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
