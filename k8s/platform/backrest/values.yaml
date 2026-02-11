@@ -5,7 +5,7 @@ backrest:
         main:
           image:
             repository: garethgeorge/backrest
-            tag: v1.11.2
+            tag: v1.11.2@sha256:6ecf25925dafcb6b37ab871d23c1d424a6f5008191a631c0b520641ec22a3f84
           env:
             BACKREST_DATA: /data
             BACKREST_CONFIG: /config/config.json
@@ -53,7 +53,7 @@ backrest:
 backrest-volsync-operator:
   image:
     repository: ghcr.io/vanchaxy/backrest-volsync-operator
-    tag: latest
+    tag: latest@sha256:386c8f6cd60e9ea3b95b578137a0fd3208885d3045db462f962a358fd4b91d15
 
   operatorConfig:
     create: true
