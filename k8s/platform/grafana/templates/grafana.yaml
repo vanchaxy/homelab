@@ -1,0 +1,67 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: Grafana
+metadata:
+  name: grafana
+  labels:
+    dashboards: "grafana"
+spec:
+  config:
+    server:
+      root_url: https://grafana.ivanchenko.io
+    auth:
+      oauth_auto_login: 'true'
+      signout_redirect_url: https://id.ivanchenko.io/api/oidc/end-session
+    auth.generic_oauth:
+      name: pocket-id
+      enabled: 'true'
+      client_id: ${OAUTH_CLIENT_ID}
+      client_secret: ${OAUTH_CLIENT_SECRET}
+      scopes: "openid profile email groups"
+      auth_url: "https://id.ivanchenko.io/authorize"
+      token_url: "https://id.ivanchenko.io/api/oidc/token"
+      api_url: "https://id.ivanchenko.io/api/oidc/userinfo"
+      role_attribute_path: contains(groups[*], 'admins') && 'GrafanaAdmin' || 'Viewer'
+      allow_assign_grafana_admin: 'true'
+    log:
+      mode: "console"
+  httpRoute:
+    spec:
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      hostnames:
+        - grafana.ivanchenko.io
+      rules:
+        - matches:
+            - path:
+                type: PathPrefix
+                value: /
+          backendRefs:
+            - name: grafana-service
+              port: 3000
+  deployment:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: grafana
+              env:
+                - name: OAUTH_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-oauth
+                      key: OAUTH_CLIENT_ID
+                - name: OAUTH_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-oauth
+                      key: OAUTH_CLIENT_SECRET
+  persistentVolumeClaim:
+    spec:
+      storageClassName: "longhorn-ssd"
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
