@@ -1,0 +1,64 @@
+backrest:
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: garethgeorge/backrest
+            tag: v1.11.2
+          env:
+            BACKREST_DATA: /data
+            BACKREST_CONFIG: /config/config.json
+            XDG_CACHE_HOME: /cache
+
+  service:
+    main:
+      controller: main
+      type: ClusterIP
+      ports:
+        http:
+          port: 9898
+
+  route:
+    main:
+      hostnames:
+        - backrest.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      rules:
+        - backendRefs:
+            - identifier: main
+          timeouts:
+            request: 3600s
+
+  persistence:
+    config:
+      enabled: true
+      suffix: config
+      storageClass: longhorn-ssd
+      size: 2Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        main:
+          main:
+            - path: /data
+              subPath: data
+            - path: /config
+              subPath: config
+            - path: /cache
+              subPath: cache
+
+backrest-volsync-operator:
+  image:
+    repository: ghcr.io/vanchaxy/backrest-volsync-operator
+    tag: latest
+
+  operatorConfig:
+    create: true
+    bindingGeneration: All
+    defaultBackrest:
+      url: http://backrest:9898/
+    bindingGenerationKinds:
+      - ReplicationSource
