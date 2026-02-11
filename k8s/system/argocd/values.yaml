@@ -99,11 +99,14 @@ appsSync:
     - amdgpu
     - csi-driver-nfs
     - longhorn-system
-    - monitoring
     - media
+    - telemetry
 
 helpers:
   infisicalSecrets:
     - name: argocd-secret
+      labels:
+        app.kubernetes.io/name: argocd-secret
+        app.kubernetes.io/part-of: argocd
       infisical:
         path: "/argocd/argocd-secret"

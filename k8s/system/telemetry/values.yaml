@@ -1,0 +1,22 @@
+victoria-metrics-k8s-stack:
+  victoria-metrics-operator:
+    admissionWebhooks:
+      enabled: true
+      certManager:
+        enabled: true
+
+  grafana:
+    enabled: false
+    forceDeployDatasource: true
+
+  defaultDashboards:
+    grafanaOperator:
+      enabled: true
+      spec:
+        allowCrossNamespaceImport: true
+
+  defaultDatasources:
+    grafanaOperator:
+      enabled: true
+      spec:
+        allowCrossNamespaceImport: true

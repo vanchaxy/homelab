@@ -1,0 +1,9 @@
+grafana-operator:
+  crds:
+    immutable: false
+
+helpers:
+  infisicalSecrets:
+    - name: grafana-oauth
+      infisical:
+        path: "/monitoring/grafana"
