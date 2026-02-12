@@ -61,9 +61,3 @@ helpers:
   backups:
     - pvcName: icarus-config
       resticRepoSuffix: icarus
-      retain:
-        hourly: 12
-        daily: 7
-        weekly: 4
-        monthly: 2
-        yearly: 1

@@ -1,0 +1,49 @@
+robusta:
+  clusterName: homelab
+  enableHolmesGPT: true
+  enablePlatformPlaybooks: true
+  enablePrometheusStack: false
+  enabledManagedConfiguration: true
+  globalConfig:
+    account_id: 0111ef51-88c5-46fc-8b46-cf765381b053
+    signing_key: 979efb36-5ce2-44bf-b3c3-c6e224d9bfd9
+  holmes:
+    additionalEnvVars:
+    - name: ROBUSTA_AI
+      value: 'true'
+    - name: ROBUSTA_API_ENDPOINT
+      value: https://api.eu.robusta.dev
+    - name: ROBUSTA_UI_DOMAIN
+      value: https://platform.eu.robusta.dev
+    - name: ROBUSTA_UI_TOKEN
+      valueFrom:
+        secretKeyRef:
+          key: ROBUSTA_UI_TOKEN
+          name: robusta-secrets
+  isSmallCluster: false
+  runner:
+    additional_env_vars:
+    - name: RELAY_EXTERNAL_ACTIONS_URL
+      value: https://api.eu.robusta.dev/integrations/generic/actions
+    - name: WEBSOCKET_RELAY_ADDRESS
+      value: wss://relay.eu.robusta.dev
+    - name: ROBUSTA_UI_DOMAIN
+      value: https://platform.eu.robusta.dev
+    - name: ROBUSTA_TELEMETRY_ENDPOINT
+      value: https://api.eu.robusta.dev/telemetry
+    - name: ROBUSTA_UI_TOKEN
+      valueFrom:
+        secretKeyRef:
+          key: ROBUSTA_UI_TOKEN
+          name: robusta-secrets
+    sendAdditionalTelemetry: true
+  sinksConfig:
+  - robusta_sink:
+      name: robusta_ui_sink
+      token: '{{ env.ROBUSTA_UI_TOKEN }}'
+
+helpers:
+  infisicalSecrets:
+    - name: robusta-secrets
+      infisical:
+        path: "/robusta"

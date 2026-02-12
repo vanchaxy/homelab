@@ -1,4 +1,10 @@
 longhorn:
+  image:
+    longhorn:
+      manager:
+        tag: v1.11.0-hotfix-1
+      instanceManager:
+        tag: v1.11.0-hotfix-1
   persistence:
     defaultClass: false
   preUpgradeChecker:

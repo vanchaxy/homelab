@@ -1,11 +1,15 @@
 media:
   defaultPodOptions:
     automountServiceAccountToken: false
-  #    securityContext:
-  #      fsGroup: 568
-  #      fsGroupChangePolicy: "OnRootMismatch"
-  #      runAsUser: 0
-  #      runAsGroup: 0
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: In
+                  values:
+                    - saturn
 
   controllers:
     qbittorrent:
@@ -13,14 +17,17 @@ media:
         main:
           image:
             repository: linuxserver/qbittorrent
-            tag: libtorrentv1@sha256:9d16001782d83e41386c3a09df5bc9405b38acd35d6ee7c816967438aff4a1f8
+            tag: 5.1.4
           env:
             PUID: 568
             PGID: 568
             TZ: Etc/UTC
             WEBUI_PORT: 8081
           resources:
+            requests:
+              memory: 2Gi
             limits:
+              memory: 2Gi
               squat.ai/tun: "1"
           probes:
             liveness:
@@ -205,12 +212,6 @@ media:
                 failureThreshold: 3
 
     mkvtools:
-      #      pod:
-      #        securityContext:
-      #          fsGroup: 568
-      #          fsGroupChangePolicy: "OnRootMismatch"
-      #          runAsUser: 568
-      #          runAsGroup: 568
       containers:
         main:
           image:
@@ -349,10 +350,10 @@ media:
             - identifier: jellyfin
 
   persistence:
-    config:
+    config-rwo:
       storageClass: longhorn-ssd
       size: 50Gi
-      accessMode: ReadWriteMany
+      accessMode: ReadWriteOnce
       advancedMounts:
         qbittorrent:
           main:
@@ -428,8 +429,13 @@ helpers:
       infisical:
         path: "/media/oidc-client-secret"
   backups:
-    - pvcName: media-config
+    - pvcName: media-config-rwo
       resticRepoSuffix: media/config
+      moverSecurityContext:
+        fsGroup: 568
+        runAsGroup: 568
+        runAsNonRoot: true
+        runAsUser: 568
   oidcPolicy:
     routes:
       - media-qbittorrent

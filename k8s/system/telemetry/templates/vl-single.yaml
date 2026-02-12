@@ -2,3 +2,9 @@ apiVersion: operator.victoriametrics.com/v1
 kind: VLSingle
 metadata:
   name: victoria-logs
+spec:
+  retentionPeriod: "30d"
+  storage:
+    resources:
+      requests:
+        storage: 20Gi

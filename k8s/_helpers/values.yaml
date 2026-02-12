@@ -13,10 +13,9 @@ global:
     pruneIntervalDays: 14
     retain:
       hourly: 12
-      daily: 7
-      weekly: 4
-      monthly: 2
-      yearly: 1
+      daily: 12
+      weekly: 12
+      monthly: 12
     schedule: "0 0 * * *"
 
 ghcrSecret:

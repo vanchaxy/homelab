@@ -1,0 +1,10 @@
+apiVersion: v2
+name: robusta
+version: 0.0.0
+dependencies:
+  - name: robusta
+    version: 0.32.x
+    repository: https://robusta-charts.storage.googleapis.com
+  - name: helpers
+    version: 0.1.0
+    repository: file://../../../k8s/_helpers
