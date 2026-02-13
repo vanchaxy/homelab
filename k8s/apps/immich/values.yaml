@@ -81,19 +81,9 @@ helpers:
     - pvcName: photo-library
       resticRepoSuffix: photo-library
       schedule: "0 0 * * *"
-      retain:
-        daily: 5
-        weekly: 4
-        monthly: 2
-        yearly: 1
     - pvcName: immich-postgres-1
       resticRepoSuffix: immich/postgres
       schedule: "0 0 * * *"
-      retain:
-        daily: 5
-        weekly: 4
-        monthly: 2
-        yearly: 1
       moverSecurityContext:
         fsGroup: 26
         runAsGroup: 26

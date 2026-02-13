@@ -40,9 +40,3 @@ helpers:
     - enabled: false
       pvcName: necesse-config
       resticRepoSuffix: necesse
-      retain:
-        hourly: 12
-        daily: 7
-        weekly: 4
-        monthly: 2
-        yearly: 1

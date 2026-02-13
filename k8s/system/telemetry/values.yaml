@@ -5,6 +5,14 @@ victoria-metrics-k8s-stack:
       certManager:
         enabled: true
 
+  vmsingle:
+    spec:
+      retentionPeriod: "30d"
+      storage:
+        resources:
+          requests:
+            storage: 20Gi
+
   grafana:
     enabled: false
     forceDeployDatasource: true
