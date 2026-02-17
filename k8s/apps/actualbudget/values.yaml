@@ -1,4 +1,16 @@
 actualbudget:
+  defaultPodOptions:
+    automountServiceAccountToken: false
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: In
+                  values:
+                    - jupiter
+
   controllers:
     actualbudget:
       containers:
@@ -14,14 +26,26 @@ actualbudget:
             - secretRef:
                 name: actualbudget-secret
 
+    bank-sync-web:
+      containers:
+        main:
+          image:
+            repository: ghcr.io/coleifer/sqlite-web
+            tag: 0.7.0
+          args:
+            - -H
+            - 0.0.0.0
+            - /data/sqlite.db
+
     bank-sync:
       type: cronjob
       cronjob:
         schedule: "0 11,15,20 * * *"
+        concurrencyPolicy: Forbid
         startingDeadlineSeconds: 120
         backoffLimit: 0
-        successfulJobsHistory: 21
-        failedJobsHistory: 21
+        successfulJobsHistory: 3
+        failedJobsHistory: 3
       pod:
         imagePullSecrets:
           - name: ghcr-login-secret
@@ -29,7 +53,7 @@ actualbudget:
         main:
           image:
             repository: ghcr.io/vanchaxy/bank-sync
-            tag: sha-6a93e8c
+            tag: sha-59b2244
           envFrom:
             - secretRef:
                 name: actualbudget-secret
@@ -38,10 +62,11 @@ actualbudget:
       type: cronjob
       cronjob:
         schedule: "0 0-10,12-14,16-19,21-23 * * *"
+        concurrencyPolicy: Forbid
         startingDeadlineSeconds: 120
         backoffLimit: 0
-        successfulJobsHistory: 21
-        failedJobsHistory: 21
+        successfulJobsHistory: 3
+        failedJobsHistory: 3
       pod:
         imagePullSecrets:
           - name: ghcr-login-secret
@@ -49,7 +74,7 @@ actualbudget:
         main:
           image:
             repository: ghcr.io/vanchaxy/bank-sync
-            tag: sha-6a93e8c
+            tag: sha-59b2244
           args: ['--skip-download']
           envFrom:
             - secretRef:
@@ -62,15 +87,34 @@ actualbudget:
       ports:
         http:
           port: 5006
+    bank-sync-web:
+      controller: bank-sync-web
+      type: ClusterIP
+      ports:
+        http:
+          port: 8080
 
   route:
-    main:
+    actualbudget:
       hostnames:
         - budget.ivanchenko.io
       parentRefs:
         - name: internal-gw
           namespace: envoy-gateway
           sectionName: https
+      rules:
+        - backendRefs:
+            - identifier: actualbudget
+    bank-sync-web:
+      hostnames:
+        - bank-sync.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      rules:
+        - backendRefs:
+            - identifier: bank-sync-web
 
   persistence:
     data:
@@ -92,6 +136,9 @@ actualbudget:
           main:
             - path: /data
         bank-sync-skip-download:
+          main:
+            - path: /data
+        bank-sync-web:
           main:
             - path: /data
 
