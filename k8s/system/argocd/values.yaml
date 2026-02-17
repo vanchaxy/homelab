@@ -78,7 +78,7 @@ argo-cd:
     httproute:
       enabled: true
       hostnames:
-       - argocd.ivanchenko.io
+        - argocd.ivanchenko.io
       parentRefs:
         - name: internal-gw
           namespace: envoy-gateway

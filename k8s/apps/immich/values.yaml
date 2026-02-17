@@ -61,7 +61,6 @@ immich:
             namespace: envoy-gateway
             sectionName: https
 
-
   machine-learning:
     enabled: true
     controllers:

@@ -13,10 +13,10 @@ abiotic-factor:
             QueryPort: 27015
             ServerPassword: password
             SteamServerName: Linux Server
-            sePerfThreads: 'true'
-            NoAsyncLoadingThread: 'true'
+            sePerfThreads: "true"
+            NoAsyncLoadingThread: "true"
             WorldSaveName: Cascade
-            AutoUpdate: 'true'
+            AutoUpdate: "true"
 
   service:
     main:
@@ -49,4 +49,3 @@ helpers:
     - enabled: false
       pvcName: abiotic-factor
       resticRepoSuffix: abiotic-factor
-

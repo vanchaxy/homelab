@@ -13,15 +13,15 @@ longhorn:
   defaultSettings:
     backupTarget: s3://longhorn-vanchaxy@dummyregion/
     backupTargetCredentialSecret: b2-secret
-    createDefaultDiskLabeledNodes: 'true'
-    storageOverProvisioningPercentage: '100'
-    defaultReplicaCount: '2'
-    autoDeletePodWhenVolumeDetachedUnexpectedly: 'true'
+    createDefaultDiskLabeledNodes: "true"
+    storageOverProvisioningPercentage: "100"
+    defaultReplicaCount: "2"
+    autoDeletePodWhenVolumeDetachedUnexpectedly: "true"
     nodeDownPodDeletionPolicy: delete-both-statefulset-and-deployment-pod
   httproute:
     enabled: true
     hostnames:
-     - longhorn.ivanchenko.io
+      - longhorn.ivanchenko.io
     parentRefs:
       - name: internal-gw
         namespace: envoy-gateway

@@ -38,9 +38,9 @@ cilium:
       capabilities:
         keepCapNetBindService: true
         envoy:
-         - NET_ADMIN
-         - PERFMON
-         - BPF
+          - NET_ADMIN
+          - PERFMON
+          - BPF
 
   cgroup:
     autoMount:
@@ -95,8 +95,8 @@ cilium:
 ciliumBGP:
   peers:
     - hostname: mars
-      peerAddress: "10.100.0.1/32"
+      peerAddress: "10.100.0.1"
     - hostname: jupiter
-      peerAddress: "10.100.1.1/32"
+      peerAddress: "10.100.1.1"
     - hostname: saturn
-      peerAddress: "10.100.2.1/32"
+      peerAddress: "10.100.2.1"

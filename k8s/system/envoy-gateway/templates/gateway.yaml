@@ -5,12 +5,12 @@ metadata:
   namespace: cert-manager
 spec:
   from:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    namespace: envoy-gateway
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      namespace: envoy-gateway
   to:
-  - group: ""
-    kind: Secret
+    - group: ""
+      kind: Secret
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: GatewayClass
@@ -28,6 +28,44 @@ spec:
   infrastructure:
     annotations:
       lbipam.cilium.io/ips: 192.168.50.240
+    parametersRef:
+      group: gateway.envoyproxy.io
+      kind: EnvoyProxy
+      name: custom-proxy-config
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      hostname: "*.ivanchenko.io"
+      allowedRoutes:
+        namespaces:
+          from: Same
+    - name: https
+      protocol: HTTPS
+      port: 443
+      hostname: "*.ivanchenko.io"
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        certificateRefs:
+          - kind: Secret
+            name: ivanchenko-io-wildcard-tls
+            namespace: cert-manager
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: public-gw
+spec:
+  gatewayClassName: envoy
+  infrastructure:
+    annotations:
+      lbipam.cilium.io/lb-ipam-ips: 46.38.230.69
+      lbipam.cilium.io/sharing-key: vps-tunnel
+      lbipam.cilium.io/sharing-cross-namespace: "*"
+    labels:
+      expose-public: "true"
     parametersRef:
       group: gateway.envoyproxy.io
       kind: EnvoyProxy
@@ -73,6 +111,8 @@ metadata:
 spec:
   parentRefs:
     - name: internal-gw
+      sectionName: http
+    - name: public-gw
       sectionName: http
   rules:
     - filters:

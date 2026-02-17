@@ -16,6 +16,18 @@ librespeed:
       ports:
         http:
           port: 8080
+    ext-lb:
+      controller: main
+      annotations:
+        lbipam.cilium.io/lb-ipam-ips: 46.38.230.69
+        lbipam.cilium.io/sharing-key: vps-tunnel
+        lbipam.cilium.io/sharing-cross-namespace: "*"
+      labels:
+        expose-public: "true"
+      type: LoadBalancer
+      ports:
+        http:
+          port: 8080
 
   route:
     main:
@@ -25,3 +37,16 @@ librespeed:
         - name: internal-gw
           namespace: envoy-gateway
           sectionName: https
+      rules:
+        - backendRefs:
+            - identifier: main
+    main-public:
+      hostnames:
+        - speed-public.ivanchenko.io
+      parentRefs:
+        - name: public-gw
+          namespace: envoy-gateway
+          sectionName: https
+      rules:
+        - backendRefs:
+            - identifier: main

@@ -1,20 +1,50 @@
 {{- range .Values.ciliumBGP.peers }}
----
-apiVersion: cilium.io/v2alpha1
-kind: CiliumBGPPeeringPolicy
+apiVersion: cilium.io/v2
+kind: CiliumBGPClusterConfig
 metadata:
-  name: vps-peering-{{ .hostname }}
+  name: bgp-node-{{ .hostname }}
 spec:
   nodeSelector:
     matchLabels:
       kubernetes.io/hostname: {{ .hostname | quote }}
-  virtualRouters:
-    - localASN: 64512
-      exportPodCIDR: false
-      serviceSelector:
+  bgpInstances:
+    - name: "instance-{{ .hostname }}"
+      localASN: 64512
+      peers:
+        - name: "peer-{{ .hostname }}"
+          peerASN: 64512
+          peerAddress: {{ .peerAddress | quote }}
+          peerConfigRef:
+            name: default-peer-config
+---
+{{- end }}
+apiVersion: cilium.io/v2
+kind: CiliumBGPPeerConfig
+metadata:
+  name: default-peer-config
+spec:
+  timers:
+    holdTimeSeconds: 90
+    keepAliveTimeSeconds: 30
+  families:
+    - afi: ipv4
+      safi: unicast
+      advertisements:
+        matchLabels:
+          advertise: "public-lb"
+---
+apiVersion: cilium.io/v2
+kind: CiliumBGPAdvertisement
+metadata:
+  name: advertise-public-services
+  labels:
+    advertise: "public-lb"
+spec:
+  advertisements:
+    - advertisementType: Service
+      service:
+        addresses:
+          - LoadBalancerIP
+      selector:
         matchLabels:
           expose-public: "true"
-      neighbors:
-        - peerAddress: {{ .peerAddress | quote }}
-          peerASN: 64512
-{{- end }}

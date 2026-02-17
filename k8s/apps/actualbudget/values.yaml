@@ -75,7 +75,7 @@ actualbudget:
           image:
             repository: ghcr.io/vanchaxy/bank-sync
             tag: sha-59b2244
-          args: ['--skip-download']
+          args: ["--skip-download"]
           envFrom:
             - secretRef:
                 name: actualbudget-secret
