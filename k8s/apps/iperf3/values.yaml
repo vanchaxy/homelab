@@ -1,17 +1,29 @@
 iperf3:
   controllers:
     main:
-      replicas: 0
+      replicas: null
       containers:
         main:
           image:
             repository: networkstatic/iperf3
             tag: latest@sha256:07dcca91c0e47d82d83d91de8c3d46b840eef4180499456b4fa8d6dadb46b6c8
-          args: ['-s']
+          args: ["-s"]
 
   service:
     main:
       controller: main
+      type: LoadBalancer
+      ports:
+        http:
+          port: 5201
+    public:
+      controller: main
+      annotations:
+        lbipam.cilium.io/lb-ipam-ips: 46.38.230.69
+        lbipam.cilium.io/sharing-key: vps-tunnel
+        lbipam.cilium.io/sharing-cross-namespace: "*"
+      labels:
+        expose-public: "true"
       type: LoadBalancer
       ports:
         http:

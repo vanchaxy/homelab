@@ -7,11 +7,11 @@ spec:
     matchLabels: {}
   egress:
     - toPorts:
-      - ports:
-        - port: "53"
-          protocol: ANY
-        rules:
-          dns:
-            - matchPattern: "*"
+        - ports:
+            - port: "53"
+              protocol: ANY
+          rules:
+            dns:
+              - matchPattern: "*"
     - toEntities:
-      - all
+        - all

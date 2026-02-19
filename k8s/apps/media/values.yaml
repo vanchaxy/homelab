@@ -35,7 +35,12 @@ media:
               custom: true
               spec:
                 exec:
-                  command: [ "/bin/sh", "-c", "/bin/ping -qc 2 1.1.1.1 && /bin/ls /data/media || exit 1" ]
+                  command:
+                    [
+                      "/bin/sh",
+                      "-c",
+                      "/bin/ping -qc 2 1.1.1.1 && /bin/ls /data/media || exit 1",
+                    ]
                 initialDelaySeconds: 60
                 periodSeconds: 15
                 timeoutSeconds: 3
@@ -86,29 +91,29 @@ media:
             TZ: Etc/UTC
           args:
             - daemon
-            - '-T'
+            - "-T"
             - http://media-prowlarr:9696/1/api?apikey=6e4a625420f84dd38d474f3b9664ea1a
             - http://media-prowlarr:9696/2/api?apikey=6e4a625420f84dd38d474f3b9664ea1a
-            - '-A'
+            - "-A"
             - inject
-            - '--qbittorrent-url'
-            - 'http://media-qbittorrent:8081'
-            - '--duplicate-categories'
-            - '--match-mode'
-            - 'partial'
-            - '--link-dirs'
-            - '/data/x-seed'
-            - '--season-from-episodes'
-            - '0.8'
-            - '--rss-cadence'
-            - '15min'
+            - "--qbittorrent-url"
+            - "http://media-qbittorrent:8081"
+            - "--duplicate-categories"
+            - "--match-mode"
+            - "partial"
+            - "--link-dirs"
+            - "/data/x-seed"
+            - "--season-from-episodes"
+            - "0.8"
+            - "--rss-cadence"
+            - "15min"
           probes:
             liveness:
               enabled: true
               custom: true
               spec:
                 exec:
-                  command: [ "/bin/sh", "-c", "/bin/ls /data/media || exit 1" ]
+                  command: ["/bin/sh", "-c", "/bin/ls /data/media || exit 1"]
                 initialDelaySeconds: 60
                 periodSeconds: 15
                 timeoutSeconds: 3
@@ -141,7 +146,7 @@ media:
               custom: true
               spec:
                 exec:
-                  command: [ "/bin/sh", "-c", "/bin/ls /data/media || exit 1" ]
+                  command: ["/bin/sh", "-c", "/bin/ls /data/media || exit 1"]
                 initialDelaySeconds: 60
                 periodSeconds: 15
                 timeoutSeconds: 3
@@ -163,7 +168,7 @@ media:
               custom: true
               spec:
                 exec:
-                  command: [ "/bin/sh", "-c", "/bin/ls /data/media || exit 1" ]
+                  command: ["/bin/sh", "-c", "/bin/ls /data/media || exit 1"]
                 initialDelaySeconds: 60
                 periodSeconds: 15
                 timeoutSeconds: 3
@@ -205,7 +210,7 @@ media:
               custom: true
               spec:
                 exec:
-                  command: [ "/bin/sh", "-c", "/bin/ls /data/media || exit 1" ]
+                  command: ["/bin/sh", "-c", "/bin/ls /data/media || exit 1"]
                 initialDelaySeconds: 60
                 periodSeconds: 15
                 timeoutSeconds: 3
@@ -227,7 +232,7 @@ media:
               custom: true
               spec:
                 exec:
-                  command: [ "/bin/sh", "-c", "/bin/ls /data/media || exit 1" ]
+                  command: ["/bin/sh", "-c", "/bin/ls /data/media || exit 1"]
                 initialDelaySeconds: 60
                 periodSeconds: 15
                 timeoutSeconds: 3
