@@ -31,7 +31,7 @@ actualbudget:
         main:
           image:
             repository: ghcr.io/coleifer/sqlite-web
-            tag: 0.7.0@sha256:cc89917eb76a842c6206fc555584c72f0b44f3080c06144c5012a5f736ece69d
+            tag: 0.7.1@sha256:24a59df0603a7e17e46bc45e3ccbf0e6ab12eacecb66d00b1d45a1370b072ec5
           args:
             - -H
             - 0.0.0.0
