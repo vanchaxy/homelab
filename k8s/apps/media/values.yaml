@@ -238,6 +238,20 @@ media:
                 timeoutSeconds: 3
                 failureThreshold: 3
 
+    seerr:
+      pod:
+        securityContext:
+          fsGroup: 568
+          fsGroupChangePolicy: "OnRootMismatch"
+          runAsUser: 568
+          runAsGroup: 568
+
+      containers:
+        main:
+          image:
+            repository: ghcr.io/seerr-team/seerr
+            tag: v3.0.1
+
   service:
     qbittorrent:
       controller: qbittorrent
@@ -281,6 +295,12 @@ media:
       ports:
         http:
           port: 8096
+    seerr:
+      controller: seerr
+      type: ClusterIP
+      ports:
+        http:
+          port: 5055
 
   route:
     qbittorrent:
@@ -353,6 +373,16 @@ media:
       rules:
         - backendRefs:
             - identifier: jellyfin
+    seerr:
+      hostnames:
+        - seerr.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      rules:
+        - backendRefs:
+            - identifier: seerr
 
   persistence:
     config-rwo:
@@ -392,6 +422,11 @@ media:
           main:
             - path: /UTOPIA-Upload-Assistant/data
               subPath: mkvtools-config
+        seerr:
+          main:
+            - path: /app/config
+              subPath: seerr-config
+
     tmp:
       type: emptyDir
       advancedMounts:
