@@ -1,0 +1,81 @@
+donetick:
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: donetick/donetick
+            tag: v0.1.74
+          env:
+            DT_ENV: selfhosted
+            DT_SERVER_PORT: 2021
+            DT_SERVER_SERVE_FRONTEND: 'true'
+            DT_SERVER_RATE_PERIOD: '9999999s'
+            DT_SERVER_RATE_LIMIT: '9999999'
+            DT_DATABASE_TYPE: sqlite
+            DT_SQLITE_PATH: /donetick-data/donetick.db
+            DT_OAUTH2_CLIENT_ID: donetick
+            DT_OAUTH2_REDIRECT_URL: https://donetick.ivanchenko.io/auth/oauth2
+            DT_OAUTH2_SCOPES: openid,profile,email
+            DT_OAUTH2_AUTH_URL: https://id.ivanchenko.io/authorize
+            DT_OAUTH2_TOKEN_URL: https://id.ivanchenko.io/api/oidc/token
+            DT_OAUTH2_USER_INFO_URL: https://id.ivanchenko.io/api/oidc/userinfo
+            DT_OAUTH2_NAME: "Pocket ID"
+            DT_STORAGE_STORAGE_TYPE: remote
+            DT_STORAGE_BUCKET_NAME: donetick
+            DT_STORAGE_REGION: us-east-1
+            DT_STORAGE_BASE_PATH: assets
+            DT_STORAGE_ENDPOINT: https://s3.ivanchenko.io
+            DT_STORAGE_MAX_USER_STORAGE: '1073741824'
+            DT_STORAGE_MAX_FILE_SIZE: '33554432'
+          envFrom:
+            - secretRef:
+                name: donetick-oauth
+            - secretRef:
+                name: donetick-s3
+  service:
+    main:
+      controller: main
+      type: ClusterIP
+      ports:
+        http:
+          port: 2021
+
+  route:
+    main:
+      hostnames:
+        - donetick.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+
+  persistence:
+    data:
+      enabled: true
+      suffix: data
+      storageClass: longhorn-ssd
+      size: 1Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        main:
+          main:
+            - path: /donetick-data
+              subPath: data
+            - path: /config
+              subPath: config
+
+helpers:
+  infisicalSecrets:
+    - name: donetick-oauth
+      namespace: donetick
+      infisical:
+        path: "/donetick/oauth"
+    - name: donetick-s3
+      namespace: donetick
+      infisical:
+        path: "/versitygw"
+      template:
+        data:
+          DT_STORAGE_ACCESS_KEY: "{{ .rootAccessKeyId.Value }}"
+          DT_STORAGE_SECRET_KEY: "{{ .rootSecretAccessKey.Value }}"
