@@ -1,6 +1,6 @@
 cloudnative-pg:
   config:
-    clusterWide: false
+    clusterWide: true
 
 immich:
   controllers:
