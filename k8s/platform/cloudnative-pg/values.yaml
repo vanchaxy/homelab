@@ -1,0 +1,3 @@
+cloudnative-pg:
+  config:
+    clusterWide: true
