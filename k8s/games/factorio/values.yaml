@@ -1,0 +1,55 @@
+factorio:
+  controllers:
+    main:
+      replicas: null
+      containers:
+        main:
+          image:
+            repository: factoriotools/factorio
+            tag: 2.0.73
+
+  service:
+    main:
+      controller: main
+      type: LoadBalancer
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: "factorio.ivanchenko.io"
+        lbipam.cilium.io/lb-ipam-ips: 46.38.230.69
+        lbipam.cilium.io/sharing-key: vps-tunnel
+        lbipam.cilium.io/sharing-cross-namespace: "*"
+      labels:
+        expose-public: "true"
+      ports:
+        game:
+          port: 34197
+          protocol: UDP
+        query:
+          port: 27015
+          protocol: TCP
+    internal:
+      controller: main
+      type: LoadBalancer
+      loadBalancerIP: 192.168.50.230
+      ports:
+        game:
+          port: 34197
+          protocol: UDP
+        query:
+          port: 27015
+          protocol: TCP
+
+  persistence:
+    server:
+      enabled: true
+      storageClass: longhorn-ssd
+      size: 1Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        main:
+          main:
+            - path: /factorio
+
+helpers:
+  backups:
+    - pvcName: factorio
+      resticRepoSuffix: factorio
