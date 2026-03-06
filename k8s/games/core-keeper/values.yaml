@@ -6,7 +6,7 @@ core-keeper:
         main:
           image:
             repository: escaping/core-keeper-dedicated
-            tag: v2.7.2@sha256:57a339c3d47bdeee1908c80400806783292a9f01a232ca1906eadd8b9f578a30
+            tag: v2.8.1@sha256:87fa7925596264e1460cb6c7c128e9d39ac5445206e04e587993b5d4afa7c90f
           envFrom:
             - secretRef:
                 name: core-keeper-secret
