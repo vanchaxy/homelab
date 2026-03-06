@@ -1,0 +1,84 @@
+kaneo:
+  controllers:
+    api:
+      containers:
+        main:
+          image:
+            repository: ghcr.io/usekaneo/api
+            tag: latest
+          env:
+            KANEO_CLIENT_URL: "https://kaneo.ivanchenko.io"
+            KANEO_API_URL: "https://kaneo.ivanchenko.io"
+            DISABLE_GUEST_ACCESS: 'true'
+            DISABLE_REGISTRATION: 'true'
+            DATABASE_URL:
+              valueFrom:
+                secretKeyRef:
+                  name: kaneo-secret
+                  key: dburi
+            AUTH_SECRET:
+              valueFrom:
+                secretKeyRef:
+                  name: kaneo-secret
+                  key: AUTH_SECRET
+            CUSTOM_OAUTH_CLIENT_ID: kaneo
+            CUSTOM_OAUTH_CLIENT_SECRET:
+              valueFrom:
+                secretKeyRef:
+                  name: kaneo-secret
+                  key: CUSTOM_OAUTH_CLIENT_SECRET
+            CUSTOM_OAUTH_DISCOVERY_URL: https://id.ivanchenko.io/.well-known/openid-configuration
+
+    web:
+      containers:
+        main:
+          image:
+            repository: ghcr.io/usekaneo/web
+            tag: latest
+          env:
+            KANEO_API_URL: "https://kaneo.ivanchenko.io"
+            KANEO_CLIENT_URL: "https://kaneo.ivanchenko.io"
+
+  service:
+    api:
+      controller: api
+      ports:
+        http:
+          port: 1337
+
+    web:
+      controller: web
+      ports:
+        http:
+          port: 5173
+
+  route:
+    main:
+      hostnames:
+        - kaneo.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      rules:
+        - matches:
+            - path:
+                type: PathPrefix
+                value: /
+          backendRefs:
+            - name: kaneo-web
+              port: 5173
+        - matches:
+            - path:
+                type: PathPrefix
+                value: /api/
+          backendRefs:
+            - name: kaneo-api
+              port: 1337
+
+helpers:
+  infisicalSecrets:
+    - name: kaneo-secret
+      type: kubernetes.io/basic-auth
+      infisical:
+        path: "/kaneo"

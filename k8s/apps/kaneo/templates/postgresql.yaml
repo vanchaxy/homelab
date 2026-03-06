@@ -1,0 +1,21 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: kaneo-postgres
+spec:
+  imageName: 'ghcr.io/cloudnative-pg/postgresql:18.3-minimal-trixie'
+  instances: 1
+  bootstrap:
+    initdb:
+      database: kaneo
+      owner: kaneo
+      secret:
+        name: kaneo-secret
+  storage:
+    pvcTemplate:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Gi
+      storageClassName: longhorn-ssd
