@@ -53,3 +53,7 @@ helpers:
   backups:
     - pvcName: factorio
       resticRepoSuffix: factorio
+      moverSecurityContext:
+        fsGroup: 845
+        runAsGroup: 845
+        runAsUser: 845
