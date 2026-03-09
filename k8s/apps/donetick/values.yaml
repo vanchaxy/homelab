@@ -8,31 +8,85 @@ donetick:
             tag: v0.1.74@sha256:5e6e2afe0f23c16f791ce52ef22c1914e39673f889e85ba4517b7e6ad4fbc2f0
           env:
             DT_ENV: selfhosted
-            DT_SERVER_PORT: 2021
-            DT_SERVER_SERVE_FRONTEND: 'true'
-            DT_SERVER_RATE_PERIOD: '9999999s'
-            DT_SERVER_RATE_LIMIT: '9999999'
-            DT_DATABASE_TYPE: sqlite
-            DT_SQLITE_PATH: /donetick-data/donetick.db
-            DT_OAUTH2_CLIENT_ID: donetick
-            DT_OAUTH2_REDIRECT_URL: https://donetick.ivanchenko.io/auth/oauth2
-            DT_OAUTH2_SCOPES: openid,profile,email
-            DT_OAUTH2_AUTH_URL: https://id.ivanchenko.io/authorize
-            DT_OAUTH2_TOKEN_URL: https://id.ivanchenko.io/api/oidc/token
-            DT_OAUTH2_USER_INFO_URL: https://id.ivanchenko.io/api/oidc/userinfo
-            DT_OAUTH2_NAME: "Pocket ID"
-            DT_STORAGE_STORAGE_TYPE: remote
-            DT_STORAGE_BUCKET_NAME: donetick
-            DT_STORAGE_REGION: us-east-1
-            DT_STORAGE_BASE_PATH: assets
-            DT_STORAGE_ENDPOINT: https://s3.ivanchenko.io
-            DT_STORAGE_MAX_USER_STORAGE: '1073741824'
-            DT_STORAGE_MAX_FILE_SIZE: '33554432'
           envFrom:
             - secretRef:
                 name: donetick-oauth
             - secretRef:
                 name: donetick-s3
+
+  configMaps:
+    config:
+      enabled: true
+      data:
+        selfhosted.yaml: |
+          name: "selfhosted"
+
+          is_done_tick_dot_com: false
+          is_user_creation_disabled: false
+
+          database:
+            type: "sqlite"
+            migration: true
+
+          jwt:
+            session_time: 168h
+            max_refresh: 1440h
+
+          server:
+            port: 2021
+            read_timeout: 10s
+            write_timeout: 10s
+            rate_period: 60s
+            rate_limit: 300
+            cors_allow_origins:
+              - "https://donetick.ivanchenko.io"
+              - "https://localhost"
+              - "http://localhost"
+              - "capacitor://localhost"
+            serve_frontend: true
+
+          logging:
+            level: "info"
+            encoding: "json"
+            development: false
+
+          scheduler_jobs:
+            due_job: 30m
+            overdue_job: 3h
+            pre_due_job: 3h
+
+          oauth2:
+            client_id: "donetick"
+            auth_url: "https://id.ivanchenko.io/authorize"
+            token_url: "https://id.ivanchenko.io/api/oidc/token"
+            user_info_url: "https://id.ivanchenko.io/api/oidc/userinfo"
+            redirect_url: "https://donetick.ivanchenko.io/auth/oauth2"
+            name: "Pocket ID"
+
+          storage:
+            storage_type: remote
+            bucket_name: donetick
+            region: us-east-1
+            base_path: assets
+            endpoint: "https://s3.ivanchenko.io"
+            max_user_storage: 1073741824
+            max_file_size: 33554432
+
+          realtime:
+            enabled: true
+            sse_enabled: true
+            heartbeat_interval: 60s
+            connection_timeout: 120s
+            max_connections: 1000
+            max_connections_per_user: 5
+            event_queue_size: 2048
+            cleanup_interval: 2m
+            stale_threshold: 5m
+            enable_compression: true
+            enable_stats: true
+            allowed_origins:
+              - "*"
+
   service:
     main:
       controller: main
@@ -62,8 +116,16 @@ donetick:
           main:
             - path: /donetick-data
               subPath: data
-            - path: /config
-              subPath: config
+    config:
+      enabled: true
+      type: configMap
+      identifier: config
+      advancedMounts:
+        main:
+          main:
+            - path: /config/selfhosted.yaml
+              subPath: selfhosted.yaml
+              readOnly: true
 
 helpers:
   infisicalSecrets:
