@@ -37,13 +37,6 @@ librespeed:
         - name: internal-gw
           namespace: envoy-gateway
           sectionName: https
-      rules:
-        - backendRefs:
-            - identifier: main
-    main-public:
-      hostnames:
-        - speed-public.ivanchenko.io
-      parentRefs:
         - name: public-gw
           namespace: envoy-gateway
           sectionName: https
