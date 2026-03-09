@@ -5,7 +5,7 @@ donetick:
         main:
           image:
             repository: donetick/donetick
-            tag: v0.1.74
+            tag: v0.1.74@sha256:5e6e2afe0f23c16f791ce52ef22c1914e39673f889e85ba4517b7e6ad4fbc2f0
           env:
             DT_ENV: selfhosted
             DT_SERVER_PORT: 2021
