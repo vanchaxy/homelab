@@ -1,0 +1,10 @@
+apiVersion: v2
+name: versitygw
+version: 0.0.0
+dependencies:
+  - name: versitygw
+    version: 0.2.1
+    repository: oci://ghcr.io/versity/versitygw/charts
+  - name: helpers
+    version: 0.1.0
+    repository: file://../../../k8s/_helpers

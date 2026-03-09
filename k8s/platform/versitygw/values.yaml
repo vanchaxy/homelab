@@ -1,0 +1,55 @@
+versitygw:
+  image:
+    repository: ghcr.io/versity/versitygw
+    tag: v1.3.1
+
+  auth:
+    existingSecret: versitygw
+
+  gateway:
+    corsAllowOrigin: https://versitygw.ivanchenko.io
+
+  httpRoute:
+    enabled: true
+    parentRefs:
+      - name: internal-gw
+        namespace: envoy-gateway
+        sectionName: https
+    hostnames:
+      - s3.ivanchenko.io
+
+  admin:
+    enabled: true
+    httpRoute:
+      enabled: true
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      hostnames:
+        - s3-admin.ivanchenko.io
+
+  webui:
+    enabled: true
+    apiGateways:
+      - https://s3.ivanchenko.io
+    adminGateways:
+      - https://s3-admin.ivanchenko.io
+    httpRoute:
+      enabled: true
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      hostnames:
+        - versitygw.ivanchenko.io
+
+helpers:
+  infisicalSecrets:
+    - name: versitygw
+      infisical:
+        path: "/versitygw"
+  backups:
+    - enabled: true
+      pvcName: versitygw-data
+      resticRepoSuffix: versitygw
