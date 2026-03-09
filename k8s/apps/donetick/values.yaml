@@ -79,3 +79,7 @@ helpers:
         data:
           DT_STORAGE_ACCESS_KEY: "{{ .rootAccessKeyId.Value }}"
           DT_STORAGE_SECRET_KEY: "{{ .rootSecretAccessKey.Value }}"
+  backups:
+    - enabled: true
+      pvcName: donetick-data
+      resticRepoSuffix: donetick
