@@ -11,3 +11,4 @@ spec:
   dnsNames:
     - ivanchenko.io
     - "*.ivanchenko.io"
+    - "*.s3.ivanchenko.io"

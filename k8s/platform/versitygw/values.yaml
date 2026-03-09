@@ -8,6 +8,7 @@ versitygw:
 
   gateway:
     corsAllowOrigin: https://versitygw.ivanchenko.io
+    virtualDomain: s3.ivanchenko.io
 
   httpRoute:
     enabled: true
@@ -17,6 +18,7 @@ versitygw:
         sectionName: https
     hostnames:
       - s3.ivanchenko.io
+      - '*.s3.ivanchenko.io'
 
   admin:
     enabled: true
