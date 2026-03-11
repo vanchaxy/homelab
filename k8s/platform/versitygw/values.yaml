@@ -7,7 +7,6 @@ versitygw:
     existingSecret: versitygw
 
   gateway:
-    corsAllowOrigin: https://versitygw.ivanchenko.io
     virtualDomain: s3.ivanchenko.io
 
   httpRoute:
