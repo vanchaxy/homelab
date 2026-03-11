@@ -29,6 +29,8 @@ factorio:
     internal:
       controller: main
       type: LoadBalancer
+      annotations:
+        internal.ivanchenko.io/hostname: "factorio.ivanchenko.io"
       loadBalancerIP: 192.168.50.230
       ports:
         game:
