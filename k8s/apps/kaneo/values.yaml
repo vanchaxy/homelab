@@ -6,6 +6,9 @@ kaneo:
           image:
             repository: ghcr.io/usekaneo/api
             tag: 2.3.8@sha256:3febba14b45eeeb02331391cb4f843ca651a40d69e684b160a1270b004275e35
+          envFrom:
+            - secretRef:
+                name: kaneo-s3
           env:
             KANEO_CLIENT_URL: "https://kaneo.ivanchenko.io"
             KANEO_API_URL: "https://kaneo.ivanchenko.io"
@@ -28,6 +31,9 @@ kaneo:
                   name: kaneo-secret
                   key: CUSTOM_OAUTH_CLIENT_SECRET
             CUSTOM_OAUTH_DISCOVERY_URL: https://id.ivanchenko.io/.well-known/openid-configuration
+            S3_ENDPOINT: https://s3.ivanchenko.io
+            S3_BUCKET: kaneo
+            
 
     web:
       containers:
@@ -82,3 +88,11 @@ helpers:
       type: kubernetes.io/basic-auth
       infisical:
         path: "/kaneo"
+    - name: kaneo-s3
+      namespace: kaneo
+      infisical:
+        path: "/versitygw"
+      template:
+        data:
+          S3_ACCESS_KEY_ID: "{{ .rootAccessKeyId.Value }}"
+          S3_SECRET_ACCESS_KEY: "{{ .rootSecretAccessKey.Value }}"
