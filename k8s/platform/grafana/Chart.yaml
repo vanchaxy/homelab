@@ -3,7 +3,7 @@ name: grafana
 version: 0.0.0
 dependencies:
   - name: grafana-operator
-    version: 5.22.0
+    version: 5.22.1
     repository: https://grafana.github.io/helm-charts
   - name: helpers
     version: 0.1.0
