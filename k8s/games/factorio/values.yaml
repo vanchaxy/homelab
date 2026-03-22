@@ -5,8 +5,8 @@ factorio:
       containers:
         main:
           image:
-            repository: factoriotools/factorio
-            tag: 2.0.73@sha256:6471fbfb7eab3abf55bb53fed632606ecf17bf930891bccddff724afab9ed94c
+            repository: ghcr.io/vanchaxy/factorio
+            tag: 2.0.76
 
   service:
     main:
