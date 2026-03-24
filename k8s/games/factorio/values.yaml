@@ -6,7 +6,7 @@ factorio:
         main:
           image:
             repository: ghcr.io/vanchaxy/factorio
-            tag: 2.0.76
+            tag: 2.0.76@sha256:ee4c1547d5611d74dce52f941dd9b5d0230d7b9edfa41b6b335d43d06247833d
 
   service:
     main:
