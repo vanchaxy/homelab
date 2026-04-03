@@ -50,6 +50,9 @@ actualbudget:
       ports:
         http:
           port: 8000
+      command: [ "/bin/bash", "-c", "--" ]
+      args: [ "sleep 43200" ]
+
 
   route:
     actualbudget:
