@@ -35,7 +35,8 @@ actualbudget:
           image:
             repository: ghcr.io/vanchaxy/bank-sync
             tag: sha-2b76d4c
-          command: ['python', '-c', '"import time; time.sleep(3600)"']
+          command: [ "/bin/bash", "-c", "--" ]
+          args: [ "sleep 43200" ]
 
   service:
     actualbudget:
@@ -50,9 +51,6 @@ actualbudget:
       ports:
         http:
           port: 8000
-      command: [ "/bin/bash", "-c", "--" ]
-      args: [ "sleep 43200" ]
-
 
   route:
     actualbudget:
