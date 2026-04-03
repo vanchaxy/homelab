@@ -30,55 +30,8 @@ actualbudget:
       containers:
         main:
           image:
-            repository: ghcr.io/coleifer/sqlite-web
-            tag: 0.7.1@sha256:24a59df0603a7e17e46bc45e3ccbf0e6ab12eacecb66d00b1d45a1370b072ec5
-          args:
-            - -H
-            - 0.0.0.0
-            - /data/sqlite.db
-
-    # bank-sync:
-    #   type: cronjob
-    #   cronjob:
-    #     schedule: "0 11,15,20 * * *"
-    #     concurrencyPolicy: Forbid
-    #     startingDeadlineSeconds: 120
-    #     backoffLimit: 0
-    #     successfulJobsHistory: 3
-    #     failedJobsHistory: 3
-    #   pod:
-    #     imagePullSecrets:
-    #       - name: ghcr-login-secret
-    #   containers:
-    #     main:
-    #       image:
-    #         repository: ghcr.io/vanchaxy/bank-sync
-    #         tag: sha-59b2244
-    #       envFrom:
-    #         - secretRef:
-    #             name: actualbudget-secret
-
-    # bank-sync-skip-download:
-    #   type: cronjob
-    #   cronjob:
-    #     schedule: "0 0-10,12-14,16-19,21-23 * * *"
-    #     concurrencyPolicy: Forbid
-    #     startingDeadlineSeconds: 120
-    #     backoffLimit: 0
-    #     successfulJobsHistory: 3
-    #     failedJobsHistory: 3
-    #   pod:
-    #     imagePullSecrets:
-    #       - name: ghcr-login-secret
-    #   containers:
-    #     main:
-    #       image:
-    #         repository: ghcr.io/vanchaxy/bank-sync
-    #         tag: sha-59b2244
-    #       args: ["--skip-download"]
-    #       envFrom:
-    #         - secretRef:
-    #             name: actualbudget-secret
+            repository: ghcr.io/vanchaxy/bank-sync
+            tag: sha-2b76d4c
 
   service:
     actualbudget:
@@ -92,7 +45,7 @@ actualbudget:
       type: ClusterIP
       ports:
         http:
-          port: 8080
+          port: 8000
 
   route:
     actualbudget:
@@ -132,12 +85,6 @@ actualbudget:
       size: 1Gi
       accessMode: ReadWriteOnce
       advancedMounts:
-        # bank-sync:
-        #   main:
-        #     - path: /data
-        # bank-sync-skip-download:
-        #   main:
-        #     - path: /data
         bank-sync-web:
           main:
             - path: /data
