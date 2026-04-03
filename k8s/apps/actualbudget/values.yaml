@@ -152,5 +152,5 @@ helpers:
   backups:
     - pvcName: actualbudget-data
       resticRepoSuffix: actualbudget/data
-    # - pvcName: actualbudget-bank-sync
-    #   resticRepoSuffix: actualbudget/bank-sync
+    - pvcName: actualbudget-bank-sync
+      resticRepoSuffix: actualbudget/bank-sync
