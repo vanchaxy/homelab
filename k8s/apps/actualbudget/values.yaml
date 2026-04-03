@@ -34,7 +34,9 @@ actualbudget:
         main:
           image:
             repository: ghcr.io/vanchaxy/bank-sync
-            tag: sha-ad38bf5
+            tag: sha-1948ec7
+          command: [ "/bin/bash", "-c", "--" ]
+          args: [ "sleep 43200" ]
 
   service:
     actualbudget:
