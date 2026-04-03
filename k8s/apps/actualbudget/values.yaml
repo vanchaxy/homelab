@@ -132,12 +132,12 @@ actualbudget:
       size: 1Gi
       accessMode: ReadWriteOnce
       advancedMounts:
-        bank-sync:
-          main:
-            - path: /data
-        bank-sync-skip-download:
-          main:
-            - path: /data
+        # bank-sync:
+        #   main:
+        #     - path: /data
+        # bank-sync-skip-download:
+        #   main:
+        #     - path: /data
         bank-sync-web:
           main:
             - path: /data
@@ -152,5 +152,5 @@ helpers:
   backups:
     - pvcName: actualbudget-data
       resticRepoSuffix: actualbudget/data
-    - pvcName: actualbudget-bank-sync
-      resticRepoSuffix: actualbudget/bank-sync
+    # - pvcName: actualbudget-bank-sync
+    #   resticRepoSuffix: actualbudget/bank-sync
