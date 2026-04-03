@@ -49,6 +49,7 @@ actualbudget:
       ports:
         http:
           port: 8000
+      command: ['python', '-c', '"import time; time.sleep(3600)"']
 
   route:
     actualbudget:
