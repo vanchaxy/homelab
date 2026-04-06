@@ -1,7 +1,7 @@
 satisfactory:
   controllers:
     main:
-      replicas: 0
+      replicas: null
       containers:
         main:
           image:
@@ -17,9 +17,27 @@ satisfactory:
     main:
       controller: main
       type: LoadBalancer
-      loadBalancerIP: 192.168.50.235
       annotations:
         external-dns.alpha.kubernetes.io/hostname: "sf.ivanchenko.io"
+        lbipam.cilium.io/lb-ipam-ips: 46.38.230.69
+        lbipam.cilium.io/sharing-key: vps-tunnel
+        lbipam.cilium.io/sharing-cross-namespace: "*"
+      ports:
+        api:
+          port: 7777
+          protocol: TCP
+        game:
+          port: 7777
+          protocol: UDP
+        messaging:
+          port: 8888
+          protocol: TCP
+    internal:
+      controller: main
+      type: LoadBalancer
+      loadBalancerIP: 192.168.50.235
+      annotations:
+        internal.ivanchenko.io/hostname: "sf.ivanchenko.io"
       ports:
         api:
           port: 7777
