@@ -5,7 +5,7 @@ icarus:
         main:
           image:
             repository: mornedhels/icarus-server
-            tag: dev@sha256:5201f57e846da20c4312e3a02f05a16783e39dae82c347b4985f2a29d180cf25
+            tag: dev@sha256:a1220e46eeac99b62273eb4a39b4fc514aa53e7d0caa174c2f4eb5865e279dd6
           env:
             UPDATE_CRON: "*/30 * * * *"
           envFrom:
