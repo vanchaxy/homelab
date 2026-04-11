@@ -1,0 +1,21 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: toloka-torznab-postgres
+spec:
+  imageName: 'ghcr.io/cloudnative-pg/postgresql:18.3-minimal-trixie'
+  instances: 1
+  bootstrap:
+    initdb:
+      database: toloka
+      owner: toloka
+      secret:
+        name: toloka-secret
+  storage:
+    pvcTemplate:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 30Gi
+      storageClassName: longhorn-ssd

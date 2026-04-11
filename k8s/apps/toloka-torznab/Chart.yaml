@@ -1,0 +1,11 @@
+apiVersion: v2
+name: toloka-torznab
+version: 0.0.0
+dependencies:
+  - name: app-template
+    version: 4.6.2
+    repository: https://bjw-s-labs.github.io/helm-charts
+    alias: toloka-torznab
+  - name: helpers
+    version: 0.1.0
+    repository: file://../../../k8s/_helpers

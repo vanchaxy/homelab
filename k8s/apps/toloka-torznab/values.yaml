@@ -1,0 +1,85 @@
+toloka-torznab:
+  controllers:
+    main:
+      pod:
+        imagePullSecrets:
+          - name: ghcr-login-secret
+      containers:
+        main:
+          image:
+            repository: ghcr.io/vanchaxy/toloka-indexer
+            tag: 0.0.1rc1
+          envFrom:
+            - secretRef:
+                name: toloka-torznab-secret
+    electric:
+      containers:
+        main:
+          image:
+            repository: electricsql/electric
+            tag: 1.5.1
+      ELECTRIC_INSECURE: 'true'
+      ELECTRIC_MANUAL_TABLE_PUBLISHING: 'true'
+      ELECTRIC_STORAGE_DIR: '/persistent'
+      DATABASE_URL:
+        valueFrom:
+          secretKeyRef:
+            name: toloka-torznab-secret
+            key: ELECTRIC_DATABASE_URL
+
+  service:
+    main:
+      controller: main
+      type: ClusterIP
+      ports:
+        http:
+          port: 8000
+    electric:
+      controller: main
+      type: ClusterIP
+      ports:
+        http:
+          port: 3000
+
+  route:
+    main:
+      hostnames:
+        - toloka-torznab-api.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      rules:
+        - backendRefs:
+            - identifier: main
+    electric:
+      hostnames:
+        - toloka-torznab-electric.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      rules:
+        - backendRefs:
+            - identifier: electric
+
+  persistence:
+    electric:
+      enabled: true
+      suffix: electric
+      storageClass: longhorn-ssd
+      size: 5Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        electric:
+          main:
+            - path: /persistent
+
+helpers:
+  ghcrSecret:
+    enabled: true
+  infisicalSecrets:
+    - name: toloka-torznab-secret
+      type: kubernetes.io/basic-auth
+      infisical:
+        path: "/toloka-torznab"
