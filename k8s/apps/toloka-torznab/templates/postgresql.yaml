@@ -10,7 +10,7 @@ spec:
       database: toloka
       owner: toloka
       secret:
-        name: toloka-secret
+        name: toloka-torznab-secret
   storage:
     pvcTemplate:
       accessModes:
