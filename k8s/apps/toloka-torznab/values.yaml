@@ -36,7 +36,7 @@ toloka-torznab:
         http:
           port: 8000
     electric:
-      controller: main
+      controller: electric
       type: ClusterIP
       ports:
         http:
