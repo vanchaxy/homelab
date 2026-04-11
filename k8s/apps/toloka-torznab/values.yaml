@@ -18,14 +18,15 @@ toloka-torznab:
           image:
             repository: electricsql/electric
             tag: 1.5.1
-      ELECTRIC_INSECURE: 'true'
-      ELECTRIC_MANUAL_TABLE_PUBLISHING: 'true'
-      ELECTRIC_STORAGE_DIR: '/persistent'
-      DATABASE_URL:
-        valueFrom:
-          secretKeyRef:
-            name: toloka-torznab-secret
-            key: ELECTRIC_DATABASE_URL
+          env:
+            ELECTRIC_INSECURE: 'true'
+            ELECTRIC_MANUAL_TABLE_PUBLISHING: 'true'
+            ELECTRIC_STORAGE_DIR: '/persistent'
+            DATABASE_URL:
+              valueFrom:
+                secretKeyRef:
+                  name: toloka-torznab-secret
+                  key: ELECTRIC_DATABASE_URL
 
   service:
     main:
