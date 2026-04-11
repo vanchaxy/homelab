@@ -17,7 +17,7 @@ toloka-torznab:
         main:
           image:
             repository: electricsql/electric
-            tag: 1.5.1
+            tag: 1.5.1@sha256:0c32ad465aa7981de3efeff918386c0aa543877b27c8266eed083ab38fc05a0f
           env:
             ELECTRIC_INSECURE: 'true'
             ELECTRIC_MANUAL_TABLE_PUBLISHING: 'true'
