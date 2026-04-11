@@ -11,6 +11,20 @@ spec:
       owner: toloka
       secret:
         name: toloka-torznab-secret
+  postgresql:
+    parameters:
+      wal_level: logical
+      max_wal_senders: "10"
+      max_replication_slots: "10"
+  managed:
+    roles:
+      - name: toloka
+        ensure: present
+        login: true
+        createrole: true
+        replication: true
+        passwordSecret:
+          name: toloka-torznab-secret
   storage:
     pvcTemplate:
       accessModes:
