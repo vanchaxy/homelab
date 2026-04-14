@@ -5,7 +5,7 @@ kaneo:
         main:
           image:
             repository: ghcr.io/usekaneo/api
-            tag: 2.6.0@sha256:b139cd01e43afd7ec60dbc981d4012cf0e0909ba7084de017c769e065243a4e9
+            tag: 2.6.8@sha256:3bff1d8b5c7a434c020658c4606e67d11b3eeed2ab7e11107a533c05c38cbcbe
           envFrom:
             - secretRef:
                 name: kaneo-s3
