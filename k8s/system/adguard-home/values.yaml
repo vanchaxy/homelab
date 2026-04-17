@@ -45,7 +45,7 @@ adguard-home:
       enabled: true
       suffix: config
       storageClass: longhorn-ssd
-      size: 1Gi
+      size: 10Gi
       accessMode: ReadWriteOnce
       advancedMounts:
         main:
