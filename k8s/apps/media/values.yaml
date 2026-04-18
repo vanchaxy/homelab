@@ -181,9 +181,9 @@ media:
             repository: ghcr.io/dictionarry-hub/profilarr
             tag: develop
           env:
-            PUID=1000
-            PGID=1000
-            TZ=Etc/UTC
+            PUID: 1000
+            PGID: 1000
+            TZ: Etc/UTC
           envFrom:
             - secretRef:
                 name: media-secret
