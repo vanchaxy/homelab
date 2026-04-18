@@ -175,6 +175,9 @@ media:
                 failureThreshold: 3
 
     profilarr:
+      pod:
+        imagePullSecrets:
+          - name: ghcr-login-secret
       containers:
         main:
           image:
@@ -427,6 +430,8 @@ media:
             - path: /data
 
 helpers:
+  ghcrSecret:
+    enabled: true
   infisicalSecrets:
     - name: media-secret
       namespace: media
