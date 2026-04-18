@@ -188,6 +188,7 @@ media:
             PGID: 1000
             TZ: Etc/UTC
             AUTH: 'off'
+            ORIGIN: 'https://profilarr.ivanchenko.io/'
           envFrom:
             - secretRef:
                 name: media-secret
