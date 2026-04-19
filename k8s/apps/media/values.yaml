@@ -107,6 +107,22 @@ media:
             TZ: Etc/UTC
           args:
             - daemon
+            - "-T"
+            - http://media-prowlarr:9696/1/api?apikey=6e4a625420f84dd38d474f3b9664ea1a
+            - http://media-prowlarr:9696/2/api?apikey=6e4a625420f84dd38d474f3b9664ea1a
+            - "-A"
+            - inject
+            - "--qbittorrent-url"
+            - "http://media-qbittorrent:8081"
+            - "--duplicate-categories"
+            - "--match-mode"
+            - "partial"
+            - "--link-dirs"
+            - "/data/x-seed"
+            - "--season-from-episodes"
+            - "0.8"
+            - "--rss-cadence"
+            - "15min"
           probes:
             liveness:
               enabled: true
@@ -394,7 +410,7 @@ media:
         cross-seed:
           main:
             - path: /config
-              subPath: cross-seed-7-config
+              subPath: cross-seed-config
         prowlarr:
           main:
             - path: /config
