@@ -104,6 +104,9 @@ media:
           env:
             PUID: 568
             PGID: 568
+            TZ: Etc/UTC
+          args:
+            - daemon
           probes:
             liveness:
               enabled: true
