@@ -240,12 +240,6 @@ media:
                 failureThreshold: 3
 
     mkvtools:
-      pod:
-        securityContext:
-          fsGroup: 568
-          fsGroupChangePolicy: "OnRootMismatch"
-          runAsUser: 568
-          runAsGroup: 568
       containers:
         main:
           image:
@@ -439,7 +433,8 @@ media:
               subPath: jellyfin-config
         mkvtools:
           main:
-            - path: /config
+            - path: /UTOPIA-Upload-Assistant/data
+              subPath: mkvtools-config
     tmp:
       type: emptyDir
       advancedMounts:
