@@ -433,8 +433,7 @@ media:
               subPath: jellyfin-config
         mkvtools:
           main:
-            - path: /UTOPIA-Upload-Assistant/data
-              subPath: mkvtools-config
+            - path: /config
     tmp:
       type: emptyDir
       advancedMounts:
