@@ -72,6 +72,22 @@ media:
             limits:
               squat.ai/tun: "1"
 
+    qui:
+      containers:
+        main:
+          image:
+            repository: ghcr.io/autobrr/qui
+            tag: v1.17.0
+          env:
+            QUI__OIDC_ENABLED: 'true'
+            QUI__OIDC_ISSUER: https://id.ivanchenko.io
+            QUI__OIDC_CLIENT_ID: 3799cc54-4405-4682-a9d1-0b57c5a4e9a9
+            QUI__OIDC_REDIRECT_URL: http://qui.ivanchenko.io/api/auth/oidc/callback
+            QUI__OIDC_DISABLE_BUILT_IN_LOGIN: 'true'
+          envFrom:
+            - secretRef:
+                name: media-secret
+
     cross-seed:
       pod:
         securityContext:
@@ -252,6 +268,12 @@ media:
       ports:
         http:
           port: 8081
+    qui:
+      controller: qui
+      type: ClusterIP
+      ports:
+        http:
+          port: 7476
     cross-seed:
       controller: cross-seed
       type: ClusterIP
@@ -300,6 +322,16 @@ media:
       rules:
         - backendRefs:
             - identifier: qbittorrent
+    qui:
+      hostnames:
+        - qui.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      rules:
+        - backendRefs:
+            - identifier: qui
     cross-seed:
       hostnames:
         - cross-seed.ivanchenko.io
@@ -371,6 +403,10 @@ media:
           main:
             - path: /config
               subPath: qbittorrent-config
+        qui:
+          main:
+            - path: /config
+              subPath: qui-config
         cross-seed:
           main:
             - path: /config
@@ -412,6 +448,9 @@ media:
       retain: true
       advancedMounts:
         qbittorrent:
+          main:
+            - path: /data
+        qui:
           main:
             - path: /data
         cross-seed:
