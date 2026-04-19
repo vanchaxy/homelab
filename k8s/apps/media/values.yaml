@@ -394,7 +394,7 @@ media:
         cross-seed:
           main:
             - path: /config
-              subPath: cross-seed-config
+              subPath: cross-seed-7-config
         prowlarr:
           main:
             - path: /config
