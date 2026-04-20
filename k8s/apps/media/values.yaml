@@ -123,6 +123,10 @@ media:
             - "0.8"
             - "--rss-cadence"
             - "15min"
+            - "--sonarr"
+            - "http://media-sonarr:8989/?apikey=356f923e63d14f7ebf16571f8534bbcc"
+            - "--radarr"
+            - "http://media-radarr:7878/?apikey=e7e28d0f747f4b1d9809211862e45eee"
           probes:
             liveness:
               enabled: true
