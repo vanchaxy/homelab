@@ -108,8 +108,8 @@ media:
           args:
             - daemon
             - "-T"
-            - http://media-prowlarr:9696/7/api?apikey=6e4a625420f84dd38d474f3b9664ea1a
-            - http://media-prowlarr:9696/8/api?apikey=6e4a625420f84dd38d474f3b9664ea1a
+            - http://media-prowlarr:9696/9/api?apikey=6e4a625420f84dd38d474f3b9664ea1a
+            - http://media-prowlarr:9696/10/api?apikey=6e4a625420f84dd38d474f3b9664ea1a
             - "-A"
             - inject
             - "--qbittorrent-url"
