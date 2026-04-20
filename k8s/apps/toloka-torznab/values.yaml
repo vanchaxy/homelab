@@ -8,7 +8,7 @@ toloka-torznab:
         main:
           image:
             repository: ghcr.io/vanchaxy/toloka-indexer
-            tag: sha-0f66f4e
+            tag: sha-241e3a7
           envFrom:
             - secretRef:
                 name: toloka-torznab-secret
