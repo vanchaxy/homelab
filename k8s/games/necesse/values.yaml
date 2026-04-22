@@ -16,7 +16,6 @@ necesse:
     main:
       controller: main
       type: LoadBalancer
-      loadBalancerIP: 192.168.50.237
       annotations:
         external-dns.alpha.kubernetes.io/hostname: "necesse.ivanchenko.io"
       ports:
