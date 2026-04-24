@@ -17,7 +17,7 @@ media:
         main:
           image:
             repository: linuxserver/qbittorrent
-            tag: libtorrentv1
+            tag: libtorrentv1@sha256:fde4b8a4bead9d766775103fc91f2cd8e26323c502863516d1b975e5669302b3
           env:
             PUID: 568
             PGID: 568
@@ -277,7 +277,7 @@ media:
         main:
           image:
             repository: ghcr.io/seerr-team/seerr
-            tag: v3.2.0
+            tag: v3.2.0@sha256:c4cbd5121236ac2f70a843a0b920b68a27976be57917555f1c45b08a1e6b2aad
 
   service:
     qbittorrent:
