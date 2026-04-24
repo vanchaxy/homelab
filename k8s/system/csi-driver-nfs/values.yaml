@@ -12,9 +12,11 @@ csi-driver-nfs:
     volumeBindingMode: Immediate
     mountOptions:
       - nfsvers=4.1
-      - soft
-      - timeo=50
-      - retrans=2
+      - hard
+      - timeo=600
+      - retrans=3
       - relatime
       - rsize=1048576
       - wsize=1048576
+      - nconnect=4
+      - noatime
