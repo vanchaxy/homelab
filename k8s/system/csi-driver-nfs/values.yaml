@@ -11,7 +11,7 @@ csi-driver-nfs:
     reclaimPolicy: Retain
     volumeBindingMode: Immediate
     mountOptions:
-      - nfsvers=4.1
+      - nfsvers=4.2
       - hard
       - timeo=600
       - retrans=3
