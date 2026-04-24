@@ -24,10 +24,7 @@ media:
             TZ: Etc/UTC
             WEBUI_PORT: 8081
           resources:
-            requests:
-              memory: 2Gi
             limits:
-              memory: 2Gi
               squat.ai/tun: "1"
           probes:
             liveness:
