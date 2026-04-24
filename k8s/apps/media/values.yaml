@@ -250,7 +250,7 @@ media:
         main:
           image:
             repository: ghcr.io/seerr-team/seerr
-            tag: v3.0.1
+            tag: v3.2.0
 
   service:
     qbittorrent:
