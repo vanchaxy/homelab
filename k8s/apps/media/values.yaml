@@ -56,7 +56,6 @@ media:
             DOT: off
             DNS_KEEP_NAMESERVER: on
             HEALTH_VPN_DURATION_INITIAL: 30s
-            VPN_SERVICE_PROVIDER: protonvpn
             VPN_PORT_FORWARDING: on
             VPN_PORT_FORWARDING_UP_COMMAND: >-
               /bin/sh -c 'wget -O- --retry-connrefused --post-data "json={\"listen_port\":{{ `{{PORTS}}` }}}" http://127.0.0.1:8081/api/v2/app/setPreferences 2>&1'
