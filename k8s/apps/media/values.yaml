@@ -403,6 +403,14 @@ media:
             - identifier: jellyfin
 
   persistence:
+    wireguard:
+      enabled: true
+      type: secret
+      name: wireguard-secret
+      advancedMounts:
+        qbittorrent:
+          gluetun:
+            - path: /gluetun/wireguard
     config-rwo:
       storageClass: longhorn-ssd
       size: 50Gi
@@ -490,6 +498,9 @@ helpers:
     - name: oidc-client-secret
       infisical:
         path: "/media/oidc-client-secret"
+    - name: wireguard-secret
+      infisical:
+        path: "/media/wireguard"
   backups:
     - pvcName: media-config-rwo
       resticRepoSuffix: media/config
