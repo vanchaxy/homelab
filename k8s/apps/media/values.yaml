@@ -430,11 +430,16 @@ media:
             - type: CORS
               cors:
                 allowOrigins:
-                  - "http://*.ivanchenko.io"
-                  - "https://donutware.github.io"
+                  - https://donutware.github.io
                 allowMethods:
                   - GET
                   - POST
+                  - OPTIONS
+                allowHeaders:
+                  - Content-Type
+                  - Authorization
+                allowCredentials: true
+                maxAge: 600
 
   persistence:
     wireguard:
