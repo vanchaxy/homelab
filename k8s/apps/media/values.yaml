@@ -430,6 +430,7 @@ media:
             - type: CORS
               cors:
                 allowOrigins:
+                  - https://*.ivanchenko.io
                   - https://donutware.github.io
                 allowMethods:
                   - GET
