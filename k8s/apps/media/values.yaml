@@ -426,6 +426,15 @@ media:
       rules:
         - backendRefs:
             - identifier: seerr
+          filters:
+            - type: CORS
+              cors:
+                allowOrigins:
+                  - "http://*.ivanchenko.io"
+                  - "https://donutware.github.io"
+                allowMethods:
+                  - GET
+                  - POST
 
   persistence:
     wireguard:
