@@ -439,6 +439,7 @@ media:
                 allowHeaders:
                   - Content-Type
                   - Authorization
+                  - x-api-key
                 allowCredentials: true
                 maxAge: 600
 
