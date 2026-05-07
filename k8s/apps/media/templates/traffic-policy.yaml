@@ -16,3 +16,16 @@ spec:
   timeout:
     http:
       requestTimeout: 100s
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: jellyfin-download
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: media-jellyfin
+  timeout:
+    http:
+      requestTimeout: 7200s
