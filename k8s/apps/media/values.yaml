@@ -247,12 +247,14 @@ media:
       containers:
         main:
           image:
-            repository: ghcr.io/vanchaxy/mkvtool
-            tag: sha-238c97d@sha256:ef478c98973029643ca60a50d1f33286b71d4592cff4fe47d0029da5344ce70e
+            repository: ghcr.io/audionut/upload-assistant
+            tag: latest
           env:
             PUID: 568
             PGID: 568
             TZ: Etc/UTC
+            UA_BROWSE_ROOTS: /data,/Upload-Assistant/tmp
+            SESSION_SECRET_FILE: /Upload-Assistant/data/session_secret
           probes:
             liveness:
               enabled: true
@@ -334,6 +336,12 @@ media:
       ports:
         http:
           port: 5055
+    mkvtools:
+      controller: mkvtools
+      type: ClusterIP
+      ports:
+        http:
+          port: 5000
 
   route:
     qbittorrent:
@@ -442,6 +450,16 @@ media:
                   - x-api-key
                 allowCredentials: true
                 maxAge: 600
+    mkvtools:
+      hostnames:
+        - mkvtools.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      rules:
+        - backendRefs:
+            - identifier: mkvtools
 
   persistence:
     wireguard:
@@ -491,7 +509,7 @@ media:
               subPath: jellyfin-config
         mkvtools:
           main:
-            - path: /UTOPIA-Upload-Assistant/data
+            - path: /Upload-Assistant/data
               subPath: mkvtools-config
         seerr:
           main:
