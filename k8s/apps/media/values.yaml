@@ -510,19 +510,13 @@ media:
               subPath: jellyfin-config
         mkvtools:
           main:
-            - path: /Upload-Assistant/data
+            - path: /Upload-Assistant
               subPath: mkvtools-new-config
         seerr:
           main:
             - path: /app/config
               subPath: seerr-config
 
-    tmp:
-      type: emptyDir
-      advancedMounts:
-        mkvtools:
-          main:
-            - path: /Upload-Assistant/tmp
     data:
       storageClass: nfs-csi
       size: 10Ti
