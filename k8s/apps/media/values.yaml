@@ -255,6 +255,7 @@ media:
             TZ: Etc/UTC
             UA_BROWSE_ROOTS: /data,/Upload-Assistant/tmp
             SESSION_SECRET_FILE: /Upload-Assistant/data/session_secret
+          args: ["--webui", "0.0.0.0:5000"]
           probes:
             liveness:
               enabled: true
