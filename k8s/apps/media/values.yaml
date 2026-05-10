@@ -521,7 +521,7 @@ media:
       advancedMounts:
         mkvtools:
           main:
-            - path: /UTOPIA-Upload-Assistant/tmp
+            - path: /Upload-Assistant/tmp
     data:
       storageClass: nfs-csi
       size: 10Ti
