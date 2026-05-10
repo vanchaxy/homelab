@@ -510,7 +510,7 @@ media:
               subPath: jellyfin-config
         mkvtools:
           main:
-            - path: /Upload-Assistant
+            - path: /Upload-Assistant/data
               subPath: mkvtools-new-config
         seerr:
           main:
