@@ -252,7 +252,6 @@ media:
             PGID: 568
             TZ: Etc/UTC
             UA_BROWSE_ROOTS: /data/downloads,/Upload-Assistant/tmp
-            SESSION_SECRET_FILE: /Upload-Assistant/data/session_secret
           args: ["--webui", "0.0.0.0:5000"]
           probes:
             liveness:
