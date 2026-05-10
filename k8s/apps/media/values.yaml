@@ -253,7 +253,7 @@ media:
             PUID: 568
             PGID: 568
             TZ: Etc/UTC
-            UA_BROWSE_ROOTS: /data,/Upload-Assistant/tmp
+            UA_BROWSE_ROOTS: /data/downloads,/Upload-Assistant/tmp
             SESSION_SECRET_FILE: /Upload-Assistant/data/session_secret
           probes:
             liveness:
@@ -510,7 +510,7 @@ media:
         mkvtools:
           main:
             - path: /Upload-Assistant/data
-              subPath: mkvtools-config
+              subPath: mkvtools-new-config
         seerr:
           main:
             - path: /app/config
@@ -521,7 +521,7 @@ media:
       advancedMounts:
         mkvtools:
           main:
-            - path: /UTOPIA-Upload-Assistant/tmp
+            - path: /Upload-Assistant/tmp
     data:
       storageClass: nfs-csi
       size: 10Ti
