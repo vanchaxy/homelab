@@ -246,7 +246,7 @@ media:
         main:
           image:
             repository: ghcr.io/audionut/upload-assistant
-            tag: latest
+            tag: latest@sha256:9361d3c59a4fd92cf1197d0d08af635f3f7578c0c2f2b32aaea385e37115cc92
           env:
             PUID: 568
             PGID: 568
