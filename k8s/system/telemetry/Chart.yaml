@@ -6,5 +6,5 @@ dependencies:
     version: 0.74.1
     repository: https://victoriametrics.github.io/helm-charts/
   - name: prometheus-operator-crds
-    version: 28.0.1
+    version: 29.0.0
     repository: https://prometheus-community.github.io/helm-charts/
