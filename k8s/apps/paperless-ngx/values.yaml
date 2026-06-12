@@ -92,8 +92,14 @@ redis:
   master:
     persistence:
       enabled: true
+    resources:
+      limits:
+        cpu: null
   replica:
     replicaCount: 0
+    resources:
+      limits:
+        cpu: null
 
 helpers:
   infisicalSecrets:

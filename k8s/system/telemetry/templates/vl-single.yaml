@@ -8,3 +8,10 @@ spec:
     resources:
       requests:
         storage: 20Gi
+  useDefaultResources: false
+  resources:
+    requests:
+      cpu: 50m
+      memory: 200Mi
+    limits:
+      memory: 1Gi
