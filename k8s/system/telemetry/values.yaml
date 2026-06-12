@@ -110,3 +110,26 @@ victoria-metrics-k8s-stack:
             tlsConfig:
               caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
               insecureSkipVerify: true
+
+  # The chart's kubelet scrape labelmaps every node label onto every
+  # kubelet/cAdvisor series. Our nodes carry the AMD GPU node-labeller's
+  # per-value labels (beta.amd.com/gpu.cu-count.11=1, ...) plus Talos
+  # extension labels, which pushes wide series like kubernetes_build_info
+  # and container_blkio_device_usage_total past -maxLabelsPerTimeseries=40.
+  # vmsingle then rejects them (RowsRejectedOnIngestion: too_many_labels)
+  # and logs a warning per drop (TooManyLogs). These node labels are noise
+  # on per-container metrics, so drop them after the labelmap — this also
+  # cuts cardinality across all kubelet series. Reproduces the chart's
+  # default relabelConfigs (list values are replaced, not merged).
+  kubelet:
+    vmScrape:
+      spec:
+        relabelConfigs:
+          - action: labelmap
+            regex: __meta_kubernetes_node_label_(.+)
+          - sourceLabels: [__metrics_path__]
+            targetLabel: metrics_path
+          - targetLabel: job
+            replacement: kubelet
+          - action: labeldrop
+            regex: (amd_com_gpu_.*|beta_amd_com_gpu_.*|extensions_talos_dev_.*)
