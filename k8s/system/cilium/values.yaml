@@ -54,17 +54,21 @@ cilium:
   rollOutCiliumPods: true
   resources:
     limits:
-      cpu: 1000m
       memory: 1Gi
     requests:
       cpu: 200m
       memory: 512Mi
 
+  # Drop CPU limit from the install-cni-binaries init container too
+  cni:
+    resources:
+      limits:
+        cpu: null
+
   operator:
     rollOutPods: true
     resources:
       limits:
-        cpu: 500m
         memory: 256Mi
       requests:
         cpu: 50m

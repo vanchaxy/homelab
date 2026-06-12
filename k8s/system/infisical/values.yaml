@@ -1,0 +1,6 @@
+secrets-operator:
+  controllerManager:
+    manager:
+      resources:
+        limits:
+          cpu: null
