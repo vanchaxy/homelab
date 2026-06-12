@@ -84,3 +84,13 @@ helpers:
       type: kubernetes.io/basic-auth
       infisical:
         path: "/toloka-torznab"
+  backups:
+    - pvcName: toloka-torznab-postgres-1
+      resticRepoSuffix: toloka-torznab/postgres
+      moverSecurityContext:
+        fsGroup: 26
+        runAsGroup: 26
+        runAsNonRoot: true
+        runAsUser: 26
+    - pvcName: toloka-torznab-electric
+      resticRepoSuffix: toloka-torznab/electric
