@@ -1,0 +1,43 @@
+# Routing for the external (VM) Alertmanager — the alerts vmalert evaluates from
+# VMRules land here. Everything defaults to Telegram; the always-firing Watchdog
+# is diverted to the healthchecks.io webhook as a dead man's switch (if these
+# pings stop, alerting has broken and healthchecks.io fires).
+#
+# Picked up automatically (VMAlertmanager selectAllByDefault: true). Routes apply
+# cluster-wide because spec.disableNamespaceMatcher is set in values.yaml.
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMAlertmanagerConfig
+metadata:
+  name: alerting-routing
+  namespace: telemetry
+spec:
+  route:
+    receiver: telegram
+    group_by: [alertname]
+    group_wait: 30s
+    group_interval: 5m
+    repeat_interval: 4h
+    routes:
+      - receiver: healthchecks
+        matchers:
+          - alertname="Watchdog"
+        group_wait: 0s
+        group_interval: 1m
+        # Re-fire cadence while Watchdog keeps firing = healthchecks ping cadence.
+        # Set the healthchecks.io check period >= this.
+        repeat_interval: 5m
+  receivers:
+    - name: telegram
+      telegram_configs:
+        - bot_token:
+            name: alertmanager-secrets
+            key: TELEGRAM_BOTTOKEN
+          chat_id: 236266523
+          parse_mode: HTML
+          send_resolved: true
+    - name: healthchecks
+      webhook_configs:
+        - url_secret:
+            name: alertmanager-secrets
+            key: HEALTHCHECKS_URL
+          send_resolved: false

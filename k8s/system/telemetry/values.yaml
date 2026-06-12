@@ -43,6 +43,7 @@ victoria-metrics-k8s-stack:
   alertmanager:
     spec:
       useDefaultResources: false
+      disableNamespaceMatcher: true
       resources:
         requests:
           cpu: 20m
@@ -133,3 +134,9 @@ victoria-metrics-k8s-stack:
             replacement: kubelet
           - action: labeldrop
             regex: (amd_com_gpu_.*|beta_amd_com_gpu_.*|extensions_talos_dev_.*)
+
+helpers:
+  infisicalSecrets:
+    - name: alertmanager-secrets
+      infisical:
+        path: "/monitoring/grafana-alerting"
