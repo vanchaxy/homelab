@@ -16,6 +16,9 @@ spec:
       wal_level: logical
       max_wal_senders: "10"
       max_replication_slots: "10"
+      # Cap how much WAL an inactive logical slot may pin. If Electric stops
+      # advancing, Postgres invalidates the slot instead of filling the PVC.
+      max_slot_wal_keep_size: "8GB"
   managed:
     roles:
       - name: toloka
