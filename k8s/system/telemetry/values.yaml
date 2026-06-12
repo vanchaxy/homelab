@@ -75,3 +75,30 @@ victoria-metrics-k8s-stack:
       # fires once per new failure and stops after 6h.
       KubeJobFailed:
         create: false
+
+  # kube-scheduler and kube-controller-manager serve metrics with a
+  # self-signed cert valid only for 127.0.0.1/localhost (Talos default),
+  # while we scrape them on the node IP. Skip cert verification — the
+  # endpoint is still authenticated via the serviceaccount bearer token.
+  # (bind-address: 0.0.0.0 is set on both in the Talos machine config.)
+  kubeScheduler:
+    vmScrape:
+      spec:
+        endpoints:
+          - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+            port: http-metrics
+            scheme: https
+            tlsConfig:
+              caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+              insecureSkipVerify: true
+
+  kubeControllerManager:
+    vmScrape:
+      spec:
+        endpoints:
+          - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+            port: http-metrics
+            scheme: https
+            tlsConfig:
+              caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+              insecureSkipVerify: true
