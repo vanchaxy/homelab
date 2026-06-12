@@ -7,9 +7,12 @@ helpers:
     - name: grafana-oauth
       infisical:
         path: "/monitoring/grafana"
-    # Alerting credentials, referenced by the GrafanaContactPoints via
-    # valuesFrom (see templates/alerting-contactpoints.yaml). Populate the
     # Infisical path with keys: TELEGRAM_BOTTOKEN, TELEGRAM_CHATID, HEALTHCHECKS_URL.
     - name: grafana-alerting
       infisical:
         path: "/monitoring/grafana-alerting"
+      template:
+        includeAllSecrets: true
+        metadata:
+          labels:
+            app.kubernetes.io/managed-by: grafana-operator
