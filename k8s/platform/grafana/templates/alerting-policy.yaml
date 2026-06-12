@@ -1,0 +1,23 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaNotificationPolicy
+metadata:
+  name: grafana-notification-policy
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  route:
+    receiver: telegram
+    group_by:
+      - grafana_folder
+      - alertname
+    routes:
+      - receiver: healthchecks
+        continue: false
+        group_wait: 0s
+        group_interval: 1m
+        repeat_interval: 5m
+        object_matchers:
+          - - alertname
+            - "="
+            - Watchdog

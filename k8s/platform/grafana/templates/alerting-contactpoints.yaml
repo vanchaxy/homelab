@@ -1,0 +1,43 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaContactPoint
+metadata:
+  name: telegram
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  name: telegram
+  type: telegram
+  settings:
+    parse_mode: HTML
+  valuesFrom:
+    - targetPath: bottoken
+      valueFrom:
+        secretKeyRef:
+          name: grafana-alerting
+          key: TELEGRAM_BOTTOKEN
+    - targetPath: chatid
+      valueFrom:
+        secretKeyRef:
+          name: grafana-alerting
+          key: TELEGRAM_CHATID
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaContactPoint
+metadata:
+  name: healthchecks
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  name: healthchecks
+  type: webhook
+  disableResolveMessage: true
+  settings:
+    httpMethod: POST
+  valuesFrom:
+    - targetPath: url
+      valueFrom:
+        secretKeyRef:
+          name: grafana-alerting
+          key: HEALTHCHECKS_URL
