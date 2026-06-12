@@ -14,7 +14,7 @@ spec:
           labels:
             severity: warning
           annotations:
-            summary: 'CNPG slot {{ $labels.slot_name }} on {{ $labels.namespace }}/{{ $labels.pod }} is inactive'
+            summary: {{ `'CNPG slot {{ $labels.slot_name }} on {{ $labels.namespace }}/{{ $labels.pod }} is inactive'` }}
             description: 'No consumer connected for >1h. Slot is retaining WAL. Investigate before max_slot_wal_keep_size invalidates it.'
         - alert: PostgresReplicationSlotLagHigh
           expr: |
@@ -23,5 +23,5 @@ spec:
           labels:
             severity: warning
           annotations:
-            summary: 'CNPG slot {{ $labels.slot_name }} on {{ $labels.namespace }}/{{ $labels.pod }} retaining >6GB of WAL'
+            summary: {{ `'CNPG slot {{ $labels.slot_name }} on {{ $labels.namespace }}/{{ $labels.pod }} retaining >6GB of WAL'` }}
             description: 'Within 2 GB of max_slot_wal_keep_size=8GB. The consumer (e.g. Electric) must catch up or be reset; otherwise the slot will be invalidated and need a fresh sync.'
