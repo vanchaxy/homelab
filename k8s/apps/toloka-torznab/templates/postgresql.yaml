@@ -5,6 +5,8 @@ metadata:
 spec:
   imageName: 'ghcr.io/cloudnative-pg/postgresql:18.3-minimal-trixie'
   instances: 1
+  monitoring:
+    enablePodMonitor: true
   bootstrap:
     initdb:
       database: toloka

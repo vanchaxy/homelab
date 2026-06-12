@@ -6,6 +6,9 @@ spec:
   imageName: ghcr.io/tensorchord/cloudnative-vectorchord:16-0.3.0
   instances: 1
 
+  monitoring:
+    enablePodMonitor: true
+
   postgresql:
     shared_preload_libraries:
       - "vchord.so"
