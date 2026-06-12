@@ -92,6 +92,14 @@ victoria-metrics-k8s-stack:
               caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
               insecureSkipVerify: true
 
+  # Talos runs etcd as a host service, not a Kubernetes pod, so the
+  # chart's kube-etcd Service selector (component: etcd) matches nothing
+  # and the scrape pool has 0 targets — firing ScrapePoolHasNoTargets.
+  # etcd metrics aren't exposed to the pod network on Talos by default,
+  # so disable the scrape rather than ship an empty pool.
+  kubeEtcd:
+    enabled: false
+
   kubeControllerManager:
     vmScrape:
       spec:
