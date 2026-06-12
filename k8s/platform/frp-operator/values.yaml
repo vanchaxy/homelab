@@ -1,5 +1,0 @@
-helpers:
-  infisicalSecrets:
-    - name: frp
-      infisical:
-        path: "/frp"
