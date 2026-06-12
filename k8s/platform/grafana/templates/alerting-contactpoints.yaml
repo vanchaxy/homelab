@@ -34,7 +34,7 @@ spec:
   type: webhook
   disableResolveMessage: true
   settings:
-    httpMethod: GET
+    httpMethod: POST
   valuesFrom:
     - targetPath: url
       valueFrom:
