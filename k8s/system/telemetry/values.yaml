@@ -28,3 +28,13 @@ victoria-metrics-k8s-stack:
       enabled: true
       spec:
         allowCrossNamespaceImport: true
+
+  defaultRules:
+    rules:
+      # Upstream KubeJobFailed fires forever (`kube_job_failed > 0`)
+      # because failed Jobs are never garbage-collected unless
+      # ttlSecondsAfterFinished is set. Custom rule in
+      # templates/vmrule-kube-job-failed.yaml uses changes() so it
+      # fires once per new failure and stops after 6h.
+      KubeJobFailed:
+        create: false
