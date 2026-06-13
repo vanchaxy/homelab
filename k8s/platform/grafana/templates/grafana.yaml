@@ -5,6 +5,8 @@ metadata:
   labels:
     dashboards: "grafana"
 spec:
+  # renovate: datasource=docker depName=grafana/grafana
+  version: "13.0.2"
   config:
     server:
       root_url: https://grafana.ivanchenko.io
@@ -46,8 +48,6 @@ spec:
         spec:
           containers:
             - name: grafana
-              # renovate: datasource=docker depName=grafana/grafana
-              image: docker.io/grafana/grafana:13.0.2@sha256:5dad0df181cb644a14e13617b913b261a54f7d4fd4510721dba420929f35bea2
               env:
                 - name: OAUTH_CLIENT_ID
                   valueFrom:
