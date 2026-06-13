@@ -73,13 +73,19 @@ spec:
             mountPath: /root/app/values.yaml
             subPath: values.yaml
         command:
-          - cilium
-          - install
-          - --version=v1.18.6
-          - --set
-          - kubeProxyReplacement=true
-          - --values
-          - /root/app/values.yaml
+          - /bin/sh
+          - -c
+          - |
+            # Talos re-applies this bootstrap manifest on every machineconfig
+            # apply. On an already-provisioned cluster `cilium install` fails
+            # (Cilium is already present), leaving a Failed Job that trips the
+            # kube-job-failed-once alert. Skip the install when Cilium is
+            # already running so the Job succeeds and no failure is recorded.
+            if cilium status --wait=false >/dev/null 2>&1; then
+              echo "Cilium already installed; nothing to do"
+              exit 0
+            fi
+            exec cilium install --version=v1.18.6 --set kubeProxyReplacement=true --values /root/app/values.yaml
       volumes:
         - name: values
           configMap:
