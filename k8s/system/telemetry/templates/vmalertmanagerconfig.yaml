@@ -17,6 +17,9 @@ spec:
         group_wait: 0s
         group_interval: 1m
         repeat_interval: 5m
+      - receiver: blackhole
+        matchers:
+          - alertname="InfoInhibitor"
   receivers:
     - name: telegram
       telegram_configs:
@@ -32,3 +35,14 @@ spec:
             name: alertmanager-secrets
             key: HEALTHCHECKS_URL
           send_resolved: false
+    - name: blackhole
+  inhibit_rules:
+    - source_matchers: ['severity="critical"']
+      target_matchers: ['severity=~"warning|info"']
+      equal: [namespace, alertname]
+    - source_matchers: ['severity="warning"']
+      target_matchers: ['severity="info"']
+      equal: [namespace, alertname]
+    - source_matchers: ['alertname="InfoInhibitor"']
+      target_matchers: ['severity="info"']
+      equal: [namespace]
