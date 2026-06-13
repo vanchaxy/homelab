@@ -7,22 +7,13 @@ spec:
   groups:
     - name: kube-job-failed-once
       rules:
-        # Fires only when kube_job_failed changes within the last 6h
-        # (i.e. when a Job newly fails). Auto-clears 6h after the last
-        # failure event even if the Failed Job object still exists.
-        #
-        # cilium-install is excluded: it's a Talos bootstrap inline manifest
-        # (terraform/cluster/node/manifests/cilium-install.yaml) that runs
-        # `cilium install` on every machineconfig apply and fails by design on
-        # an already-provisioned cluster (Cilium is already present). The image
-        # is distroless so it can't be made idempotent with a shell guard, and
-        # a genuine CNI bootstrap failure on a fresh node surfaces via other
-        # alerts (nodes NotReady, etc.).
         - alert: KubeJobFailed
           expr: |
+            kube_job_failed{job="kube-state-metrics", job_name!="cilium-install", condition="true"} > 0
+            and ignoring(__name__)
             changes(kube_job_failed{job="kube-state-metrics", job_name!="cilium-install", condition="true"}[6h]) > 0
           labels:
             severity: warning
           annotations:
             summary: {{ `'Job {{ $labels.namespace }}/{{ $labels.job_name }} failed'` }}
-            description: 'A new Job failure was recorded in the last 6h. After investigating, delete the Job object so it does not accumulate in etcd.'
+            description: 'A Job failed within the last 6h. After investigating, delete the Job object to clear this alert and stop it accumulating in etcd.'
