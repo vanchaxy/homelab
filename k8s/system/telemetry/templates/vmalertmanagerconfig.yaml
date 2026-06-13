@@ -38,18 +38,15 @@ spec:
           # text via reReplaceAll.
           message: |-
 {{ `
-{{- if eq .Status "firing" -}}
+{{- $esc := "[_*\\[\\]()~__BT__>#+\\-=|{}.!\\\\]" -}}
+{{- if .Alerts.Firing -}}
 {{- if eq .CommonLabels.severity "critical" }}🔥 *CRITICAL*
 {{- else if eq .CommonLabels.severity "warning" }}⚠️ *WARNING*
-{{- else }}ℹ️ *FIRING*{{ end }} · {{ .Alerts.Firing | len }} firing
+{{- else }}ℹ️ *FIRING*{{ end }} · {{ .Alerts.Firing | len }} firing{{ if .Alerts.Resolved }}, {{ .Alerts.Resolved | len }} resolved{{ end }}
 {{- else -}}
 ✅ *RESOLVED* · {{ .Alerts.Resolved | len }} resolved
 {{- end }}
-{{ range .Alerts }}
-{{- $esc := "[_*\\[\\]()~__BT__>#+\\-=|{}.!\\\\]" -}}
-{{- if eq .Status "resolved" -}}
-✅ *{{ reReplaceAll $esc "\\$0" .Labels.alertname }}*{{ with .Labels.namespace }} · __BT__{{ . }}__BT__{{ end }}
-{{ else -}}
+{{ range .Alerts.Firing }}
 {{ if eq .Labels.severity "critical" }}🔥{{ else if eq .Labels.severity "warning" }}⚠️{{ else }}ℹ️{{ end }} *{{ reReplaceAll $esc "\\$0" .Labels.alertname }}*
 {{- with .Annotations.summary }}
 {{ reReplaceAll $esc "\\$0" . }}{{ end }}
@@ -60,7 +57,9 @@ __BT____BT____BT__
 {{ end }}{{ end -}}
 __BT____BT____BT__
 {{ end -}}
-{{ end }}
+{{ range .Alerts.Resolved }}
+✅ *{{ reReplaceAll $esc "\\$0" .Labels.alertname }}*{{ with .Labels.namespace }} · __BT__{{ . }}__BT__{{ end }}
+{{ end -}}
 ` | replace "__BT__" "`" | trim | indent 12 }}
     - name: healthchecks
       webhook_configs:
