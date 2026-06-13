@@ -66,3 +66,6 @@ helpers:
       namespace: yamtrack
       infisical:
         path: "/yamtrack"
+  backups:
+    - pvcName: yamtrack-data
+      resticRepoSuffix: yamtrack

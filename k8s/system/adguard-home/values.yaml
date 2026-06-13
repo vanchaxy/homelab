@@ -54,3 +54,8 @@ adguard-home:
               subPath: conf
             - path: /opt/adguardhome/work
               subPath: work
+
+helpers:
+  backups:
+    - pvcName: adguard-home-config
+      resticRepoSuffix: adguard-home

@@ -16,3 +16,11 @@ helpers:
         metadata:
           labels:
             app.kubernetes.io/managed-by: grafana-operator
+  backups:
+    - pvcName: grafana-pvc
+      resticRepoSuffix: grafana
+      moverSecurityContext:
+        fsGroup: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+        runAsUser: 10001
