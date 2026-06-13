@@ -9,7 +9,7 @@ global:
     bucketSecretPath: "/common/restic"
     storageClassName: longhorn-ssd-backup
     volumeSnapshotClassName: longhorn-snapshot-vsc
-    copyMethod: Clone
+    copyMethod: Snapshot
     pruneIntervalDays: 14
     retain:
       hourly: 12
