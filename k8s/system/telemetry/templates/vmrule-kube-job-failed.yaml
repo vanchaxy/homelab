@@ -20,7 +20,7 @@ spec:
         # alerts (nodes NotReady, etc.).
         - alert: KubeJobFailed
           expr: |
-            changes(kube_job_failed{job="kube-state-metrics", job_name!="cilium-install"}[6h]) > 0
+            changes(kube_job_failed{job="kube-state-metrics", job_name!="cilium-install", condition="true"}[6h]) > 0
           labels:
             severity: warning
           annotations:

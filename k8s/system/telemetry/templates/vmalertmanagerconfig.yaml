@@ -35,7 +35,7 @@ spec:
           # backtick (which would close the raw string) and is replaced below.
           # MarkdownV2 needs every reserved char escaped in dynamic text or
           # Telegram 400s and the alert is never delivered: $esc escapes body
-          # text; URLs only need ) and \ escaped inside the (...) link target.
+          # text via reReplaceAll.
           message: |-
 {{ `
 {{- if eq .Status "firing" -}}
@@ -59,9 +59,6 @@ __BT____BT____BT__
 {{ range .Labels.SortedPairs }}{{ if not (match "^(alertname|alertgroup|severity|condition|prometheus|endpoint|instance|job|service)$" .Name) }}{{ .Name }} = {{ .Value }}
 {{ end }}{{ end -}}
 __BT____BT____BT__
-{{- if or .GeneratorURL .Annotations.runbook_url }}
-{{ with .GeneratorURL }}🔗 [source]({{ reReplaceAll "[)\\\\]" "\\$0" . }}){{ end }}{{ with .Annotations.runbook_url }} · 📖 [runbook]({{ reReplaceAll "[)\\\\]" "\\$0" . }}){{ end }}
-{{- end }}
 {{ end -}}
 {{ end }}
 ` | replace "__BT__" "`" | trim | indent 12 }}
