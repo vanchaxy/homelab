@@ -1,5 +1,11 @@
 victoria-metrics-k8s-stack:
   victoria-metrics-operator:
+    # Pinned back from chart-default v0.71.0: that build's /metrics endpoint
+    # deadlocks (never returns), so vmagent can't scrape the operator and
+    # TargetDown/TooManyScrapeErrors/TooManyLogs fire. Remove once upstream
+    # ships a fix newer than v0.71.0.
+    image:
+      tag: v0.70.1
     admissionWebhooks:
       enabled: true
       certManager:
