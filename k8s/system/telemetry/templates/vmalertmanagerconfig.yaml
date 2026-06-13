@@ -30,36 +30,41 @@ spec:
           parse_mode: MarkdownV2
           send_resolved: true
           disable_notifications: false
+          # The message is an Alertmanager (not Helm) template, so it is wrapped
+          # in a Helm raw string to pass through verbatim. __BT__ stands in for
+          # backtick (which would close the raw string) and is replaced below.
           # MarkdownV2 needs every reserved char escaped in dynamic text or
-          # Telegram 400s and the alert is never delivered. $esc escapes body
+          # Telegram 400s and the alert is never delivered: $esc escapes body
           # text; URLs only need ) and \ escaped inside the (...) link target.
           message: |-
-            {{- if eq .Status "firing" -}}
-              {{- if eq .CommonLabels.severity "critical" }}🔥 *CRITICAL*
-              {{- else if eq .CommonLabels.severity "warning" }}⚠️ *WARNING*
-              {{- else }}ℹ️ *FIRING*{{ end }} · {{ .Alerts.Firing | len }} firing
-            {{- else -}}
-              ✅ *RESOLVED* · {{ .Alerts.Resolved | len }} resolved
-            {{- end }}
-            {{ range .Alerts }}
-            {{- $esc := "[_*\\[\\]()~`>#+\\-=|{}.!\\\\]" -}}
-            {{- if eq .Status "resolved" -}}
-              ✅ *{{ reReplaceAll $esc "\\$0" .Labels.alertname }}*{{ with .Labels.namespace }} · `{{ . }}`{{ end }}
-            {{ else -}}
-              {{ if eq .Labels.severity "critical" }}🔥{{ else if eq .Labels.severity "warning" }}⚠️{{ else }}ℹ️{{ end }} *{{ reReplaceAll $esc "\\$0" .Labels.alertname }}*
-              {{- with .Annotations.summary }}
-            {{ reReplaceAll $esc "\\$0" . }}{{ end }}
-              {{- with .Annotations.description }}
-            {{ reReplaceAll $esc "\\$0" . }}{{ end }}
-            ```
-            {{ range .Labels.SortedPairs }}{{ if not (match "^(alertname|alertgroup|severity|condition|prometheus|endpoint|instance|job|service)$" .Name) }}{{ .Name }} = {{ .Value }}
-            {{ end }}{{ end -}}
-            ```
-              {{- if or .GeneratorURL .Annotations.runbook_url }}
-            {{ with .GeneratorURL }}🔗 [source]({{ reReplaceAll "[)\\\\]" "\\$0" . }}){{ end }}{{ with .Annotations.runbook_url }} · 📖 [runbook]({{ reReplaceAll "[)\\\\]" "\\$0" . }}){{ end }}
-              {{- end }}
-            {{ end -}}
-            {{ end }}
+{{ `
+{{- if eq .Status "firing" -}}
+{{- if eq .CommonLabels.severity "critical" }}🔥 *CRITICAL*
+{{- else if eq .CommonLabels.severity "warning" }}⚠️ *WARNING*
+{{- else }}ℹ️ *FIRING*{{ end }} · {{ .Alerts.Firing | len }} firing
+{{- else -}}
+✅ *RESOLVED* · {{ .Alerts.Resolved | len }} resolved
+{{- end }}
+{{ range .Alerts }}
+{{- $esc := "[_*\\[\\]()~__BT__>#+\\-=|{}.!\\\\]" -}}
+{{- if eq .Status "resolved" -}}
+✅ *{{ reReplaceAll $esc "\\$0" .Labels.alertname }}*{{ with .Labels.namespace }} · __BT__{{ . }}__BT__{{ end }}
+{{ else -}}
+{{ if eq .Labels.severity "critical" }}🔥{{ else if eq .Labels.severity "warning" }}⚠️{{ else }}ℹ️{{ end }} *{{ reReplaceAll $esc "\\$0" .Labels.alertname }}*
+{{- with .Annotations.summary }}
+{{ reReplaceAll $esc "\\$0" . }}{{ end }}
+{{- with .Annotations.description }}
+{{ reReplaceAll $esc "\\$0" . }}{{ end }}
+__BT____BT____BT__
+{{ range .Labels.SortedPairs }}{{ if not (match "^(alertname|alertgroup|severity|condition|prometheus|endpoint|instance|job|service)$" .Name) }}{{ .Name }} = {{ .Value }}
+{{ end }}{{ end -}}
+__BT____BT____BT__
+{{- if or .GeneratorURL .Annotations.runbook_url }}
+{{ with .GeneratorURL }}🔗 [source]({{ reReplaceAll "[)\\\\]" "\\$0" . }}){{ end }}{{ with .Annotations.runbook_url }} · 📖 [runbook]({{ reReplaceAll "[)\\\\]" "\\$0" . }}){{ end }}
+{{- end }}
+{{ end -}}
+{{ end }}
+` | replace "__BT__" "`" | trim | indent 12 }}
     - name: healthchecks
       webhook_configs:
         - url_secret:
