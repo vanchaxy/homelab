@@ -1,0 +1,28 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: pvc-not-backed-up
+  namespace: telemetry
+spec:
+  groups:
+    - name: pvc-not-backed-up
+      rules:
+        - alert: PVCNotBackedUp
+          expr: |
+            kube_persistentvolumeclaim_info{persistentvolumeclaim!~"volsync-.+|redis-data-.+|.+-gamefiles|media-data", namespace!="telemetry"}
+            unless on (namespace, persistentvolumeclaim)
+            max by (namespace, persistentvolumeclaim) (
+              label_replace(
+                label_replace(
+                  volsync_missed_intervals_total{role="source"},
+                  "namespace", "$1", "obj_namespace", "(.+)"
+                ),
+                "persistentvolumeclaim", "$1", "obj_name", "(.+)-backup"
+              )
+            )
+          for: 1h
+          labels:
+            severity: warning
+          annotations:
+            summary: {{ `'PVC {{ $labels.namespace }}/{{ $labels.persistentvolumeclaim }} has no VolSync backup'` }}
+            description: 'No ReplicationSource backs up this PVC. Add a helpers.backups[] entry for it, or if it is intentionally not backed up, exclude it from the PVCNotBackedUp alert expression.'

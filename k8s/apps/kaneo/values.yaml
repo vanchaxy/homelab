@@ -96,3 +96,11 @@ helpers:
         data:
           S3_ACCESS_KEY_ID: "{{ .rootAccessKeyId.Value }}"
           S3_SECRET_ACCESS_KEY: "{{ .rootSecretAccessKey.Value }}"
+  backups:
+    - pvcName: kaneo-postgres-1
+      resticRepoSuffix: kaneo/postgres
+      moverSecurityContext:
+        fsGroup: 26
+        runAsGroup: 26
+        runAsNonRoot: true
+        runAsUser: 26

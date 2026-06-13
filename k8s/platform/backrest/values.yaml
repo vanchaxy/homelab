@@ -62,3 +62,8 @@ backrest-volsync-operator:
       url: http://backrest:9898/
     bindingGenerationKinds:
       - ReplicationSource
+
+helpers:
+  backups:
+    - pvcName: backrest-config
+      resticRepoSuffix: backrest
