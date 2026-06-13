@@ -4,3 +4,11 @@ volsync:
   resources:
     limits:
       cpu: null
+
+snapshot-controller:
+  webhook:
+    tls:
+      certManagerIssuerRef:
+        name: volsync-conversion-webhook
+        kind: Issuer
+        group: cert-manager.io
