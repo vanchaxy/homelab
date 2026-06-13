@@ -27,8 +27,39 @@ spec:
             name: alertmanager-secrets
             key: TELEGRAM_BOTTOKEN
           chat_id: 236266523
-          parse_mode: HTML
+          parse_mode: MarkdownV2
           send_resolved: true
+          disable_notifications: false
+          # MarkdownV2 needs every reserved char escaped in dynamic text or
+          # Telegram 400s and the alert is never delivered. $esc escapes body
+          # text; URLs only need ) and \ escaped inside the (...) link target.
+          message: |-
+            {{- if eq .Status "firing" -}}
+              {{- if eq .CommonLabels.severity "critical" }}🔥 *CRITICAL*
+              {{- else if eq .CommonLabels.severity "warning" }}⚠️ *WARNING*
+              {{- else }}ℹ️ *FIRING*{{ end }} · {{ .Alerts.Firing | len }} firing
+            {{- else -}}
+              ✅ *RESOLVED* · {{ .Alerts.Resolved | len }} resolved
+            {{- end }}
+            {{ range .Alerts }}
+            {{- $esc := "[_*\\[\\]()~`>#+\\-=|{}.!\\\\]" -}}
+            {{- if eq .Status "resolved" -}}
+              ✅ *{{ reReplaceAll $esc "\\$0" .Labels.alertname }}*{{ with .Labels.namespace }} · `{{ . }}`{{ end }}
+            {{ else -}}
+              {{ if eq .Labels.severity "critical" }}🔥{{ else if eq .Labels.severity "warning" }}⚠️{{ else }}ℹ️{{ end }} *{{ reReplaceAll $esc "\\$0" .Labels.alertname }}*
+              {{- with .Annotations.summary }}
+            {{ reReplaceAll $esc "\\$0" . }}{{ end }}
+              {{- with .Annotations.description }}
+            {{ reReplaceAll $esc "\\$0" . }}{{ end }}
+            ```
+            {{ range .Labels.SortedPairs }}{{ if not (match "^(alertname|alertgroup|severity|condition|prometheus|endpoint|instance|job|service)$" .Name) }}{{ .Name }} = {{ .Value }}
+            {{ end }}{{ end -}}
+            ```
+              {{- if or .GeneratorURL .Annotations.runbook_url }}
+            {{ with .GeneratorURL }}🔗 [source]({{ reReplaceAll "[)\\\\]" "\\$0" . }}){{ end }}{{ with .Annotations.runbook_url }} · 📖 [runbook]({{ reReplaceAll "[)\\\\]" "\\$0" . }}){{ end }}
+              {{- end }}
+            {{ end -}}
+            {{ end }}
     - name: healthchecks
       webhook_configs:
         - url_secret:
