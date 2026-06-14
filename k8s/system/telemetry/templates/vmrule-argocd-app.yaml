@@ -1,0 +1,27 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: argocd-app
+  namespace: telemetry
+spec:
+  groups:
+    - name: argocd-app
+      rules:
+        - alert: ArgoAppOutOfSync
+          expr: |
+            argocd_app_info{sync_status!="Synced"} == 1
+          for: 2h
+          labels:
+            severity: warning
+          annotations:
+            summary: {{ `'ArgoCD app {{ $labels.name }} is {{ $labels.sync_status }}'` }}
+            description: 'Application has been out of sync for 2h despite auto-sync + self-heal, so a sync is stuck or failing. Check the app in the ArgoCD UI.'
+        - alert: ArgoAppUnhealthy
+          expr: |
+            argocd_app_info{health_status!~"Healthy|Suspended"} == 1
+          for: 2h
+          labels:
+            severity: warning
+          annotations:
+            summary: {{ `'ArgoCD app {{ $labels.name }} is {{ $labels.health_status }}'` }}
+            description: 'Application has been unhealthy (Degraded/Progressing/Missing/Unknown) for 2h. Check the failing resource in the ArgoCD UI.'
