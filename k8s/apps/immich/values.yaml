@@ -67,11 +67,79 @@ immich:
               repository: ghcr.io/immich-app/immich-machine-learning
               tag: v2.7.5@sha256:a2501141440f10516d329fdfba2c68082e19eb9ba6016c061ac80d23beadf7f3
 
+immichframe:
+  controllers:
+    frame:
+      containers:
+        main:
+          image:
+            repository: ghcr.io/immichframe/immichframe
+            tag: v1.0.33.0@sha256:1680d2f63a89fa0db6e5a7c5c497bed27a47f314efe18e1f11cff1dea1910f57
+          env:
+            TZ: Europe/Berlin
+  service:
+    frame:
+      controller: frame
+      ports:
+        http:
+          port: 8080
+  route:
+    main:
+      hostnames:
+        - immichframe.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      rules:
+        - backendRefs:
+            - identifier: frame
+              port: 8080
+  persistence:
+    config:
+      enabled: true
+      type: secret
+      name: immichframe-config
+      globalMounts:
+        - path: /app/Config/Settings.yml
+          subPath: Settings.yml
+          readOnly: true
+
 helpers:
   infisicalSecrets:
     - name: immich-postgres-user
       infisical:
         path: "/immich/postgres-user"
+    - name: immichframe-config
+      infisical:
+        path: "/immichframe"
+      template:
+        data:
+          Settings.yml: |
+            General:
+              DownloadImages: false
+              RenewImagesDuration: 30
+            Interval: 30
+            TransitionDuration: 2
+            Layout: splitview
+            ShowClock: true
+            ShowProgressBar: true
+            ShowPhotoDate: true
+            ShowImageLocation: true
+            ShowAlbumName: true
+            Language: en
+            UnitSystem: metric
+            WeatherApiKey: "{{ .weatherApiKey.Value }}"
+            WeatherLatLong: "50.4501,30.5234"
+            ShowWeatherDescription: true
+            Webcalendars:
+              - "{{ .calendarUrl.Value }}"
+            Accounts:
+              - ImmichServerUrl: http://immich-server:2283
+                ApiKey: "{{ .apiKey.Value }}"
+                ShowMemories: true
+                ShowFavorites: false
+                ShowArchived: false
   backups:
     - pvcName: photo-library
       resticRepoSuffix: photo-library

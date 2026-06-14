@@ -5,6 +5,10 @@ dependencies:
   - name: immich
     repository: https://immich-app.github.io/immich-charts
     version: 0.12.0
+  - name: app-template
+    version: 4.6.2
+    repository: https://bjw-s-labs.github.io/helm-charts
+    alias: immichframe
   - name: helpers
     version: 0.1.0
     repository: file://../../../k8s/_helpers
