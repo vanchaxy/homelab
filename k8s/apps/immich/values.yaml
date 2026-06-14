@@ -132,7 +132,7 @@ helpers:
             Language: en
             UnitSystem: metric
             WeatherApiKey: "{{ .weatherApiKey.Value }}"
-            WeatherLatLong: "50.4501,30.5234"
+            WeatherLatLong: "50.069346,14.502549"
             ShowWeatherDescription: true
             Webcalendars:
               - "{{ .calendarUrl.Value }}"
