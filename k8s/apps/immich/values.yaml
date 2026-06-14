@@ -120,22 +120,22 @@ helpers:
             General:
               DownloadImages: false
               RenewImagesDuration: 30
-            Interval: 30
-            TransitionDuration: 2
-            Layout: splitview
-            ShowClock: true
-            ClockFormat: HH:mm
-            ShowProgressBar: true
-            ShowPhotoDate: true
-            ShowImageLocation: true
-            ShowAlbumName: true
-            Language: en
-            UnitSystem: metric
-            WeatherApiKey: "{{ .weatherApiKey.Value }}"
-            WeatherLatLong: "50.069346,14.502549"
-            ShowWeatherDescription: true
-            Webcalendars:
-              - "{{ .calendarUrl.Value }}"
+              Interval: 30
+              TransitionDuration: 2
+              Layout: splitview
+              ShowClock: true
+              ClockFormat: HH:mm
+              ShowProgressBar: true
+              ShowPhotoDate: true
+              ShowImageLocation: true
+              ShowAlbumName: true
+              Language: en
+              UnitSystem: metric
+              WeatherApiKey: "{{ .weatherApiKey.Value }}"
+              WeatherLatLong: "50.069346,14.502549"
+              ShowWeatherDescription: true
+              Webcalendars:
+                - "{{ .calendarUrl.Value }}"
             Accounts:
               - ImmichServerUrl: http://immich-server:2283
                 ApiKey: "{{ .apiKey.Value }}"
