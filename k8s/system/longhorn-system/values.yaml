@@ -1,6 +1,9 @@
 longhorn:
   persistence:
     defaultClass: false
+  metrics:
+    serviceMonitor:
+      enabled: true
   preUpgradeChecker:
     upgradeVersionCheck: false
     jobEnabled: false
