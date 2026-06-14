@@ -74,6 +74,11 @@ argo-cd:
         g, admins, role:admin
   dex:
     enabled: false
+  controller:
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
   server:
     httproute:
       enabled: true
@@ -83,6 +88,30 @@ argo-cd:
         - name: internal-gw
           namespace: envoy-gateway
           sectionName: https
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+  repoServer:
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+  applicationSet:
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+  notifications:
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+  redis:
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
   redisSecretInit:
     enabled: false
 
