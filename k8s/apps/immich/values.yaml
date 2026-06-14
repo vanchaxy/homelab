@@ -134,8 +134,8 @@ helpers:
               WeatherApiKey: "{{ .weatherApiKey.Value }}"
               WeatherLatLong: "50.069346,14.502549"
               ShowWeatherDescription: true
-              Webcalendars:
-                - "{{ .calendarUrl.Value }}"
+              # Webcalendars:
+              #  - "{{ .calendarUrl.Value }}"
             Accounts:
               - ImmichServerUrl: http://immich-server:2283
                 ApiKey: "{{ .apiKey.Value }}"
