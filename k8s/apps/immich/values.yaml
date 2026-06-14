@@ -124,6 +124,7 @@ helpers:
             TransitionDuration: 2
             Layout: splitview
             ShowClock: true
+            ClockFormat: HH:mm
             ShowProgressBar: true
             ShowPhotoDate: true
             ShowImageLocation: true
@@ -131,14 +132,14 @@ helpers:
             Language: en
             UnitSystem: metric
             WeatherApiKey: "{{ .weatherApiKey.Value }}"
-            WeatherLatLong: "50.4501,30.5234"
+            WeatherLatLong: "50.069346,14.502549"
             ShowWeatherDescription: true
             Webcalendars:
               - "{{ .calendarUrl.Value }}"
             Accounts:
               - ImmichServerUrl: http://immich-server:2283
                 ApiKey: "{{ .apiKey.Value }}"
-                ShowMemories: true
+                ShowMemories: false
                 ShowFavorites: false
                 ShowArchived: false
                 Albums:
