@@ -68,6 +68,7 @@ immich:
               tag: v2.7.5@sha256:a2501141440f10516d329fdfba2c68082e19eb9ba6016c061ac80d23beadf7f3
 
 immichframe:
+  fullnameOverride: immich-frame
   controllers:
     frame:
       containers:
@@ -140,6 +141,9 @@ helpers:
                 ShowMemories: true
                 ShowFavorites: false
                 ShowArchived: false
+                Albums:
+                  - f37675fe-3813-4def-bfc0-aa913590a7e7
+                  - 94a787f3-515f-4dd1-9a4f-4b3114e1ef2d
   backups:
     - pvcName: photo-library
       resticRepoSuffix: photo-library
