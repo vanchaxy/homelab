@@ -82,6 +82,9 @@ victoria-metrics-k8s-stack:
       # fires once per new failure and stops after 6h.
       KubeJobFailed:
         create: false
+      RecordingRulesNoData:
+        spec:
+          expr: sum(vmalert_recording_rules_last_evaluation_samples{group!="kube-scheduler.rules"}) without(id) < 1
 
   # kube-scheduler and kube-controller-manager serve metrics with a
   # self-signed cert valid only for 127.0.0.1/localhost (Talos default),
