@@ -124,6 +124,7 @@ helpers:
             TransitionDuration: 2
             Layout: splitview
             ShowClock: true
+            ClockFormat: HH:mm
             ShowProgressBar: true
             ShowPhotoDate: true
             ShowImageLocation: true
@@ -138,7 +139,7 @@ helpers:
             Accounts:
               - ImmichServerUrl: http://immich-server:2283
                 ApiKey: "{{ .apiKey.Value }}"
-                ShowMemories: true
+                ShowMemories: false
                 ShowFavorites: false
                 ShowArchived: false
                 Albums:
