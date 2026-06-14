@@ -1,0 +1,18 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: volsync-backup-failing
+  namespace: telemetry
+spec:
+  groups:
+    - name: volsync-backup-failing
+      rules:
+        - alert: VolSyncBackupFailing
+          expr: |
+            volsync_volume_out_of_sync{role="source"} == 1
+          for: 6h
+          labels:
+            severity: warning
+          annotations:
+            summary: {{ `'VolSync backup {{ $labels.obj_namespace }}/{{ $labels.obj_name }} is failing'` }}
+            description: 'ReplicationSource has been out of sync past its schedule for 6h (failed mover, locked restic repo, etc.). A hung clone instead surfaces as KubeContainerWaiting on the mover pod.'
