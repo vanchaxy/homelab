@@ -21,6 +21,7 @@ actualbudget:
           env:
             ACTUAL_OPENID_SERVER_HOSTNAME: https://budget.ivanchenko.io
             # ACTUAL_OPENID_ENFORCE: true
+            ACTUAL_LOGIN_METHOD: password
             ACTUAL_OPENID_AUTH_METHOD: openid
           envFrom:
             - secretRef:
