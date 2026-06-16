@@ -20,7 +20,7 @@ actualbudget:
             tag: 26.4.0@sha256:b0e732e2c41b3dc468a71548e88ef76d3f0c157fc43d15fa05d14ec1c5747e1e
           env:
             ACTUAL_OPENID_SERVER_HOSTNAME: https://budget.ivanchenko.io
-            ACTUAL_OPENID_ENFORCE: true
+            # ACTUAL_OPENID_ENFORCE: true
             ACTUAL_OPENID_AUTH_METHOD: openid
           envFrom:
             - secretRef:
