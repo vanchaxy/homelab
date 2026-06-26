@@ -1,7 +1,7 @@
 versitygw:
   image:
     repository: ghcr.io/versity/versitygw
-    tag: v1.4.1@sha256:0400cb59f59da0f1cf9f7fd49505191abc348dfadf54509bf1988caaff4eb96f
+    tag: v1.6.0@sha256:d6ec798f66cac65bd5813d94fbe51edf658120d749c1cf5b572b63a2334c4d81
 
   auth:
     existingSecret: versitygw
