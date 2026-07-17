@@ -52,8 +52,8 @@ backrest:
 
 backrest-volsync-operator:
   image:
-    repository: ghcr.io/vanchaxy/backrest-volsync-operator
-    tag: latest@sha256:386c8f6cd60e9ea3b95b578137a0fd3208885d3045db462f962a358fd4b91d15
+    repository: ghcr.io/jogotcha/backrest-volsync-operator
+    tag: 0.3.0@sha256:93580e477a4d37b3f319903b4f1ff073384d0e13178f3acd3df00a1f0cb5880a
 
   operatorConfig:
     create: true

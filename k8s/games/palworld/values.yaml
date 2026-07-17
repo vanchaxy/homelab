@@ -1,0 +1,61 @@
+palworld:
+  controllers:
+    main:
+      replicas: null
+      containers:
+        main:
+          image:
+            repository: thijsvanloef/palworld-server-docker
+            tag: latest@sha256:f0769c2d336d00e46c2b5f74f5bf079628c1a454e176a4b31836f98eaaf4d8c4
+          env:
+            PUID: 1000
+            PGID: 1000
+            PORT: 8211
+            QUERY_PORT: 27015
+            PLAYERS: 16
+            MULTITHREADING: "true"
+            COMMUNITY: "false"
+            UPDATE_ON_BOOT: "true"
+            RCON_ENABLED: "true"
+            RCON_PORT: 25575
+            SERVER_NAME: Palworld Server
+            TZ: Europe/Kyiv
+          envFrom:
+            - secretRef:
+                name: palworld-secret
+
+  service:
+    main:
+      controller: main
+      type: LoadBalancer
+      loadBalancerIP: 192.168.50.239
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: "palworld.ivanchenko.io"
+      ports:
+        game:
+          port: 8211
+          protocol: UDP
+        query:
+          port: 27015
+          protocol: UDP
+
+  persistence:
+    config:
+      enabled: true
+      suffix: config
+      storageClass: longhorn-ssd
+      size: 20Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        main:
+          main:
+            - path: /palworld
+
+helpers:
+  infisicalSecrets:
+    - name: palworld-secret
+      infisical:
+        path: "/palworld"
+  backups:
+    - pvcName: palworld-config
+      resticRepoSuffix: palworld
