@@ -560,6 +560,7 @@ helpers:
   backups:
     - pvcName: media-config-rwo
       resticRepoSuffix: media/config
+      unlock: "2026-07-17"
       moverSecurityContext:
         fsGroup: 568
         runAsGroup: 568

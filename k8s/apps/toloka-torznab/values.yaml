@@ -94,3 +94,4 @@ helpers:
         runAsUser: 26
     - pvcName: toloka-torznab-electric
       resticRepoSuffix: toloka-torznab/electric
+      unlock: "2026-07-17"

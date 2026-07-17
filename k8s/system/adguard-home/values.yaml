@@ -59,3 +59,4 @@ helpers:
   backups:
     - pvcName: adguard-home-config
       resticRepoSuffix: adguard-home
+      unlock: "2026-07-17"
