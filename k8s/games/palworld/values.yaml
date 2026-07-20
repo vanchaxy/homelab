@@ -11,7 +11,7 @@ palworld:
             PUID: 1000
             PGID: 1000
             PORT: 8211
-            QUERY_PORT: 27015
+            QUERY_PORT: 27016
             PLAYERS: 16
             MULTITHREADING: "true"
             COMMUNITY: "false"
@@ -28,15 +28,32 @@ palworld:
     main:
       controller: main
       type: LoadBalancer
-      loadBalancerIP: 192.168.50.239
       annotations:
         external-dns.alpha.kubernetes.io/hostname: "palworld.ivanchenko.io"
+        lbipam.cilium.io/lb-ipam-ips: 46.38.230.69
+        lbipam.cilium.io/sharing-key: vps-tunnel
+        lbipam.cilium.io/sharing-cross-namespace: "*"
+      labels:
+        expose-public: "true"
       ports:
         game:
           port: 8211
           protocol: UDP
         query:
-          port: 27015
+          port: 27016
+          protocol: UDP
+    internal:
+      controller: main
+      type: LoadBalancer
+      annotations:
+        internal.ivanchenko.io/hostname: "palworld.ivanchenko.io"
+      loadBalancerIP: 192.168.50.241
+      ports:
+        game:
+          port: 8211
+          protocol: UDP
+        query:
+          port: 27016
           protocol: UDP
 
   persistence:
