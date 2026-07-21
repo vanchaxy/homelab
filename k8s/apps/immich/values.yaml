@@ -75,7 +75,7 @@ immichframe:
         main:
           image:
             repository: ghcr.io/immichframe/immichframe
-            tag: v1.0.33.0@sha256:1680d2f63a89fa0db6e5a7c5c497bed27a47f314efe18e1f11cff1dea1910f57
+            tag: v1.0.37.0@sha256:edae2c0b9ab6e1384634582b2bab6246429e14bc209ff6ecc091fc9eedd4582c
           env:
             TZ: Europe/Berlin
   service:
