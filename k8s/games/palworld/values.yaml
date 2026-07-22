@@ -76,3 +76,8 @@ helpers:
   backups:
     - pvcName: palworld-config
       resticRepoSuffix: palworld
+      moverSecurityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
