@@ -5,7 +5,7 @@ paperless-ngx:
         main:
           image:
             repository: ghcr.io/paperless-ngx/paperless-ngx
-            tag: 2.20.14@sha256:b89f83345532cfba72690185257eb6c4f92fc2a782332a42abe19c07b7a6595f
+            tag: 3.0.5@sha256:65a4cabf0169ea7fbd90ab7bb28ba3f8b5909613635acda1a03ad606f34b456b
           env:
             PAPERLESS_REDIS: redis://paperless-ngx-redis-headless:6379
             PAPERLESS_TIKA_ENABLED: 1
