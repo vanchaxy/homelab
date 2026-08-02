@@ -149,7 +149,7 @@ media:
         main:
           image:
             repository: linuxserver/radarr
-            tag: 6.1.1@sha256:b01097ad2d948c9f5eca39eb60bb529e2e55b0738c4bf7db09383bef0abab59d
+            tag: 6.3.0@sha256:a45b5ab0f850f39edb4cc9c95bbd967b52ddc3d4574a4dfb45561177db6c88f4
           env:
             PUID: 568
             PGID: 568
