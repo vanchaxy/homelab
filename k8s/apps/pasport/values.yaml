@@ -20,12 +20,6 @@ pasport:
           image:
             repository: ghcr.io/vanchaxy/pasport
             tag: sha-5586899
-          env:
-            # Milan is currently open for booking while Prague is not, so it
-            # doubles as a live check that alerting actually fires.
-            WATCH_URLS: >-
-              https://prague.pasport.org.ua/solutions/e-queue,
-              https://milan.pasport.org.ua/solutions/e-queue
           envFrom:
             - secretRef:
                 name: pasport-secret
