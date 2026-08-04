@@ -1,0 +1,68 @@
+pasport:
+  defaultPodOptions:
+    automountServiceAccountToken: false
+
+  controllers:
+    main:
+      # The data volume is ReadWriteOnce, so a rolling update would deadlock:
+      # the new pod cannot mount until the old one lets go, and the old one is
+      # not removed until the new one is ready.
+      strategy: Recreate
+      pod:
+        imagePullSecrets:
+          - name: ghcr-login-secret
+      containers:
+        main:
+          image:
+            repository: ghcr.io/vanchaxy/pasport
+            tag: sha-d296a59
+          envFrom:
+            - secretRef:
+                name: pasport-secret
+          resources:
+            requests:
+              cpu: 50m
+              memory: 512Mi
+            limits:
+              # Chromium is the whole workload here. It idles between checks and
+              # spikes briefly while a page renders.
+              memory: 2Gi
+
+  persistence:
+    # Playwright browser profile plus state.json. Keeping the profile across
+    # restarts preserves the Cloudflare clearance cookie, which is what stops
+    # the site re-challenging us on every check.
+    data:
+      enabled: true
+      storageClass: longhorn-ssd
+      size: 2Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        main:
+          main:
+            - path: /data
+
+    # Chromium crashes on the 64Mi default /dev/shm. The container already runs
+    # with --disable-dev-shm-usage, so this is belt and braces, and cheap.
+    dshm:
+      type: emptyDir
+      medium: Memory
+      sizeLimit: 1Gi
+      advancedMounts:
+        main:
+          main:
+            - path: /dev/shm
+
+helpers:
+  # Image lives in a private GHCR package.
+  ghcrSecret:
+    enabled: true
+
+  # Needs TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID.
+  infisicalSecrets:
+    - name: pasport-secret
+      infisical:
+        path: "/pasport"
+
+# No backups on purpose: /data holds only a browser profile and the notification
+# de-duplication state, both of which rebuild themselves on a fresh start.
