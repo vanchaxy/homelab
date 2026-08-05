@@ -10,7 +10,7 @@ hermes-karyna:
             repository: ghcr.io/vanchaxy/hermes-karyna
             tag: sha-0214ea4
           env:
-            TZ: Europe/Kyiv
+            TZ: Europe/Prague
             HINDSIGHT_MODE: local_external
             HINDSIGHT_API_URL: http://hermes-karyna-hindsight:8888
           envFrom:
@@ -28,7 +28,7 @@ hermes-karyna:
             repository: ghcr.io/nesquena/hermes-webui
             tag: 0.51.680@sha256:4adc16f37bd5695b6cc12a2c4e7c82154bb5bf9d29494d1f668ea5b90360fe40
           env:
-            TZ: Europe/Kyiv
+            TZ: Europe/Prague
             HERMES_HOME: /home/hermeswebui/.hermes
             HERMES_WEBUI_HOST: 0.0.0.0
             HERMES_WEBUI_PORT: "8787"
