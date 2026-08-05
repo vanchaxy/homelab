@@ -8,11 +8,34 @@ hermes-karyna:
         main:
           image:
             repository: ghcr.io/vanchaxy/hermes-karyna
-            tag: sha-f6e6460
+            tag: sha-0214ea4
           env:
             TZ: Europe/Kyiv
             HINDSIGHT_MODE: local_external
             HINDSIGHT_API_URL: http://hermes-karyna-hindsight:8888
+          envFrom:
+            - secretRef:
+                name: hermes-karyna-secret
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              memory: 2Gi
+
+        webui:
+          image:
+            repository: ghcr.io/nesquena/hermes-webui
+            tag: 0.51.680@sha256:4adc16f37bd5695b6cc12a2c4e7c82154bb5bf9d29494d1f668ea5b90360fe40
+          env:
+            TZ: Europe/Kyiv
+            HERMES_HOME: /home/hermeswebui/.hermes
+            HERMES_WEBUI_HOST: 0.0.0.0
+            HERMES_WEBUI_PORT: "8787"
+            HERMES_WEBUI_STATE_DIR: /home/hermeswebui/.hermes/webui
+            WARDROBE_HOME: /home/hermeswebui/.hermes/wardrobe
+            WANTED_UID: "10000"
+            WANTED_GID: "10000"
           envFrom:
             - secretRef:
                 name: hermes-karyna-secret
@@ -77,6 +100,26 @@ hermes-karyna:
       ports:
         http:
           port: 8888
+    webui:
+      controller: hermes
+      suffix: webui
+      type: ClusterIP
+      ports:
+        http:
+          port: 8787
+
+  route:
+    webui:
+      suffix: webui
+      hostnames:
+        - hermes.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      rules:
+        - backendRefs:
+            - identifier: webui
 
   persistence:
     data:
@@ -88,6 +131,8 @@ hermes-karyna:
         hermes:
           main:
             - path: /opt/data
+          webui:
+            - path: /home/hermeswebui/.hermes
     hindsight-data:
       enabled: true
       storageClass: longhorn-ssd
@@ -112,7 +157,7 @@ helpers:
     enabled: true
 
   # GEMINI_API_KEY, HINDSIGHT_API_LLM_API_KEY, TELEGRAM_BOT_TOKEN,
-  # TELEGRAM_ALLOWED_CHAT_IDS, HINDSIGHT_DB_PASSWORD
+  # TELEGRAM_ALLOWED_CHAT_IDS, HINDSIGHT_DB_PASSWORD, HERMES_WEBUI_PASSWORD
   infisicalSecrets:
     - name: hermes-karyna-secret
       infisical:
