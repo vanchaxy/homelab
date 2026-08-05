@@ -23,34 +23,8 @@ hermes-karyna:
             limits:
               memory: 2Gi
 
-        webui:
-          image:
-            repository: ghcr.io/nesquena/hermes-webui
-            tag: 0.51.680@sha256:4adc16f37bd5695b6cc12a2c4e7c82154bb5bf9d29494d1f668ea5b90360fe40
-          env:
-            TZ: Europe/Prague
-            HERMES_HOME: /home/hermeswebui/.hermes
-            HERMES_WEBUI_HOST: 0.0.0.0
-            HERMES_WEBUI_PORT: "8787"
-            HERMES_WEBUI_STATE_DIR: /home/hermeswebui/.hermes/webui
-            WARDROBE_HOME: /home/hermeswebui/.hermes/wardrobe
-            WANTED_UID: "10000"
-            WANTED_GID: "10000"
-          envFrom:
-            - secretRef:
-                name: hermes-karyna-secret
-          resources:
-            requests:
-              cpu: 100m
-              memory: 512Mi
-            limits:
-              memory: 2Gi
-
     hindsight:
       pod:
-        # Hindsight runs rootless as uid 1000 and refuses to start when its
-        # data directory is not writable; a Longhorn volume arrives owned by
-        # root.
         securityContext:
           fsGroup: 1000
           fsGroupChangePolicy: "OnRootMismatch"
@@ -62,9 +36,6 @@ hermes-karyna:
             repository: ghcr.io/vectorize-io/hindsight
             tag: 0.8.6@sha256:ffa391a77284e49f6b55e32c86f33529ac4257831407b14038a72b6a0a232039
           env:
-            # Defaults to the pod hostname, which changes on every recreate,
-            # stranding in-flight tasks under the old id. One replica on a RWO
-            # volume, so a literal is stable and unambiguous.
             HINDSIGHT_API_WORKER_ID: hermes-karyna-hindsight
             HINDSIGHT_API_LLM_PROVIDER: gemini
             HINDSIGHT_API_LLM_MODEL: gemini-3.5-flash-lite
@@ -105,6 +76,47 @@ hermes-karyna:
                 periodSeconds: 15
                 failureThreshold: 40
 
+    webui:
+      pod:
+        imagePullSecrets:
+          - name: ghcr-login-secret
+      initContainers:
+        agent-src:
+          image:
+            repository: ghcr.io/vanchaxy/hermes-karyna
+            tag: sha-0214ea4
+          command:
+            - /bin/sh
+            - -c
+            - >-
+              cp -a /opt/hermes/. /agent-src/ &&
+              rm -rf /agent-src/.venv /agent-src/.playwright &&
+              chmod -R a+rX /agent-src
+      containers:
+        main:
+          image:
+            repository: ghcr.io/nesquena/hermes-webui
+            tag: 0.51.680@sha256:4adc16f37bd5695b6cc12a2c4e7c82154bb5bf9d29494d1f668ea5b90360fe40
+          env:
+            TZ: Europe/Prague
+            HERMES_HOME: /home/hermeswebui/.hermes
+            HERMES_WEBUI_AGENT_DIR: /opt/hermes
+            HERMES_NIX_BUILD: "1"
+            HERMES_WEBUI_HOST: 0.0.0.0
+            HERMES_WEBUI_PORT: "8787"
+            HERMES_WEBUI_STATE_DIR: /home/hermeswebui/.hermes/webui
+            WANTED_UID: "10000"
+            WANTED_GID: "10000"
+          envFrom:
+            - secretRef:
+                name: hermes-karyna-secret
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              memory: 2Gi
+
   service:
     hindsight:
       controller: hindsight
@@ -114,7 +126,7 @@ hermes-karyna:
         http:
           port: 8888
     webui:
-      controller: hermes
+      controller: webui
       suffix: webui
       type: ClusterIP
       ports:
@@ -144,8 +156,6 @@ hermes-karyna:
         hermes:
           main:
             - path: /opt/data
-          webui:
-            - path: /home/hermeswebui/.hermes
     hindsight-data:
       enabled: true
       storageClass: longhorn-ssd
@@ -164,6 +174,26 @@ hermes-karyna:
         hindsight:
           main:
             - path: /home/hindsight/.cache
+    webui-data:
+      enabled: true
+      storageClass: longhorn-ssd
+      size: 5Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        webui:
+          main:
+            - path: /home/hermeswebui/.hermes
+    webui-agent-src:
+      enabled: true
+      type: emptyDir
+      sizeLimit: 2Gi
+      advancedMounts:
+        webui:
+          agent-src:
+            - path: /agent-src
+          main:
+            - path: /opt/hermes
+              readOnly: true
 
 helpers:
   ghcrSecret:
