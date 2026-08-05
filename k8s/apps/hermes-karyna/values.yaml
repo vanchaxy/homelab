@@ -8,11 +8,14 @@ hermes-karyna:
         main:
           image:
             repository: ghcr.io/vanchaxy/hermes-karyna
-            tag: sha-f1b5eea
+            tag: sha-c9dea59
           env:
             TZ: Europe/Prague
             HINDSIGHT_MODE: local_external
             HINDSIGHT_API_URL: http://hermes-karyna-hindsight:8888
+            HERMES_DASHBOARD: "1"
+            HERMES_DASHBOARD_HOST: 0.0.0.0
+            HERMES_DASHBOARD_PORT: "9119"
           envFrom:
             - secretRef:
                 name: hermes-karyna-secret
@@ -84,14 +87,20 @@ hermes-karyna:
         agent-src:
           image:
             repository: ghcr.io/vanchaxy/hermes-karyna
-            tag: sha-f1b5eea
+            tag: sha-c9dea59
           command:
             - /bin/sh
             - -c
             - >-
               cp -a /opt/hermes/. /agent-src/ &&
               rm -rf /agent-src/.venv /agent-src/.playwright &&
-              chmod -R a+rX /agent-src
+              chmod -R a+rX /agent-src &&
+              mkdir -p /webui-home/skills &&
+              cp -a /opt/hermes/docker/SOUL.md /webui-home/SOUL.md &&
+              cp -a /opt/hermes/skills/wardrobe /webui-home/skills/ &&
+              { [ -f /webui-home/config.yaml ] ||
+                cp -a /opt/hermes/wardrobe-config.yaml /webui-home/config.yaml ; } &&
+              chown -R 10000:10000 /webui-home
       containers:
         main:
           image:
@@ -107,6 +116,11 @@ hermes-karyna:
             HERMES_WEBUI_STATE_DIR: /home/hermeswebui/.hermes/webui
             WANTED_UID: "10000"
             WANTED_GID: "10000"
+            GOOGLE_API_KEY:
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-karyna-secret
+                  key: GEMINI_API_KEY
           envFrom:
             - secretRef:
                 name: hermes-karyna-secret
@@ -132,6 +146,20 @@ hermes-karyna:
       ports:
         http:
           port: 8787
+    dashboard:
+      controller: hermes
+      suffix: dashboard
+      type: ClusterIP
+      ports:
+        http:
+          port: 9119
+    hindsight-ui:
+      controller: hindsight
+      suffix: hindsight-ui
+      type: ClusterIP
+      ports:
+        http:
+          port: 9999
 
   route:
     webui:
@@ -145,6 +173,28 @@ hermes-karyna:
       rules:
         - backendRefs:
             - identifier: webui
+    dashboard:
+      suffix: dashboard
+      hostnames:
+        - hermes-dashboard.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      rules:
+        - backendRefs:
+            - identifier: dashboard
+    hindsight:
+      suffix: hindsight
+      hostnames:
+        - hindsight.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      rules:
+        - backendRefs:
+            - identifier: hindsight-ui
 
   persistence:
     data:
@@ -181,6 +231,8 @@ hermes-karyna:
       accessMode: ReadWriteOnce
       advancedMounts:
         webui:
+          agent-src:
+            - path: /webui-home
           main:
             - path: /home/hermeswebui/.hermes
     webui-agent-src:
@@ -200,7 +252,8 @@ helpers:
     enabled: true
 
   # GEMINI_API_KEY, HINDSIGHT_API_LLM_API_KEY, TELEGRAM_BOT_TOKEN,
-  # TELEGRAM_ALLOWED_USERS, HINDSIGHT_DB_PASSWORD, HERMES_WEBUI_PASSWORD
+  # TELEGRAM_ALLOWED_USERS, HINDSIGHT_DB_PASSWORD, HERMES_WEBUI_PASSWORD,
+  # HERMES_DASHBOARD_BASIC_AUTH_USERNAME, HERMES_DASHBOARD_BASIC_AUTH_PASSWORD
   infisicalSecrets:
     - name: hermes-karyna-secret
       infisical:
