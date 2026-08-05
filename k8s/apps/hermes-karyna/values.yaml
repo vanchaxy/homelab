@@ -1,0 +1,160 @@
+# Hermes — a Telegram assistant for Карина, whose first skill manages her
+# wardrobe. Content and image: https://github.com/vanchaxy/hermes-karyna
+#
+# There is deliberately no `route:` here, unlike every other app in this repo.
+# Telegram uses long polling, so nothing ever connects TO Hermes: no hostname,
+# no certificate, no Gateway entry. The only inbound port is Hindsight's, and
+# that is cluster-internal.
+
+hermes-karyna:
+  controllers:
+    hermes:
+      pod:
+        imagePullSecrets:
+          - name: ghcr-login-secret
+      containers:
+        main:
+          image:
+            repository: ghcr.io/vanchaxy/hermes-karyna
+            tag: sha-f6e6460
+          env:
+            TZ: Europe/Kyiv
+            # How the agent REACHES the memory server. Distinct from the
+            # HINDSIGHT_API_* values in hermes-karyna-secret, which configure
+            # the server itself — these two namespaces overlap by name only.
+            HINDSIGHT_MODE: local_external
+            HINDSIGHT_API_URL: http://hermes-karyna-hindsight:8888
+          envFrom:
+            - secretRef:
+                name: hermes-karyna-secret
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              memory: 2Gi
+
+    hindsight:
+      containers:
+        main:
+          image:
+            repository: ghcr.io/vectorize-io/hindsight
+            tag: 0.8.6@sha256:ffa391a77284e49f6b55e32c86f33529ac4257831407b14038a72b6a0a232039
+          envFrom:
+            - secretRef:
+                name: hermes-karyna-secret
+          resources:
+            requests:
+              cpu: 250m
+              # bge-m3 and bge-reranker-v2-m3 are ~2GB each and both load into
+              # this container. Below 4Gi it OOMs during startup, before it
+              # ever serves a request.
+              memory: 4Gi
+            limits:
+              memory: 6Gi
+          probes:
+            liveness:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /health
+                  port: 8888
+                initialDelaySeconds: 120
+                periodSeconds: 30
+                failureThreshold: 5
+            readiness:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /health
+                  port: 8888
+                # First start downloads both models into the cache PVC.
+                initialDelaySeconds: 60
+                periodSeconds: 15
+                failureThreshold: 40
+
+  service:
+    # Hermes needs no Service — it only makes outbound connections.
+    hindsight:
+      controller: hindsight
+      # app-template appends the identifier only when a release has more than
+      # one Service, so without this the memory server would answer on the bare
+      # release name — accurate, but it reads like the agent's own port.
+      suffix: hindsight
+      type: ClusterIP
+      ports:
+        http:
+          port: 8888
+
+  persistence:
+    # wardrobe.db, the photos, profile.md, sessions, and the skill synced out
+    # of the image. The photos are the irreplaceable part.
+    data:
+      enabled: true
+      storageClass: longhorn-ssd
+      size: 10Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        hermes:
+          main:
+            - path: /opt/data
+
+    # Hindsight's embedded Postgres — the memory bank itself.
+    hindsight-data:
+      enabled: true
+      storageClass: longhorn-ssd
+      size: 10Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        hindsight:
+          main:
+            - path: /home/hindsight/.pg0
+
+    # HuggingFace model cache. Without this, every pod restart re-downloads
+    # ~4.5GB of embedding and reranker weights before the container can
+    # answer a health check.
+    hindsight-cache:
+      enabled: true
+      storageClass: longhorn-ssd
+      size: 10Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        hindsight:
+          main:
+            - path: /home/hindsight/.cache
+
+helpers:
+  ghcrSecret:
+    enabled: true
+
+  # One secret for both containers. Populate the Infisical path with the
+  # variables from config/.env.example in the hermes-karyna repo:
+  # GEMINI_API_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_ALLOWED_CHAT_IDS, and the
+  # HINDSIGHT_API_* block (LLM provider/model, output language, embedding and
+  # reranker models, text-search language) plus HINDSIGHT_DB_PASSWORD.
+  #
+  # The HINDSIGHT_API_* settings all override defaults that are wrong for
+  # Ukrainian and fail SILENTLY — recall just gets worse with nothing in the
+  # logs. Don't trim them.
+  infisicalSecrets:
+    - name: hermes-karyna-secret
+      infisical:
+        path: "/hermes-karyna"
+
+  backups:
+    - pvcName: hermes-karyna-data
+      resticRepoSuffix: hermes-karyna/data
+    # Embedded Postgres, snapshotted live — crash-consistent, which Postgres
+    # recovers from the same way it recovers from a power cut. The mover runs
+    # as the image's `hindsight` user (uid/gid 1000) so it can read the files.
+    - pvcName: hermes-karyna-hindsight-data
+      resticRepoSuffix: hermes-karyna/hindsight
+      moverSecurityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+    # hermes-karyna-hindsight-cache is deliberately not backed up: it is a
+    # HuggingFace download cache and re-fetches itself.
