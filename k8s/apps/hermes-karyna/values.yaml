@@ -40,7 +40,49 @@ hermes-karyna:
           image:
             repository: ghcr.io/vectorize-io/hindsight
             tag: 0.8.6@sha256:ffa391a77284e49f6b55e32c86f33529ac4257831407b14038a72b6a0a232039
+          env:
+            # Every setting here overrides a Hindsight default that is WRONG
+            # for Ukrainian, and every one of them fails SILENTLY — recall just
+            # gets worse, with nothing in the logs to tell you. They live in
+            # git rather than Infisical precisely so the reasoning is visible.
+            # Only the API key is a secret.
+
+            # Hindsight defaults to gpt-5-mini, which needs an OpenAI account
+            # this deployment does not have. It speaks Gemini natively, so no
+            # base URL and no OpenAI-compatible shim.
+            HINDSIGHT_API_LLM_PROVIDER: gemini
+            HINDSIGHT_API_LLM_MODEL: gemini-3.5-flash-lite
+            # `retain` has the hardest job in the system: understand Ukrainian,
+            # normalise the facts to English, emit valid structured output. A
+            # bad extraction poisons the bank permanently, so it gets the
+            # better model.
+            HINDSIGHT_API_RETAIN_LLM_MODEL: gemini-3.6-flash
+
+            # Store facts in English. Hindsight otherwise auto-detects and
+            # preserves the input language, filling the bank with Ukrainian.
+            # Hermes reasons — and therefore queries — in English, and matching
+            # query and document language is the biggest single factor in
+            # retrieval quality.
+            HINDSIGHT_API_LLM_OUTPUT_LANGUAGE: English
+
+            # Multilingual embeddings are still required even though the facts
+            # are English, because the INPUT to retain is Ukrainian
+            # conversation. The default BAAI/bge-small-en-v1.5 is English-only
+            # and would embed it badly.
+            #
+            # CHANGING THIS INVALIDATES EVERY STORED VECTOR. Embedding spaces
+            # are not comparable across models, so a switch means rebuilding
+            # the bank from scratch.
+            HINDSIGHT_API_EMBEDDINGS_LOCAL_MODEL: BAAI/bge-m3
+            HINDSIGHT_API_RERANKER_LOCAL_MODEL: BAAI/bge-reranker-v2-m3
+
+            # BM25 is within-language. The facts are English, so the stock
+            # English dictionary is the right one and the (uncertain) Ukrainian
+            # Postgres dictionary never comes into it.
+            HINDSIGHT_API_TEXT_SEARCH_EXTENSION: native
+            HINDSIGHT_API_TEXT_SEARCH_EXTENSION_NATIVE_LANGUAGE: english
           envFrom:
+            # HINDSIGHT_API_LLM_API_KEY and HINDSIGHT_DB_PASSWORD.
             - secretRef:
                 name: hermes-karyna-secret
           resources:
@@ -129,15 +171,17 @@ helpers:
   ghcrSecret:
     enabled: true
 
-  # One secret for both containers. Populate the Infisical path with the
-  # variables from config/.env.example in the hermes-karyna repo:
-  # GEMINI_API_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_ALLOWED_CHAT_IDS, and the
-  # HINDSIGHT_API_* block (LLM provider/model, output language, embedding and
-  # reranker models, text-search language) plus HINDSIGHT_DB_PASSWORD.
+  # One secret for both containers. Everything that is genuinely secret, and
+  # nothing else — the rest of the configuration is in `env:` above, where it
+  # can carry the reasoning that goes with it:
   #
-  # The HINDSIGHT_API_* settings all override defaults that are wrong for
-  # Ukrainian and fail SILENTLY — recall just gets worse with nothing in the
-  # logs. Don't trim them.
+  #   GEMINI_API_KEY             one key for the agent, its side tasks and
+  #                              Hindsight's extraction
+  #   HINDSIGHT_API_LLM_API_KEY  the same Gemini key again, for the server
+  #   TELEGRAM_BOT_TOKEN         from @BotFather
+  #   TELEGRAM_ALLOWED_CHAT_IDS  Карина's chat id; not a credential, but not
+  #                              hers to publish either
+  #   HINDSIGHT_DB_PASSWORD      embedded Postgres
   infisicalSecrets:
     - name: hermes-karyna-secret
       infisical:
