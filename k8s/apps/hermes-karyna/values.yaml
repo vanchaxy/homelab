@@ -8,11 +8,12 @@ hermes-karyna:
         main:
           image:
             repository: ghcr.io/vanchaxy/hermes-karyna
-            tag: sha-c9dea59
+            tag: sha-d11fd60
           env:
             TZ: Europe/Prague
             HINDSIGHT_MODE: local_external
             HINDSIGHT_API_URL: http://hermes-karyna-hindsight:8888
+            SEARXNG_URL: http://hermes-karyna-searxng:8080
             HERMES_DASHBOARD: "1"
             HERMES_DASHBOARD_HOST: 0.0.0.0
             HERMES_DASHBOARD_PORT: "9119"
@@ -83,24 +84,29 @@ hermes-karyna:
       pod:
         imagePullSecrets:
           - name: ghcr-login-secret
+        # ReadWriteOnce allows several pods only while they share a node, so
+        # pin this one to wherever the agent landed.
+        affinity:
+          podAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              - topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: hermes-karyna
+                    app.kubernetes.io/instance: hermes-karyna
+                    app.kubernetes.io/controller: hermes
       initContainers:
         agent-src:
           image:
             repository: ghcr.io/vanchaxy/hermes-karyna
-            tag: sha-c9dea59
+            tag: sha-d11fd60
           command:
             - /bin/sh
             - -c
             - >-
               cp -a /opt/hermes/. /agent-src/ &&
               rm -rf /agent-src/.venv /agent-src/.playwright &&
-              chmod -R a+rX /agent-src &&
-              mkdir -p /webui-home/skills &&
-              cp -a /opt/hermes/docker/SOUL.md /webui-home/SOUL.md &&
-              cp -a /opt/hermes/skills/wardrobe /webui-home/skills/ &&
-              { [ -f /webui-home/config.yaml ] ||
-                cp -a /opt/hermes/wardrobe-config.yaml /webui-home/config.yaml ; } &&
-              chown -R 10000:10000 /webui-home
+              chmod -R a+rX /agent-src
       containers:
         main:
           image:
@@ -108,12 +114,12 @@ hermes-karyna:
             tag: 0.51.680@sha256:4adc16f37bd5695b6cc12a2c4e7c82154bb5bf9d29494d1f668ea5b90360fe40
           env:
             TZ: Europe/Prague
-            HERMES_HOME: /home/hermeswebui/.hermes
-            HERMES_WEBUI_AGENT_DIR: /opt/hermes
+            HERMES_HOME: /opt/data
+            HERMES_WEBUI_AGENT_DIR: /opt/hermes-agent
             HERMES_NIX_BUILD: "1"
             HERMES_WEBUI_HOST: 0.0.0.0
             HERMES_WEBUI_PORT: "8787"
-            HERMES_WEBUI_STATE_DIR: /home/hermeswebui/.hermes/webui
+            HERMES_WEBUI_STATE_DIR: /opt/data/webui
             WANTED_UID: "10000"
             WANTED_GID: "10000"
             GOOGLE_API_KEY:
@@ -130,6 +136,24 @@ hermes-karyna:
               memory: 512Mi
             limits:
               memory: 2Gi
+
+    searxng:
+      containers:
+        main:
+          image:
+            repository: docker.io/searxng/searxng
+            tag: 2026.8.4-c63835bd2@sha256:f4c8e59de166ed71f6380c0847c312ca51f0d41996e31d0559163b6b09ecde52
+          env:
+            SEARXNG_BASE_URL: http://hermes-karyna-searxng:8080/
+          envFrom:
+            - secretRef:
+                name: hermes-karyna-secret
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
 
   service:
     hindsight:
@@ -153,6 +177,13 @@ hermes-karyna:
       ports:
         http:
           port: 9119
+    searxng:
+      controller: searxng
+      suffix: searxng
+      type: ClusterIP
+      ports:
+        http:
+          port: 8080
     hindsight-ui:
       controller: hindsight
       suffix: hindsight-ui
@@ -206,6 +237,9 @@ hermes-karyna:
         hermes:
           main:
             - path: /opt/data
+        webui:
+          main:
+            - path: /opt/data
     hindsight-data:
       enabled: true
       storageClass: longhorn-ssd
@@ -224,17 +258,23 @@ hermes-karyna:
         hindsight:
           main:
             - path: /home/hindsight/.cache
-    webui-data:
+    searxng-config:
       enabled: true
-      storageClass: longhorn-ssd
-      size: 5Gi
-      accessMode: ReadWriteOnce
+      type: configMap
+      name: hermes-karyna-searxng
       advancedMounts:
-        webui:
-          agent-src:
-            - path: /webui-home
+        searxng:
           main:
-            - path: /home/hermeswebui/.hermes
+            - path: /etc/searxng/settings.yml
+              subPath: settings.yml
+              readOnly: true
+    searxng-cache:
+      enabled: true
+      type: emptyDir
+      advancedMounts:
+        searxng:
+          main:
+            - path: /var/cache/searxng
     webui-agent-src:
       enabled: true
       type: emptyDir
@@ -244,8 +284,23 @@ hermes-karyna:
           agent-src:
             - path: /agent-src
           main:
-            - path: /opt/hermes
+            - path: /opt/hermes-agent
               readOnly: true
+
+  configMaps:
+    searxng:
+      enabled: true
+      suffix: searxng
+      data:
+        settings.yml: |
+          use_default_settings: true
+          server:
+            limiter: false
+            image_proxy: false
+          search:
+            formats:
+              - html
+              - json
 
 helpers:
   ghcrSecret:
@@ -253,7 +308,8 @@ helpers:
 
   # GEMINI_API_KEY, HINDSIGHT_API_LLM_API_KEY, TELEGRAM_BOT_TOKEN,
   # TELEGRAM_ALLOWED_USERS, HINDSIGHT_DB_PASSWORD, HERMES_WEBUI_PASSWORD,
-  # HERMES_DASHBOARD_BASIC_AUTH_USERNAME, HERMES_DASHBOARD_BASIC_AUTH_PASSWORD
+  # HERMES_DASHBOARD_BASIC_AUTH_USERNAME, HERMES_DASHBOARD_BASIC_AUTH_PASSWORD,
+  # SEARXNG_SECRET
   infisicalSecrets:
     - name: hermes-karyna-secret
       infisical:
