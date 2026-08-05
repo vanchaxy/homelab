@@ -62,6 +62,10 @@ hermes-karyna:
             repository: ghcr.io/vectorize-io/hindsight
             tag: 0.8.6@sha256:ffa391a77284e49f6b55e32c86f33529ac4257831407b14038a72b6a0a232039
           env:
+            # Defaults to the pod hostname, which changes on every recreate,
+            # stranding in-flight tasks under the old id. One replica on a RWO
+            # volume, so a literal is stable and unambiguous.
+            HINDSIGHT_API_WORKER_ID: hermes-karyna-hindsight
             HINDSIGHT_API_LLM_PROVIDER: gemini
             HINDSIGHT_API_LLM_MODEL: gemini-3.5-flash-lite
             HINDSIGHT_API_RETAIN_LLM_MODEL: gemini-3.6-flash
