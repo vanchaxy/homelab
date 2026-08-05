@@ -1,11 +1,3 @@
-# Hermes — a Telegram assistant for Карина, whose first skill manages her
-# wardrobe. Content and image: https://github.com/vanchaxy/hermes-karyna
-#
-# There is deliberately no `route:` here, unlike every other app in this repo.
-# Telegram uses long polling, so nothing ever connects TO Hermes: no hostname,
-# no certificate, no Gateway entry. The only inbound port is Hindsight's, and
-# that is cluster-internal.
-
 hermes-karyna:
   controllers:
     hermes:
@@ -19,9 +11,6 @@ hermes-karyna:
             tag: sha-f6e6460
           env:
             TZ: Europe/Kyiv
-            # How the agent REACHES the memory server. Distinct from the
-            # HINDSIGHT_API_* values in hermes-karyna-secret, which configure
-            # the server itself — these two namespaces overlap by name only.
             HINDSIGHT_MODE: local_external
             HINDSIGHT_API_URL: http://hermes-karyna-hindsight:8888
           envFrom:
@@ -41,56 +30,20 @@ hermes-karyna:
             repository: ghcr.io/vectorize-io/hindsight
             tag: 0.8.6@sha256:ffa391a77284e49f6b55e32c86f33529ac4257831407b14038a72b6a0a232039
           env:
-            # Every setting here overrides a Hindsight default that is WRONG
-            # for Ukrainian, and every one of them fails SILENTLY — recall just
-            # gets worse, with nothing in the logs to tell you. They live in
-            # git rather than Infisical precisely so the reasoning is visible.
-            # Only the API key is a secret.
-
-            # Hindsight defaults to gpt-5-mini, which needs an OpenAI account
-            # this deployment does not have. It speaks Gemini natively, so no
-            # base URL and no OpenAI-compatible shim.
             HINDSIGHT_API_LLM_PROVIDER: gemini
             HINDSIGHT_API_LLM_MODEL: gemini-3.5-flash-lite
-            # `retain` has the hardest job in the system: understand Ukrainian,
-            # normalise the facts to English, emit valid structured output. A
-            # bad extraction poisons the bank permanently, so it gets the
-            # better model.
             HINDSIGHT_API_RETAIN_LLM_MODEL: gemini-3.6-flash
-
-            # Store facts in English. Hindsight otherwise auto-detects and
-            # preserves the input language, filling the bank with Ukrainian.
-            # Hermes reasons — and therefore queries — in English, and matching
-            # query and document language is the biggest single factor in
-            # retrieval quality.
             HINDSIGHT_API_LLM_OUTPUT_LANGUAGE: English
-
-            # Multilingual embeddings are still required even though the facts
-            # are English, because the INPUT to retain is Ukrainian
-            # conversation. The default BAAI/bge-small-en-v1.5 is English-only
-            # and would embed it badly.
-            #
-            # CHANGING THIS INVALIDATES EVERY STORED VECTOR. Embedding spaces
-            # are not comparable across models, so a switch means rebuilding
-            # the bank from scratch.
             HINDSIGHT_API_EMBEDDINGS_LOCAL_MODEL: BAAI/bge-m3
             HINDSIGHT_API_RERANKER_LOCAL_MODEL: BAAI/bge-reranker-v2-m3
-
-            # BM25 is within-language. The facts are English, so the stock
-            # English dictionary is the right one and the (uncertain) Ukrainian
-            # Postgres dictionary never comes into it.
             HINDSIGHT_API_TEXT_SEARCH_EXTENSION: native
             HINDSIGHT_API_TEXT_SEARCH_EXTENSION_NATIVE_LANGUAGE: english
           envFrom:
-            # HINDSIGHT_API_LLM_API_KEY and HINDSIGHT_DB_PASSWORD.
             - secretRef:
                 name: hermes-karyna-secret
           resources:
             requests:
               cpu: 250m
-              # bge-m3 and bge-reranker-v2-m3 are ~2GB each and both load into
-              # this container. Below 4Gi it OOMs during startup, before it
-              # ever serves a request.
               memory: 4Gi
             limits:
               memory: 6Gi
@@ -112,18 +65,13 @@ hermes-karyna:
                 httpGet:
                   path: /health
                   port: 8888
-                # First start downloads both models into the cache PVC.
                 initialDelaySeconds: 60
                 periodSeconds: 15
                 failureThreshold: 40
 
   service:
-    # Hermes needs no Service — it only makes outbound connections.
     hindsight:
       controller: hindsight
-      # app-template appends the identifier only when a release has more than
-      # one Service, so without this the memory server would answer on the bare
-      # release name — accurate, but it reads like the agent's own port.
       suffix: hindsight
       type: ClusterIP
       ports:
@@ -131,8 +79,6 @@ hermes-karyna:
           port: 8888
 
   persistence:
-    # wardrobe.db, the photos, profile.md, sessions, and the skill synced out
-    # of the image. The photos are the irreplaceable part.
     data:
       enabled: true
       storageClass: longhorn-ssd
@@ -142,8 +88,6 @@ hermes-karyna:
         hermes:
           main:
             - path: /opt/data
-
-    # Hindsight's embedded Postgres — the memory bank itself.
     hindsight-data:
       enabled: true
       storageClass: longhorn-ssd
@@ -153,10 +97,6 @@ hermes-karyna:
         hindsight:
           main:
             - path: /home/hindsight/.pg0
-
-    # HuggingFace model cache. Without this, every pod restart re-downloads
-    # ~4.5GB of embedding and reranker weights before the container can
-    # answer a health check.
     hindsight-cache:
       enabled: true
       storageClass: longhorn-ssd
@@ -171,17 +111,8 @@ helpers:
   ghcrSecret:
     enabled: true
 
-  # One secret for both containers. Everything that is genuinely secret, and
-  # nothing else — the rest of the configuration is in `env:` above, where it
-  # can carry the reasoning that goes with it:
-  #
-  #   GEMINI_API_KEY             one key for the agent, its side tasks and
-  #                              Hindsight's extraction
-  #   HINDSIGHT_API_LLM_API_KEY  the same Gemini key again, for the server
-  #   TELEGRAM_BOT_TOKEN         from @BotFather
-  #   TELEGRAM_ALLOWED_CHAT_IDS  Карина's chat id; not a credential, but not
-  #                              hers to publish either
-  #   HINDSIGHT_DB_PASSWORD      embedded Postgres
+  # GEMINI_API_KEY, HINDSIGHT_API_LLM_API_KEY, TELEGRAM_BOT_TOKEN,
+  # TELEGRAM_ALLOWED_CHAT_IDS, HINDSIGHT_DB_PASSWORD
   infisicalSecrets:
     - name: hermes-karyna-secret
       infisical:
@@ -190,9 +121,6 @@ helpers:
   backups:
     - pvcName: hermes-karyna-data
       resticRepoSuffix: hermes-karyna/data
-    # Embedded Postgres, snapshotted live — crash-consistent, which Postgres
-    # recovers from the same way it recovers from a power cut. The mover runs
-    # as the image's `hindsight` user (uid/gid 1000) so it can read the files.
     - pvcName: hermes-karyna-hindsight-data
       resticRepoSuffix: hermes-karyna/hindsight
       moverSecurityContext:
@@ -200,5 +128,3 @@ helpers:
         runAsGroup: 1000
         runAsNonRoot: true
         runAsUser: 1000
-    # hermes-karyna-hindsight-cache is deliberately not backed up: it is a
-    # HuggingFace download cache and re-fetches itself.
