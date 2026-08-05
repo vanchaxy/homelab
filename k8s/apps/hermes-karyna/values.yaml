@@ -8,7 +8,7 @@ hermes-karyna:
         main:
           image:
             repository: ghcr.io/vanchaxy/hermes-karyna
-            tag: sha-0214ea4
+            tag: sha-f1b5eea
           env:
             TZ: Europe/Prague
             HINDSIGHT_MODE: local_external
@@ -84,7 +84,7 @@ hermes-karyna:
         agent-src:
           image:
             repository: ghcr.io/vanchaxy/hermes-karyna
-            tag: sha-0214ea4
+            tag: sha-f1b5eea
           command:
             - /bin/sh
             - -c
