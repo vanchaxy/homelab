@@ -47,6 +47,15 @@ hermes-karyna:
               memory: 2Gi
 
     hindsight:
+      pod:
+        # Hindsight runs rootless as uid 1000 and refuses to start when its
+        # data directory is not writable; a Longhorn volume arrives owned by
+        # root.
+        securityContext:
+          fsGroup: 1000
+          fsGroupChangePolicy: "OnRootMismatch"
+          runAsUser: 1000
+          runAsGroup: 1000
       containers:
         main:
           image:
@@ -157,7 +166,7 @@ helpers:
     enabled: true
 
   # GEMINI_API_KEY, HINDSIGHT_API_LLM_API_KEY, TELEGRAM_BOT_TOKEN,
-  # TELEGRAM_ALLOWED_CHAT_IDS, HINDSIGHT_DB_PASSWORD, HERMES_WEBUI_PASSWORD
+  # TELEGRAM_ALLOWED_USERS, HINDSIGHT_DB_PASSWORD, HERMES_WEBUI_PASSWORD
   infisicalSecrets:
     - name: hermes-karyna-secret
       infisical:
