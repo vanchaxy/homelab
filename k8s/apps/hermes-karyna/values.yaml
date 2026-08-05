@@ -1,0 +1,175 @@
+hermes-karyna:
+  controllers:
+    hermes:
+      pod:
+        imagePullSecrets:
+          - name: ghcr-login-secret
+      containers:
+        main:
+          image:
+            repository: ghcr.io/vanchaxy/hermes-karyna
+            tag: sha-0214ea4
+          env:
+            TZ: Europe/Prague
+            HINDSIGHT_MODE: local_external
+            HINDSIGHT_API_URL: http://hermes-karyna-hindsight:8888
+          envFrom:
+            - secretRef:
+                name: hermes-karyna-secret
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              memory: 2Gi
+
+        webui:
+          image:
+            repository: ghcr.io/nesquena/hermes-webui
+            tag: 0.51.680@sha256:4adc16f37bd5695b6cc12a2c4e7c82154bb5bf9d29494d1f668ea5b90360fe40
+          env:
+            TZ: Europe/Prague
+            HERMES_HOME: /home/hermeswebui/.hermes
+            HERMES_WEBUI_HOST: 0.0.0.0
+            HERMES_WEBUI_PORT: "8787"
+            HERMES_WEBUI_STATE_DIR: /home/hermeswebui/.hermes/webui
+            WARDROBE_HOME: /home/hermeswebui/.hermes/wardrobe
+            WANTED_UID: "10000"
+            WANTED_GID: "10000"
+          envFrom:
+            - secretRef:
+                name: hermes-karyna-secret
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              memory: 2Gi
+
+    hindsight:
+      containers:
+        main:
+          image:
+            repository: ghcr.io/vectorize-io/hindsight
+            tag: 0.8.6@sha256:ffa391a77284e49f6b55e32c86f33529ac4257831407b14038a72b6a0a232039
+          env:
+            HINDSIGHT_API_LLM_PROVIDER: gemini
+            HINDSIGHT_API_LLM_MODEL: gemini-3.5-flash-lite
+            HINDSIGHT_API_RETAIN_LLM_MODEL: gemini-3.6-flash
+            HINDSIGHT_API_LLM_OUTPUT_LANGUAGE: English
+            HINDSIGHT_API_EMBEDDINGS_LOCAL_MODEL: BAAI/bge-m3
+            HINDSIGHT_API_RERANKER_LOCAL_MODEL: BAAI/bge-reranker-v2-m3
+            HINDSIGHT_API_TEXT_SEARCH_EXTENSION: native
+            HINDSIGHT_API_TEXT_SEARCH_EXTENSION_NATIVE_LANGUAGE: english
+          envFrom:
+            - secretRef:
+                name: hermes-karyna-secret
+          resources:
+            requests:
+              cpu: 250m
+              memory: 4Gi
+            limits:
+              memory: 6Gi
+          probes:
+            liveness:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /health
+                  port: 8888
+                initialDelaySeconds: 120
+                periodSeconds: 30
+                failureThreshold: 5
+            readiness:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /health
+                  port: 8888
+                initialDelaySeconds: 60
+                periodSeconds: 15
+                failureThreshold: 40
+
+  service:
+    hindsight:
+      controller: hindsight
+      suffix: hindsight
+      type: ClusterIP
+      ports:
+        http:
+          port: 8888
+    webui:
+      controller: hermes
+      suffix: webui
+      type: ClusterIP
+      ports:
+        http:
+          port: 8787
+
+  route:
+    webui:
+      suffix: webui
+      hostnames:
+        - hermes.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      rules:
+        - backendRefs:
+            - identifier: webui
+
+  persistence:
+    data:
+      enabled: true
+      storageClass: longhorn-ssd
+      size: 10Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        hermes:
+          main:
+            - path: /opt/data
+          webui:
+            - path: /home/hermeswebui/.hermes
+    hindsight-data:
+      enabled: true
+      storageClass: longhorn-ssd
+      size: 10Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        hindsight:
+          main:
+            - path: /home/hindsight/.pg0
+    hindsight-cache:
+      enabled: true
+      storageClass: longhorn-ssd
+      size: 10Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        hindsight:
+          main:
+            - path: /home/hindsight/.cache
+
+helpers:
+  ghcrSecret:
+    enabled: true
+
+  # GEMINI_API_KEY, HINDSIGHT_API_LLM_API_KEY, TELEGRAM_BOT_TOKEN,
+  # TELEGRAM_ALLOWED_CHAT_IDS, HINDSIGHT_DB_PASSWORD, HERMES_WEBUI_PASSWORD
+  infisicalSecrets:
+    - name: hermes-karyna-secret
+      infisical:
+        path: "/hermes-karyna"
+
+  backups:
+    - pvcName: hermes-karyna-data
+      resticRepoSuffix: hermes-karyna/data
+    - pvcName: hermes-karyna-hindsight-data
+      resticRepoSuffix: hermes-karyna/hindsight
+      moverSecurityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
