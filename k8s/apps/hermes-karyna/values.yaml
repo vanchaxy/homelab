@@ -8,7 +8,7 @@ hermes-karyna:
         main:
           image:
             repository: ghcr.io/vanchaxy/hermes-karyna
-            tag: sha-d11fd60
+            tag: sha-3e545b3
           env:
             TZ: Europe/Prague
             HINDSIGHT_MODE: local_external
@@ -80,63 +80,6 @@ hermes-karyna:
                 periodSeconds: 15
                 failureThreshold: 40
 
-    webui:
-      pod:
-        imagePullSecrets:
-          - name: ghcr-login-secret
-        # ReadWriteOnce allows several pods only while they share a node, so
-        # pin this one to wherever the agent landed.
-        affinity:
-          podAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              - topologyKey: kubernetes.io/hostname
-                labelSelector:
-                  matchLabels:
-                    app.kubernetes.io/name: hermes-karyna
-                    app.kubernetes.io/instance: hermes-karyna
-                    app.kubernetes.io/controller: hermes
-      initContainers:
-        agent-src:
-          image:
-            repository: ghcr.io/vanchaxy/hermes-karyna
-            tag: sha-d11fd60
-          command:
-            - /bin/sh
-            - -c
-            - >-
-              cp -a /opt/hermes/. /agent-src/ &&
-              rm -rf /agent-src/.venv /agent-src/.playwright &&
-              chmod -R a+rX /agent-src
-      containers:
-        main:
-          image:
-            repository: ghcr.io/nesquena/hermes-webui
-            tag: 0.51.680@sha256:4adc16f37bd5695b6cc12a2c4e7c82154bb5bf9d29494d1f668ea5b90360fe40
-          env:
-            TZ: Europe/Prague
-            HERMES_HOME: /opt/data
-            HERMES_WEBUI_AGENT_DIR: /opt/hermes-agent
-            HERMES_NIX_BUILD: "1"
-            HERMES_WEBUI_HOST: 0.0.0.0
-            HERMES_WEBUI_PORT: "8787"
-            HERMES_WEBUI_STATE_DIR: /opt/data/webui
-            WANTED_UID: "10000"
-            WANTED_GID: "10000"
-            GOOGLE_API_KEY:
-              valueFrom:
-                secretKeyRef:
-                  name: hermes-karyna-secret
-                  key: GEMINI_API_KEY
-          envFrom:
-            - secretRef:
-                name: hermes-karyna-secret
-          resources:
-            requests:
-              cpu: 100m
-              memory: 512Mi
-            limits:
-              memory: 2Gi
-
     searxng:
       containers:
         main:
@@ -163,13 +106,6 @@ hermes-karyna:
       ports:
         http:
           port: 8888
-    webui:
-      controller: webui
-      suffix: webui
-      type: ClusterIP
-      ports:
-        http:
-          port: 8787
     dashboard:
       controller: hermes
       suffix: dashboard
@@ -193,21 +129,10 @@ hermes-karyna:
           port: 9999
 
   route:
-    webui:
-      suffix: webui
-      hostnames:
-        - hermes.ivanchenko.io
-      parentRefs:
-        - name: internal-gw
-          namespace: envoy-gateway
-          sectionName: https
-      rules:
-        - backendRefs:
-            - identifier: webui
     dashboard:
       suffix: dashboard
       hostnames:
-        - hermes-dashboard.ivanchenko.io
+        - hermes.ivanchenko.io
       parentRefs:
         - name: internal-gw
           namespace: envoy-gateway
@@ -235,9 +160,6 @@ hermes-karyna:
       accessMode: ReadWriteOnce
       advancedMounts:
         hermes:
-          main:
-            - path: /opt/data
-        webui:
           main:
             - path: /opt/data
     hindsight-data:
@@ -275,18 +197,6 @@ hermes-karyna:
         searxng:
           main:
             - path: /var/cache/searxng
-    webui-agent-src:
-      enabled: true
-      type: emptyDir
-      sizeLimit: 2Gi
-      advancedMounts:
-        webui:
-          agent-src:
-            - path: /agent-src
-          main:
-            - path: /opt/hermes-agent
-              readOnly: true
-
   configMaps:
     searxng:
       enabled: true
@@ -307,7 +217,7 @@ helpers:
     enabled: true
 
   # GEMINI_API_KEY, HINDSIGHT_API_LLM_API_KEY, TELEGRAM_BOT_TOKEN,
-  # TELEGRAM_ALLOWED_USERS, HINDSIGHT_DB_PASSWORD, HERMES_WEBUI_PASSWORD,
+  # TELEGRAM_ALLOWED_USERS, HINDSIGHT_DB_PASSWORD,
   # HERMES_DASHBOARD_BASIC_AUTH_USERNAME, HERMES_DASHBOARD_BASIC_AUTH_PASSWORD,
   # SEARXNG_SECRET
   infisicalSecrets:
