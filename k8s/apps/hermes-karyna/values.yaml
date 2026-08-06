@@ -8,7 +8,7 @@ hermes-karyna:
         main:
           image:
             repository: ghcr.io/vanchaxy/hermes-karyna
-            tag: sha-1c14772
+            tag: sha-1652d0e
           env:
             TZ: Europe/Prague
             HINDSIGHT_MODE: local_external
