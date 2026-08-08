@@ -8,16 +8,12 @@ hermes-karyna:
         main:
           image:
             repository: ghcr.io/vanchaxy/hermes-karyna
-            tag: sha-4ebec79
+            tag: sha-96a1f8a
           env:
             TZ: Europe/Prague
             HINDSIGHT_MODE: local_external
             HINDSIGHT_API_URL: http://hermes-karyna-hindsight:8888
             SEARXNG_URL: http://hermes-karyna-searxng:8080
-            # Debounce on photo arrival; restarted by each photo. It does NOT
-            # merge albums — each Telegram album has its own media_group_id and
-            # its own batch key — so a 25-photo batch stays three turns.
-            # busy_input_mode: queue is what stops them interrupting.
             HERMES_TELEGRAM_MEDIA_BATCH_DELAY_SECONDS: "2"
             HERMES_DASHBOARD: "1"
             HERMES_DASHBOARD_HOST: 0.0.0.0
@@ -228,10 +224,6 @@ helpers:
   # TELEGRAM_ALLOWED_USERS, HINDSIGHT_DB_PASSWORD,
   # HERMES_DASHBOARD_BASIC_AUTH_USERNAME, HERMES_DASHBOARD_BASIC_AUTH_PASSWORD,
   # SEARXNG_SECRET
-  #
-  # HINDSIGHT_API_LLM_API_KEY is gone: the claude-code provider takes no key,
-  # it spawns the bundled `claude` CLI and inherits CLAUDE_CODE_OAUTH_TOKEN
-  # from this same secret.
   infisicalSecrets:
     - name: hermes-karyna-secret
       infisical:
