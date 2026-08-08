@@ -171,7 +171,7 @@ media:
         main:
           image:
             repository: linuxserver/sonarr
-            tag: 4.0.17@sha256:3580aec3802c915f0f819a88d5099abce61734b925732b8393d176b5dc561020
+            tag: 4.0.19@sha256:373159ba768e23a3a1c497d9f2b936addf8fd5b1fdce7dd6a14080ac928bfda0
           env:
             PUID: 568
             PGID: 568
