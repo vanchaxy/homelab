@@ -8,7 +8,7 @@ hermes-karyna:
         main:
           image:
             repository: ghcr.io/vanchaxy/hermes-karyna
-            tag: sha-844c7d1
+            tag: sha-e169a6f
           env:
             TZ: Europe/Prague
             HINDSIGHT_MODE: local_external
@@ -46,9 +46,12 @@ hermes-karyna:
             tag: 0.8.6@sha256:ffa391a77284e49f6b55e32c86f33529ac4257831407b14038a72b6a0a232039
           env:
             HINDSIGHT_API_WORKER_ID: hermes-karyna-hindsight
-            HINDSIGHT_API_LLM_PROVIDER: gemini
-            HINDSIGHT_API_LLM_MODEL: gemini-3.5-flash-lite
-            HINDSIGHT_API_RETAIN_LLM_MODEL: gemini-3.6-flash
+            HINDSIGHT_API_LLM_PROVIDER: claude-code
+            HINDSIGHT_API_LLM_MODEL: claude-sonnet-5
+            HINDSIGHT_API_RETAIN_LLM_MAX_CONCURRENT: "3"
+            HINDSIGHT_API_RETAIN_LLM_INITIAL_BACKOFF: "2.0"
+            HINDSIGHT_API_RETAIN_LLM_MAX_BACKOFF: "120.0"
+            HINDSIGHT_API_CONSOLIDATION_LLM_PARALLELISM: "2"
             HINDSIGHT_API_LLM_OUTPUT_LANGUAGE: English
             HINDSIGHT_API_EMBEDDINGS_LOCAL_MODEL: BAAI/bge-m3
             HINDSIGHT_API_RERANKER_LOCAL_MODEL: BAAI/bge-reranker-v2-m3
@@ -221,10 +224,14 @@ helpers:
   ghcrSecret:
     enabled: true
 
-  # GEMINI_API_KEY, HINDSIGHT_API_LLM_API_KEY, TELEGRAM_BOT_TOKEN,
+  # CLAUDE_CODE_OAUTH_TOKEN, GEMINI_API_KEY, TELEGRAM_BOT_TOKEN,
   # TELEGRAM_ALLOWED_USERS, HINDSIGHT_DB_PASSWORD,
   # HERMES_DASHBOARD_BASIC_AUTH_USERNAME, HERMES_DASHBOARD_BASIC_AUTH_PASSWORD,
   # SEARXNG_SECRET
+  #
+  # HINDSIGHT_API_LLM_API_KEY is gone: the claude-code provider takes no key,
+  # it spawns the bundled `claude` CLI and inherits CLAUDE_CODE_OAUTH_TOKEN
+  # from this same secret.
   infisicalSecrets:
     - name: hermes-karyna-secret
       infisical:
