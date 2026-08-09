@@ -8,7 +8,7 @@ hermes-karyna:
         main:
           image:
             repository: ghcr.io/vanchaxy/hermes-karyna
-            tag: sha-60547c9
+            tag: sha-bc4b512
           env:
             TZ: Europe/Prague
             HINDSIGHT_MODE: local_external
@@ -85,6 +85,19 @@ hermes-karyna:
                 periodSeconds: 15
                 failureThreshold: 40
 
+    cliproxy:
+      containers:
+        main:
+          image:
+            repository: docker.io/eceasy/cli-proxy-api
+            tag: v7.2.127
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+
     searxng:
       containers:
         main:
@@ -125,6 +138,13 @@ hermes-karyna:
       ports:
         http:
           port: 8080
+    cliproxy:
+      controller: cliproxy
+      suffix: cliproxy
+      type: ClusterIP
+      ports:
+        http:
+          port: 8317
     hindsight-ui:
       controller: hindsight
       suffix: hindsight-ui
@@ -194,6 +214,25 @@ hermes-karyna:
           main:
             - path: /config/hindsight
               readOnly: true
+    cliproxy-auth:
+      enabled: true
+      storageClass: longhorn-ssd
+      size: 1Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        cliproxy:
+          main:
+            - path: /root/.cli-proxy-api
+    cliproxy-config:
+      enabled: true
+      type: configMap
+      name: hermes-karyna-cliproxy
+      advancedMounts:
+        cliproxy:
+          main:
+            - path: /CLIProxyAPI/config.yaml
+              subPath: config.yaml
+              readOnly: true
     searxng-config:
       enabled: true
       type: configMap
@@ -212,6 +251,19 @@ hermes-karyna:
           main:
             - path: /var/cache/searxng
   configMaps:
+    cliproxy:
+      enabled: true
+      suffix: cliproxy
+      data:
+        config.yaml: |
+          port: 8317
+          host: ""
+          auth-dir: "/root/.cli-proxy-api"
+          api-keys: []
+          remote-management:
+            allow-remote: false
+            secret-key: ""
+          disable-claude-cloak-mode: false
     hindsight:
       enabled: true
       suffix: hindsight
