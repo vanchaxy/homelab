@@ -8,7 +8,7 @@ hermes-karyna:
         main:
           image:
             repository: ghcr.io/vanchaxy/hermes-karyna
-            tag: sha-96a1f8a
+            tag: sha-60547c9
           env:
             TZ: Europe/Prague
             HINDSIGHT_MODE: local_external
@@ -185,6 +185,15 @@ hermes-karyna:
         hindsight:
           main:
             - path: /home/hindsight/.cache
+    hindsight-config:
+      enabled: true
+      type: configMap
+      name: hermes-karyna-hindsight
+      advancedMounts:
+        hermes:
+          main:
+            - path: /config/hindsight
+              readOnly: true
     searxng-config:
       enabled: true
       type: configMap
@@ -203,6 +212,16 @@ hermes-karyna:
           main:
             - path: /var/cache/searxng
   configMaps:
+    hindsight:
+      enabled: true
+      suffix: hindsight
+      data:
+        config.json: |
+          {
+            "memory_mode": "hybrid",
+            "auto_recall": false,
+            "recall_types": "observation,world,experience"
+          }
     searxng:
       enabled: true
       suffix: searxng
