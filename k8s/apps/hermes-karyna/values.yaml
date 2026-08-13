@@ -6,9 +6,9 @@ hermes-karyna:
           - name: ghcr-login-secret
       containers:
         main:
-          image:
+          image: &hermesImage
             repository: ghcr.io/vanchaxy/hermes-karyna
-            tag: sha-a69cc62
+            tag: sha-5d2447d
           env:
             TZ: Europe/Prague
             HINDSIGHT_MODE: local_external
@@ -27,6 +27,47 @@ hermes-karyna:
               memory: 512Mi
             limits:
               memory: 2Gi
+
+        browser:
+          image: *hermesImage
+          command:
+            - /opt/hermes/.venv/bin/python
+            - /opt/hermes/browser/browse.py
+          env:
+            TZ: Europe/Prague
+            WARDROBE_HOME: /opt/data/wardrobe
+            HOME: /tmp
+            PYTHONDONTWRITEBYTECODE: "1"
+          securityContext:
+            runAsUser: 10000
+            runAsGroup: 10000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+          probes:
+            liveness:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /healthz
+                  port: 8080
+                periodSeconds: 30
+            readiness:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /healthz
+                  port: 8080
+                periodSeconds: 15
 
     hindsight:
       pod:
@@ -152,6 +193,13 @@ hermes-karyna:
       ports:
         http:
           port: 9999
+    wardrobe:
+      controller: hermes
+      suffix: wardrobe
+      type: ClusterIP
+      ports:
+        http:
+          port: 8080
 
   route:
     dashboard:
@@ -176,6 +224,17 @@ hermes-karyna:
       rules:
         - backendRefs:
             - identifier: hindsight-ui
+    wardrobe:
+      suffix: wardrobe
+      hostnames:
+        - wardrobe.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      rules:
+        - backendRefs:
+            - identifier: wardrobe
 
   persistence:
     data:
@@ -187,6 +246,9 @@ hermes-karyna:
         hermes:
           main:
             - path: /opt/data
+          browser:
+            - path: /opt/data
+              readOnly: true
     hindsight-data:
       enabled: true
       storageClass: longhorn-ssd
@@ -292,10 +354,6 @@ helpers:
   ghcrSecret:
     enabled: true
 
-  # CLAUDE_CODE_OAUTH_TOKEN, GEMINI_API_KEY, TELEGRAM_BOT_TOKEN,
-  # TELEGRAM_ALLOWED_USERS, HINDSIGHT_DB_PASSWORD,
-  # HERMES_DASHBOARD_BASIC_AUTH_USERNAME, HERMES_DASHBOARD_BASIC_AUTH_PASSWORD,
-  # SEARXNG_SECRET
   infisicalSecrets:
     - name: hermes-karyna-secret
       infisical:
