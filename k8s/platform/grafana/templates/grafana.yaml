@@ -6,7 +6,7 @@ metadata:
     dashboards: "grafana"
 spec:
   # renovate: datasource=docker depName=grafana/grafana
-  version: "13.0.2"
+  version: "13.2.0"
   config:
     server:
       root_url: https://grafana.ivanchenko.io
