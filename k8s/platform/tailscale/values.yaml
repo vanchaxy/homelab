@@ -1,4 +1,6 @@
 app-template:
+  defaultPodOptions:
+    automountServiceAccountToken: true
   serviceAccount:
     tailscale:
       forceRename: tailscale
