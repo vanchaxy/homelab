@@ -130,6 +130,15 @@ appsSync:
     - longhorn-system
     - media
     - telemetry
+  unmanagedReplicas:
+    - abiotic-factor
+    - core-keeper
+    - factorio
+    - icarus
+    - iperf3
+    - necesse
+    - palworld
+    - satisfactory
 
 helpers:
   infisicalSecrets:

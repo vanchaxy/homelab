@@ -1,7 +1,6 @@
 icarus:
   controllers:
     main:
-      replicas: null
       containers:
         main:
           image:
