@@ -56,11 +56,23 @@ spec:
           - CreateNamespace=true
           - ApplyOutOfSyncOnly=true
           - ServerSideApply=true
+          - RespectIgnoreDifferences=true
   templatePatch: |
-    {{ `{{ if eq .path.basename` }} {{ .Values.appsSync.privilegedNamespaces | toJson | replace "[" "" | replace "," " " | replace "]" "" }}{{ `}}` }}
+    {{ `{{- $privileged := eq .path.basename` }} {{ .Values.appsSync.privilegedNamespaces | toJson | replace "[" "" | replace "," " " | replace "]" "" }}{{ ` -}}` }}
+    {{ `{{- $unmanagedReplicas := eq .path.basename` }} {{ .Values.appsSync.unmanagedReplicas | toJson | replace "[" "" | replace "," " " | replace "]" "" }}{{ ` -}}` }}
+    {{ `{{- if or $privileged $unmanagedReplicas }}` }}
     spec:
+      {{ `{{- if $privileged }}` }}
       syncPolicy:
         managedNamespaceMetadata:
           labels:
             pod-security.kubernetes.io/enforce: privileged
-    {{ `{{ end }}` }}
+      {{ `{{- end }}` }}
+      {{ `{{- if $unmanagedReplicas }}` }}
+      ignoreDifferences:
+        - group: apps
+          kind: Deployment
+          jsonPointers:
+            - /spec/replicas
+      {{ `{{- end }}` }}
+    {{ `{{- end }}` }}

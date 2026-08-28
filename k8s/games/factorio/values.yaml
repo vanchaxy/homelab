@@ -1,7 +1,6 @@
 factorio:
   controllers:
     main:
-      replicas: null
       containers:
         main:
           image:

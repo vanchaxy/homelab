@@ -1,7 +1,6 @@
 core-keeper:
   controllers:
     main:
-      replicas: null
       containers:
         main:
           image:

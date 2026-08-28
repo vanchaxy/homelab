@@ -1,7 +1,6 @@
 abiotic-factor:
   controllers:
     main:
-      replicas: null
       containers:
         main:
           image:
