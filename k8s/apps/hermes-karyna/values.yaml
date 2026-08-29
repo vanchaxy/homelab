@@ -374,3 +374,6 @@ helpers:
         runAsGroup: 1000
         runAsNonRoot: true
         runAsUser: 1000
+    - pvcName: hermes-karyna-cliproxy-auth
+      resticRepoSuffix: hermes-karyna/cliproxy-auth
+      cacheCapacity: 1Gi
