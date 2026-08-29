@@ -10,6 +10,7 @@ global:
     storageClassName: longhorn-ssd-backup
     volumeSnapshotClassName: longhorn-snapshot-vsc
     copyMethod: Snapshot
+    cacheCapacity: 2Gi
     pruneIntervalDays: 14
     retain:
       hourly: 12

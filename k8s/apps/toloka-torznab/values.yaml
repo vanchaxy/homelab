@@ -87,6 +87,7 @@ helpers:
   backups:
     - pvcName: toloka-torznab-postgres-1
       resticRepoSuffix: toloka-torznab/postgres
+      cacheCapacity: 10Gi
       moverSecurityContext:
         fsGroup: 26
         runAsGroup: 26
