@@ -362,6 +362,11 @@ helpers:
   backups:
     - pvcName: hermes-karyna-data
       resticRepoSuffix: hermes-karyna/data
+      moverSecurityContext:
+        fsGroup: 10000
+        runAsGroup: 10000
+        runAsNonRoot: true
+        runAsUser: 10000
     - pvcName: hermes-karyna-hindsight-data
       resticRepoSuffix: hermes-karyna/hindsight
       moverSecurityContext:
