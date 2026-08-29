@@ -131,7 +131,7 @@ hermes-karyna:
         main:
           image:
             repository: docker.io/eceasy/cli-proxy-api
-            tag: v7.2.127
+            tag: v7.2.145@sha256:b90fcd2282e8b8da9ee05d531fb92e5215ac8340722f8842adb47bb7120226fd
           resources:
             requests:
               cpu: 50m
