@@ -9,7 +9,7 @@ spec:
       rules:
         - alert: PVCNotBackedUp
           expr: |
-            kube_persistentvolumeclaim_info{persistentvolumeclaim!~"volsync-.+|redis-data-.+|.+-gamefiles|media-data", namespace!="telemetry"}
+            kube_persistentvolumeclaim_info{persistentvolumeclaim!~"volsync-.+|redis-data-.+|.+-gamefiles|.+-cache|media-data", namespace!="telemetry"}
             unless on (namespace, persistentvolumeclaim)
             max by (namespace, persistentvolumeclaim) (
               label_replace(

@@ -4,6 +4,8 @@ longhorn:
   metrics:
     serviceMonitor:
       enabled: true
+  networkPolicies:
+    restrictInternalTraffic: false
   preUpgradeChecker:
     upgradeVersionCheck: false
     jobEnabled: false
