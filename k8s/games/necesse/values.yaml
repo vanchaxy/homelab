@@ -5,7 +5,7 @@ necesse:
         main:
           image:
             repository: brammys/necesse-server
-            tag: latest@sha256:792cabbc429364cc95d1fb7cdf46416c8b40e5c4b7fdf07aacc166268db4c4f9
+            tag: latest@sha256:11ed3707dd05234a24f57c5ecb2e033c9f7992844c44e557da0652b0eacedb4d
           env:
             OWNER: vanchaxy
             GIVE_CLIENTS_POWER: 1
