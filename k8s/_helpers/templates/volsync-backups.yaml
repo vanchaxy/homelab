@@ -42,6 +42,7 @@ spec:
     retain:
       {{- toYaml ($backup.retain | default $.Values.global.restic.retain) | nindent 6 }}
     copyMethod: {{ $backup.copyMethod | default $.Values.global.restic.copyMethod }}
+    cacheCapacity: {{ $backup.cacheCapacity | default $.Values.global.restic.cacheCapacity }}
     storageClassName: {{ $backup.storageClassName | default $.Values.global.restic.storageClassName }}
     volumeSnapshotClassName: {{ $backup.volumeSnapshotClassName | default $.Values.global.restic.volumeSnapshotClassName }}
     {{- with $backup.moverSecurityContext }}
