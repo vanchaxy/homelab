@@ -5,7 +5,7 @@ palworld:
         main:
           image:
             repository: thijsvanloef/palworld-server-docker
-            tag: latest@sha256:401d3eb5c053bcd72949e1ede8c4e38be5e5ad66be7272ac37940706df0aeb2f
+            tag: latest@sha256:be3ad49e373045a7b60478fd8b7f7411c1e293713dfa4733e563e798f276d688
           env:
             PUID: 1000
             PGID: 1000
