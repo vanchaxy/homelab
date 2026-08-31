@@ -31,6 +31,7 @@ kaneo:
                   name: kaneo-secret
                   key: CUSTOM_OAUTH_CLIENT_SECRET
             CUSTOM_OAUTH_DISCOVERY_URL: https://id.ivanchenko.io/.well-known/openid-configuration
+            CUSTOM_OAUTH_SCOPES: "openid,profile,email"
             S3_ENDPOINT: https://s3.ivanchenko.io
             S3_BUCKET: kaneo
             
