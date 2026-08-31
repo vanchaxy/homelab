@@ -53,7 +53,7 @@ backrest:
 backrest-volsync-operator:
   image:
     repository: ghcr.io/jogotcha/backrest-volsync-operator
-    tag: 0.3.0@sha256:93580e477a4d37b3f319903b4f1ff073384d0e13178f3acd3df00a1f0cb5880a
+    tag: 0.3.1@sha256:032036d57fdead3992c63bc7b93c4090cc7a1587b967acb1c5a43999a8cab400
 
   operatorConfig:
     create: true
