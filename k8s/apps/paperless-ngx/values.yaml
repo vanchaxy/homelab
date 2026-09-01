@@ -109,3 +109,8 @@ helpers:
   backups:
     - pvcName: paperless-ngx-data
       resticRepoSuffix: paperless-ngx/data
+      moverSecurityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
