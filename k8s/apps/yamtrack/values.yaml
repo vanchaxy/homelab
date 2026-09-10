@@ -50,7 +50,7 @@ redis:
     username: ""
   master:
     persistence:
-      enabled: true
+      enabled: false
     resources:
       limits:
         cpu: null
