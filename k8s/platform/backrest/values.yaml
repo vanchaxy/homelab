@@ -67,3 +67,4 @@ helpers:
   backups:
     - pvcName: backrest-config
       resticRepoSuffix: backrest
+      unlock: "2026-09-11"
