@@ -3,7 +3,7 @@ name: hermes-karyna
 version: 0.0.0
 dependencies:
   - name: app-template
-    version: 5.1.0
+    version: 5.2.1
     repository: https://bjw-s-labs.github.io/helm-charts
     alias: hermes-karyna
   - name: helpers
