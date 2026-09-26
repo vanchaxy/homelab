@@ -196,7 +196,7 @@ media:
         main:
           image:
             repository: ghcr.io/dictionarry-hub/profilarr
-            tag: develop@sha256:7c910c49a0c255466ff94e34293afb969cedfa9d2ab1ef319b689a743d9fc7b3
+            tag: develop@sha256:cf59c75766e1fff5c86b23194f5de6f18c6bfa3293c112792725f76a274fc9bd
           env:
             PUID: 1000
             PGID: 1000
