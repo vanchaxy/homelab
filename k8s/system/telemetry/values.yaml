@@ -74,6 +74,13 @@ victoria-metrics-k8s-stack:
       enabled: true
       spec:
         allowCrossNamespaceImport: true
+    victoriametrics:
+      datasources:
+        - name: VictoriaMetrics
+          type: prometheus
+          access: proxy
+          uid: VictoriaMetrics
+          isDefault: true
 
   defaultRules:
     rules:

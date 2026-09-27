@@ -6,7 +6,7 @@ metadata:
     dashboards: "grafana"
 spec:
   # renovate: datasource=docker depName=grafana/grafana
-  version: "13.2.1"
+  version: "13.2.2"
   config:
     server:
       root_url: https://grafana.ivanchenko.io
@@ -26,6 +26,8 @@ spec:
       allow_assign_grafana_admin: "true"
     log:
       mode: "console"
+    plugins:
+      preinstall_auto_update: "false"
   httpRoute:
     spec:
       parentRefs:
@@ -44,8 +46,17 @@ spec:
               port: 3000
   deployment:
     spec:
+      strategy:
+        type: Recreate
       template:
         spec:
+          securityContext:
+            fsGroup: 10001
+            fsGroupChangePolicy: OnRootMismatch
+          volumes:
+            - name: grafana-data
+              persistentVolumeClaim:
+                claimName: grafana-pvc
           containers:
             - name: grafana
               env:
