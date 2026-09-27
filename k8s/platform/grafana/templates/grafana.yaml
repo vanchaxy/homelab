@@ -26,6 +26,8 @@ spec:
       allow_assign_grafana_admin: "true"
     log:
       mode: "console"
+    plugins:
+      preinstall_auto_update: "false"
   httpRoute:
     spec:
       parentRefs:
