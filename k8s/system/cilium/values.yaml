@@ -100,10 +100,10 @@ ciliumBGP:
   peers:
     - hostname: mars
       peerAddress: "10.100.0.1"
-      routerAddress: "192.168.50.1"
+      routerAddress: "10.10.60.1"
     - hostname: jupiter
       peerAddress: "10.100.1.1"
-      routerAddress: "192.168.50.1"
+      routerAddress: "10.10.60.1"
     - hostname: saturn
       peerAddress: "10.100.2.1"
-      routerAddress: "192.168.50.1"
+      routerAddress: "10.10.60.1"
