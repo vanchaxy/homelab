@@ -16,6 +16,11 @@ spec:
           peerAddress: {{ .peerAddress | quote }}
           peerConfigRef:
             name: default-peer-config
+        - name: "router-{{ .hostname }}"
+          peerASN: 64512
+          peerAddress: {{ .routerAddress | quote }}
+          peerConfigRef:
+            name: router-peer-config
 ---
 {{- end }}
 apiVersion: cilium.io/v2
@@ -48,3 +53,36 @@ spec:
       selector:
         matchLabels:
           expose-public: "true"
+---
+apiVersion: cilium.io/v2
+kind: CiliumBGPPeerConfig
+metadata:
+  name: router-peer-config
+spec:
+  timers:
+    holdTimeSeconds: 9
+    keepAliveTimeSeconds: 3
+  families:
+    - afi: ipv4
+      safi: unicast
+      advertisements:
+        matchLabels:
+          advertise: "router"
+---
+apiVersion: cilium.io/v2
+kind: CiliumBGPAdvertisement
+metadata:
+  name: advertise-router
+  labels:
+    advertise: "router"
+spec:
+  advertisements:
+    - advertisementType: PodCIDR
+    - advertisementType: Service
+      service:
+        addresses:
+          - LoadBalancerIP
+      selector:
+        matchExpressions:
+          - key: expose-public
+            operator: DoesNotExist
