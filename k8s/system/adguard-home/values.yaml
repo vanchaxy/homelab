@@ -26,6 +26,18 @@ adguard-home:
         dns-over-quic:
           protocol: UDP
           port: 784
+    dns:
+      controller: main
+      type: LoadBalancer
+      loadBalancerIP: 10.10.61.250
+      ports:
+        http:
+          port: 3000
+        dns-tcp:
+          port: 53
+        dns-udp:
+          protocol: UDP
+          port: 53
 
   route:
     main:

@@ -14,6 +14,18 @@ spec:
 apiVersion: cilium.io/v2
 kind: CiliumLoadBalancerIPPool
 metadata:
+  name: services-pool
+spec:
+  blocks:
+    - cidr: "10.10.61.0/24"
+  serviceSelector:
+    matchExpressions:
+      - key: expose-public
+        operator: DoesNotExist
+---
+apiVersion: cilium.io/v2
+kind: CiliumLoadBalancerIPPool
+metadata:
   name: public-pool
 spec:
   serviceSelector:
