@@ -21,7 +21,7 @@ icarus:
     main:
       controller: main
       type: LoadBalancer
-      loadBalancerIP: 192.168.50.238
+      loadBalancerIP: 10.10.61.238
       annotations:
         external-dns.alpha.kubernetes.io/hostname: "icarus.ivanchenko.io"
       ports:
