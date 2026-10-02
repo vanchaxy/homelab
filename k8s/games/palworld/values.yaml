@@ -46,7 +46,7 @@ palworld:
       type: LoadBalancer
       annotations:
         internal.ivanchenko.io/hostname: "palworld.ivanchenko.io"
-      loadBalancerIP: 192.168.50.241
+      loadBalancerIP: 10.10.61.241
       ports:
         game:
           port: 8211

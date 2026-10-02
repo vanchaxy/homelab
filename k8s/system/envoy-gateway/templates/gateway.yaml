@@ -27,7 +27,7 @@ spec:
   gatewayClassName: envoy
   infrastructure:
     annotations:
-      lbipam.cilium.io/ips: 192.168.50.240
+      lbipam.cilium.io/ips: 10.10.61.240
     parametersRef:
       group: gateway.envoyproxy.io
       kind: EnvoyProxy

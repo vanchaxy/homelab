@@ -30,7 +30,7 @@ factorio:
       type: LoadBalancer
       annotations:
         internal.ivanchenko.io/hostname: "factorio.ivanchenko.io"
-      loadBalancerIP: 192.168.50.230
+      loadBalancerIP: 10.10.61.230
       ports:
         game:
           port: 34197
