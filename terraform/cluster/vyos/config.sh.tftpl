@@ -8,22 +8,55 @@ set system login user vyos authentication public-keys laptop type ssh-ed25519
 set system login user vyos authentication public-keys laptop key ${laptop_public_ed25519}
 set service ssh disable-password-authentication
 
-# step 3 (setup)
-%{ for name, config in nodes ~}
-set interfaces wireguard ${config.node.vps_wg_interface} address '${config.node.vps_wg_ip}/24'
-set interfaces wireguard ${config.node.vps_wg_interface} port '${config.node.vps_wg_port}'
-set interfaces wireguard ${config.node.vps_wg_interface} private-key ${wg_private_key}
-set interfaces wireguard ${config.node.vps_wg_interface} peer ${name} public-key '${config.pubkey}'
-set interfaces wireguard ${config.node.vps_wg_interface} peer ${name} allowed-ips '${forward_ip}/32'
-set interfaces wireguard ${config.node.vps_wg_interface} peer ${name} allowed-ips '${config.node.wg_ip}/32'
-set interfaces wireguard ${config.node.vps_wg_interface} ip adjust-mss 1380
-%{ endfor ~}
+# step 3 (tailscale; log in with the URL from the container log, then disable key expiry)
+set container name tailscale image 'docker.io/tailscale/tailscale:stable'
+set container name tailscale allow-host-networks
+set container name tailscale capability net-admin
+set container name tailscale capability net-raw
+set container name tailscale device tun source '/dev/net/tun'
+set container name tailscale device tun destination '/dev/net/tun'
+set container name tailscale volume state source '/config/containers/tailscale'
+set container name tailscale volume state destination '/var/lib/tailscale'
+set container name tailscale environment TS_STATE_DIR value '/var/lib/tailscale'
+set container name tailscale environment TS_USERSPACE value 'false'
+set container name tailscale environment TS_AUTH_ONCE value 'true'
+set container name tailscale environment TS_HOSTNAME value 'vps-router'
+set container name tailscale environment TS_EXTRA_ARGS value '--accept-routes=false'
+set container name tailscale environment TS_TAILSCALED_EXTRA_ARGS value '--port=41641'
+set container name tailscale restart always
 
-set protocols bgp system-as '64512'
-set protocols bgp address-family ipv4-unicast maximum-paths ibgp 3
+# step 4 (IP-in-IP to the home router across the tailnet, carrying the forwarded address)
+set interfaces tunnel tun0 encapsulation ipip
+set interfaces tunnel tun0 source-address '${vps_tailnet_ip}'
+set interfaces tunnel tun0 remote '${home_router_tailnet_ip}'
+set interfaces tunnel tun0 address '10.255.255.2/30'
+set interfaces tunnel tun0 mtu '1280'
+set interfaces tunnel tun0 ip adjust-mss '1220'
+set protocols static route ${forward_ip}/32 interface tun0
 
-%{ for name, config in nodes ~}
-set protocols bgp neighbor ${config.node.wg_ip} remote-as '64512'
-set protocols bgp neighbor ${config.node.wg_ip} address-family ipv4-unicast
-set protocols bgp neighbor ${config.node.wg_ip} address-family ipv4-unicast soft-reconfiguration inbound
-%{ endfor ~}
+# step 5 (firewall)
+set firewall global-options state-policy established action accept
+set firewall global-options state-policy related action accept
+set firewall ipv4 input filter default-action drop
+set firewall ipv4 input filter rule 10 action accept
+set firewall ipv4 input filter rule 10 inbound-interface name lo
+set firewall ipv4 input filter rule 20 action accept
+set firewall ipv4 input filter rule 20 protocol icmp
+set firewall ipv4 input filter rule 30 action accept
+set firewall ipv4 input filter rule 30 protocol tcp
+set firewall ipv4 input filter rule 30 destination port 22,222
+set firewall ipv4 input filter rule 40 action accept
+set firewall ipv4 input filter rule 40 protocol udp
+set firewall ipv4 input filter rule 40 destination port 41641
+set firewall ipv4 input filter rule 50 action accept
+set firewall ipv4 input filter rule 50 protocol ipip
+set firewall ipv4 input filter rule 50 source address '${home_router_tailnet_ip}'
+set firewall ipv4 forward filter default-action drop
+set firewall ipv4 forward filter rule 10 action accept
+set firewall ipv4 forward filter rule 10 inbound-interface name eth0
+set firewall ipv4 forward filter rule 10 outbound-interface name tun0
+set firewall ipv4 forward filter rule 10 destination address ${forward_ip}
+set firewall ipv4 forward filter rule 20 action accept
+set firewall ipv4 forward filter rule 20 inbound-interface name tun0
+set firewall ipv4 forward filter rule 20 outbound-interface name eth0
+set firewall ipv4 forward filter rule 20 source address ${forward_ip}

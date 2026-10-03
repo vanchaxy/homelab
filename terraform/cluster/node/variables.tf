@@ -1,19 +1,9 @@
 variable "node" {
   type = object({
-    name             = string
-    ip               = string
-    ssd_disk_id      = string
-    install_disk_id  = string
-    wg_ip            = string
-    vps_wg_interface = string
-    vps_wg_port      = string
-  })
-}
-
-variable "vps_wg" {
-  type = object({
-    ip         = string
-    public_key = string
+    name            = string
+    ip              = string
+    ssd_disk_id     = string
+    install_disk_id = string
   })
 }
 

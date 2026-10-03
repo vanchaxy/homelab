@@ -4,20 +4,6 @@ machine:
     nameservers:
       - 10.10.61.250
       - 1.1.1.1
-    interfaces:
-      - interface: wg0
-        mtu: 1440
-        addresses:
-          - ${wg_ip}/24
-        wireguard:
-          privateKey: ${wg_private_key}
-          listenPort: 51820
-          peers:
-            - allowedIPs:
-                - 0.0.0.0/0
-              endpoint: ${vps_ip}:${vps_wg_port}
-              publicKey: ${vps_wg_public_key}
-              persistentKeepaliveInterval: 25s
   nodeLabels:
     topology.kubernetes.io/region: ${cluster_name}
     topology.kubernetes.io/zone: ${node_name}
