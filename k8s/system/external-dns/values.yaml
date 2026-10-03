@@ -73,6 +73,7 @@ internal-external-dns:
   sources:
     - service
     - gateway-httproute
+    - crd
   policy: sync
 
   metrics:

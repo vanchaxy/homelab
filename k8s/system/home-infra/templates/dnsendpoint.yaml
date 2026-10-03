@@ -1,0 +1,12 @@
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: home-infra
+spec:
+  endpoints:
+{{- range $name, $ip := .Values.hosts }}
+    - dnsName: {{ printf "%s.%s" $name $.Values.domain }}
+      recordType: A
+      targets:
+        - {{ $ip | quote }}
+{{- end }}
