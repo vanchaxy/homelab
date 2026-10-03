@@ -1,4 +1,6 @@
 machine:
+  sysctls:
+    net.netfilter.nf_conntrack_tcp_be_liberal: "1"
   network:
     hostname: ${hostname}
     interfaces:
