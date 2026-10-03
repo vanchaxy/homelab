@@ -5,7 +5,7 @@ csi-driver-nfs:
     create: true
     name: nfs-csi
     parameters:
-      server: 192.168.50.210
+      server: 10.10.60.10
       share: /mnt/user/nfs-csi/
       mountPermissions: "0"
     reclaimPolicy: Retain
