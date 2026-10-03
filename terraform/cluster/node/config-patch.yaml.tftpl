@@ -52,6 +52,9 @@ cluster:
     extraArgs:
       bind-address: 0.0.0.0
   apiServer:
+    extraArgs:
+      service-account-issuer: https://192.168.50.201:6443
+      api-audiences: https://192.168.50.201:6443
     admissionControl:
       - name: PodSecurity
         configuration:
