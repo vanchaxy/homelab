@@ -21,6 +21,8 @@ kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
   name: longhorn-ssd-backup
+  annotations:
+    argocd.argoproj.io/sync-options: Force=true,Replace=true
 provisioner: driver.longhorn.io
 allowVolumeExpansion: true
 reclaimPolicy: "Delete"
@@ -30,6 +32,6 @@ parameters:
   staleReplicaTimeout: "30"
   fromBackup: ""
   fsType: "ext4"
-  dataLocality: "best-effort"
+  dataLocality: "disabled"
   diskSelector: "ssd"
 ---
