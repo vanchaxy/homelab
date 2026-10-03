@@ -7,6 +7,7 @@ app-template:
       staticToken: true
   controllers:
     tailscale:
+      enabled: false
       serviceAccount:
         name: tailscale
       containers:
