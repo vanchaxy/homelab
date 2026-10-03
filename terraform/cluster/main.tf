@@ -30,17 +30,16 @@ locals {
   vps_main_ip    = "202.61.245.36"
   vps_forward_ip = "46.38.230.69"
 
-  vps_tailnet_ip         = "100.97.189.31"
-  home_router_tailnet_ip = "100.97.145.113"
+  vps_wg_public_key         = "FQ195EfT3uufNS7VUfZtqfPbVRRWEQasgRoKdOTiXhg="
+  home_router_wg_public_key = "ApEMEGPpQS/xNDvFFF8F8S+GEjqhdBHBJgrIxqSoHlo="
 }
 
 module "vyos" {
   source = "./vyos"
 
-  laptop_public_ed25519  = var.laptop_public_ed25519
-  forward_ip             = local.vps_forward_ip
-  vps_tailnet_ip         = local.vps_tailnet_ip
-  home_router_tailnet_ip = local.home_router_tailnet_ip
+  laptop_public_ed25519     = var.laptop_public_ed25519
+  forward_ip                = local.vps_forward_ip
+  home_router_wg_public_key = local.home_router_wg_public_key
 }
 
 module "talos" {

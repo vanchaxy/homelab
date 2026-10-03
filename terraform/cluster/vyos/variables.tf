@@ -6,10 +6,6 @@ variable "forward_ip" {
   type = string
 }
 
-variable "vps_tailnet_ip" {
-  type = string
-}
-
-variable "home_router_tailnet_ip" {
+variable "home_router_wg_public_key" {
   type = string
 }
