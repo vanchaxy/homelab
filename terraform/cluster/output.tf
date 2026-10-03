@@ -27,3 +27,9 @@ resource "local_file" "vyos_config" {
   filename        = "../output/vyos-config.sh"
   file_permission = "0600"
 }
+
+resource "local_file" "home_router_config" {
+  content         = module.vyos.home_router_config
+  filename        = "../output/home-router-config.sh"
+  file_permission = "0600"
+}

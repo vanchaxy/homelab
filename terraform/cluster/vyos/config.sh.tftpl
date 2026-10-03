@@ -25,14 +25,20 @@ set container name tailscale environment TS_EXTRA_ARGS value '--accept-routes=fa
 set container name tailscale environment TS_TAILSCALED_EXTRA_ARGS value '--port=41641'
 set container name tailscale restart always
 
-# step 4 (IP-in-IP to the home router across the tailnet, carrying the forwarded address)
-set interfaces tunnel tun0 encapsulation ipip
-set interfaces tunnel tun0 source-address '${vps_tailnet_ip}'
-set interfaces tunnel tun0 remote '${home_router_tailnet_ip}'
-set interfaces tunnel tun0 address '10.255.255.2/30'
-set interfaces tunnel tun0 mtu '1280'
-set interfaces tunnel tun0 ip adjust-mss '1220'
-set protocols static route ${forward_ip}/32 interface tun0
+# step 4 (WireGuard to the home router, carrying the forwarded address)
+# generate the key on the box: umask 077; wg genkey > /config/auth/wg-pub.priv
+set interfaces wireguard wg0 address '10.255.254.1/30'
+set interfaces wireguard wg0 port '51820'
+set interfaces wireguard wg0 mtu '1420'
+set interfaces wireguard wg0 ip adjust-mss '1380'
+set interfaces wireguard wg0 private-key "$(cat /config/auth/wg-pub.priv)"
+set interfaces wireguard wg0 peer home-router public-key '${home_router_wg_public_key}'
+set interfaces wireguard wg0 peer home-router allowed-ips '10.255.254.2/32'
+set interfaces wireguard wg0 peer home-router allowed-ips '${forward_ip}/32'
+set protocols static route ${forward_ip}/32 interface wg0
+
+# Tailscale peer relay for clients without a direct path (run once after login)
+#   sudo podman exec tailscale tailscale set --relay-server-port=40000
 
 # step 5 (firewall)
 set firewall global-options state-policy established action accept
@@ -48,15 +54,18 @@ set firewall ipv4 input filter rule 30 destination port 22,222
 set firewall ipv4 input filter rule 40 action accept
 set firewall ipv4 input filter rule 40 protocol udp
 set firewall ipv4 input filter rule 40 destination port 41641
-set firewall ipv4 input filter rule 50 action accept
-set firewall ipv4 input filter rule 50 protocol ipip
-set firewall ipv4 input filter rule 50 source address '${home_router_tailnet_ip}'
+set firewall ipv4 input filter rule 41 action accept
+set firewall ipv4 input filter rule 41 protocol udp
+set firewall ipv4 input filter rule 41 destination port 40000
+set firewall ipv4 input filter rule 45 action accept
+set firewall ipv4 input filter rule 45 protocol udp
+set firewall ipv4 input filter rule 45 destination port 51820
 set firewall ipv4 forward filter default-action drop
-set firewall ipv4 forward filter rule 10 action accept
-set firewall ipv4 forward filter rule 10 inbound-interface name eth0
-set firewall ipv4 forward filter rule 10 outbound-interface name tun0
-set firewall ipv4 forward filter rule 10 destination address ${forward_ip}
-set firewall ipv4 forward filter rule 20 action accept
-set firewall ipv4 forward filter rule 20 inbound-interface name tun0
-set firewall ipv4 forward filter rule 20 outbound-interface name eth0
-set firewall ipv4 forward filter rule 20 source address ${forward_ip}
+set firewall ipv4 forward filter rule 11 action accept
+set firewall ipv4 forward filter rule 11 inbound-interface name eth0
+set firewall ipv4 forward filter rule 11 outbound-interface name wg0
+set firewall ipv4 forward filter rule 11 destination address ${forward_ip}
+set firewall ipv4 forward filter rule 21 action accept
+set firewall ipv4 forward filter rule 21 inbound-interface name wg0
+set firewall ipv4 forward filter rule 21 outbound-interface name eth0
+set firewall ipv4 forward filter rule 21 source address ${forward_ip}

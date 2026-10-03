@@ -4,6 +4,9 @@ machine:
     nameservers:
       - 10.10.61.250
       - 1.1.1.1
+  sysctls:
+    net.core.default_qdisc: fq
+    net.ipv4.tcp_congestion_control: bbr
   nodeLabels:
     topology.kubernetes.io/region: ${cluster_name}
     topology.kubernetes.io/zone: ${node_name}
