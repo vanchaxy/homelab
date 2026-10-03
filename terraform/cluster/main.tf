@@ -1,7 +1,7 @@
 locals {
   cluster = {
     name               = "talos-homelab"
-    endpoint           = "192.168.50.201"
+    endpoint           = "10.10.60.201"
     talos_version      = "v1.11.3"
     kubernetes_version = "v1.34.2"
   }
@@ -9,7 +9,7 @@ locals {
   nodes = {
     mars = {
       name             = "mars"
-      ip               = "192.168.50.201"
+      ip               = "10.10.60.201"
       ssd_disk_id      = "nvme-SAMSUNG_MZVLB256HAHQ-000H7_S426NX0M109347"
       install_disk_id  = "ata-KINGSTON_SA400S37480G_50026B7282642F76"
       wg_ip            = "10.100.0.2"
@@ -19,7 +19,7 @@ locals {
     }
     jupiter = {
       name             = "jupiter"
-      ip               = "192.168.50.202"
+      ip               = "10.10.60.202"
       ssd_disk_id      = "nvme-CT2000P3PSSD8_2443E990D502"
       install_disk_id  = "ata-KINGSTON_SA400S37240G_50026B7785719E80"
       wg_ip            = "10.100.1.2"
@@ -29,7 +29,7 @@ locals {
     },
     saturn = {
       name             = "saturn"
-      ip               = "192.168.50.203"
+      ip               = "10.10.60.203"
       ssd_disk_id      = "nvme-CT2000P3PSSD8_2443E990D4E6"
       install_disk_id  = "ata-KINGSTON_SA400S37240G_50026B778571955D"
       wg_ip            = "10.100.2.2"
