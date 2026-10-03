@@ -1,6 +1,9 @@
 machine:
   network:
     hostname: ${hostname}
+    nameservers:
+      - 10.10.61.250
+      - 1.1.1.1
     interfaces:
       - interface: wg0
         mtu: 1440
