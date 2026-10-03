@@ -1,58 +1,17 @@
-{{- range .Values.ciliumBGP.peers }}
 apiVersion: cilium.io/v2
 kind: CiliumBGPClusterConfig
 metadata:
-  name: bgp-node-{{ .hostname }}
+  name: bgp-router
 spec:
-  nodeSelector:
-    matchLabels:
-      kubernetes.io/hostname: {{ .hostname | quote }}
   bgpInstances:
-    - name: "instance-{{ .hostname }}"
+    - name: "instance-router"
       localASN: 64512
       peers:
-        - name: "peer-{{ .hostname }}"
+        - name: "router"
           peerASN: 64512
-          peerAddress: {{ .peerAddress | quote }}
-          peerConfigRef:
-            name: default-peer-config
-        - name: "router-{{ .hostname }}"
-          peerASN: 64512
-          peerAddress: {{ .routerAddress | quote }}
+          peerAddress: {{ .Values.ciliumBGP.routerAddress | quote }}
           peerConfigRef:
             name: router-peer-config
----
-{{- end }}
-apiVersion: cilium.io/v2
-kind: CiliumBGPPeerConfig
-metadata:
-  name: default-peer-config
-spec:
-  timers:
-    holdTimeSeconds: 90
-    keepAliveTimeSeconds: 30
-  families:
-    - afi: ipv4
-      safi: unicast
-      advertisements:
-        matchLabels:
-          advertise: "public-lb"
----
-apiVersion: cilium.io/v2
-kind: CiliumBGPAdvertisement
-metadata:
-  name: advertise-public-services
-  labels:
-    advertise: "public-lb"
-spec:
-  advertisements:
-    - advertisementType: Service
-      service:
-        addresses:
-          - LoadBalancerIP
-      selector:
-        matchLabels:
-          expose-public: "true"
 ---
 apiVersion: cilium.io/v2
 kind: CiliumBGPPeerConfig
@@ -84,5 +43,7 @@ spec:
           - LoadBalancerIP
       selector:
         matchExpressions:
-          - key: expose-public
-            operator: DoesNotExist
+          - key: somekey
+            operator: NotIn
+            values:
+              - never-used-value
