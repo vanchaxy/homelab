@@ -1,6 +1,8 @@
 gateway-helm:
   config:
     envoyGateway:
+      extensionApis:
+        enableBackend: true
       provider:
         type: Kubernetes
         kubernetes:
