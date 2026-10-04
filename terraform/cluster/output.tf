@@ -79,3 +79,20 @@ output "adguard_admin_password" {
   value     = module.vyos.adguard_admin_password
   sensitive = true
 }
+
+resource "terraform_data" "apply_gl" {
+  triggers_replace = [sha256(jsonencode(module.gl.files)), var.vyos_apply_mode]
+
+  provisioner "local-exec" {
+    command = "${path.module}/gl/apply.sh 10.10.10.2"
+    environment = {
+      VYOS_APPLY_MODE = var.vyos_apply_mode
+      GL_FILES        = jsonencode(module.gl.files)
+    }
+  }
+}
+
+output "wifi_keys" {
+  value     = module.gl.wifi_keys
+  sensitive = true
+}

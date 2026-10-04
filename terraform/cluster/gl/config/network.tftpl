@@ -1,0 +1,75 @@
+
+config interface 'loopback'
+	option device 'lo'
+	option proto 'static'
+	option ipaddr '127.0.0.1'
+	option netmask '255.0.0.0'
+
+config globals 'globals'
+	option ula_prefix 'fd83:bf69:3c48::/48'
+
+config interface 'lan'
+	option device 'br-lan.10'
+	option proto 'static'
+	list ipaddr '10.10.10.2/24'
+	option gateway '10.10.10.1'
+	option dns '10.10.10.1'
+
+config device
+	option name 'br-lan'
+	option type 'bridge'
+	list ports 'lan1'
+	list ports 'lan2'
+	list ports 'wan'
+
+config bridge-vlan
+	option device 'br-lan'
+	option vlan '10'
+	option ports 'wan:t'
+
+config bridge-vlan
+	option device 'br-lan'
+	option vlan '20'
+	option ports 'wan:t lan2:u*'
+
+config bridge-vlan
+	option device 'br-lan'
+	option vlan '30'
+	list ports 'wan:t'
+
+config bridge-vlan
+	option device 'br-lan'
+	option vlan '40'
+	list ports 'wan:t'
+
+config bridge-vlan
+	option device 'br-lan'
+	option vlan '50'
+	list ports 'wan:t'
+	list ports 'lan1:u*'
+
+config bridge-vlan
+	option device 'br-lan'
+	option vlan '70'
+	list ports 'wan:t'
+
+config interface 'trusted'
+	option device 'br-lan.20'
+	option proto 'none'
+
+config interface 'work'
+	option device 'br-lan.30'
+	option proto 'none'
+
+config interface 'iot'
+	option device 'br-lan.40'
+	option proto 'none'
+
+config interface 'media'
+	option device 'br-lan.50'
+	option proto 'none'
+
+config interface 'guest'
+	option device 'br-lan.70'
+	option proto 'none'
+

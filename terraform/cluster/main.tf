@@ -98,3 +98,7 @@ import {
   to = module.tailscale.tailscale_dns_configuration.this
   id = "dns_configuration"
 }
+
+module "gl" {
+  source = "./gl"
+}
