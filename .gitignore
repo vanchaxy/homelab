@@ -7,3 +7,4 @@
 output
 
 Chart.lock
+__pycache__/

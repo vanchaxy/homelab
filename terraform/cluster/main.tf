@@ -31,6 +31,9 @@ locals {
     home = "10.10.20.1"
     vps  = "202.61.245.36"
   }
+
+  # renovate: datasource=custom.vyos-stream depName=vyos-stream
+  vyos_version = "2026.03"
 }
 
 module "vyos" {

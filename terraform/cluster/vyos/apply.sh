@@ -7,6 +7,8 @@
 # and print `compare`. VyOS commits only the difference, so unchanged parts are
 # not touched. No difference -> discard. Otherwise commit with an auto-revert
 # armed, reconnect to prove access survived, then cancel the revert and save.
+# Before that, prepare.py writes the secret/file bundle (VYOS_BUNDLE, JSON),
+# creates container volume directories and pulls container images.
 set -euo pipefail
 
 host="$1"
@@ -16,6 +18,10 @@ revert_after="${VYOS_REVERT_AFTER:-300}"
 ssh_cmd=(ssh -o BatchMode=yes -o ConnectTimeout=15 -o ServerAliveInterval=5 "vyos@${host}")
 
 "${ssh_cmd[@]}" 'mkdir -p /config/tofu && cat > /config/tofu/desired.sh' < "$config"
+"${ssh_cmd[@]}" 'cat > /config/tofu/prepare.py' < "$(dirname "$0")/prepare.py"
+bundle="${VYOS_BUNDLE:-}"
+[ -n "$bundle" ] || bundle='{}'
+printf '%s' "$bundle" | "${ssh_cmd[@]}" "sudo python3 /config/tofu/prepare.py ${mode}"
 
 "${ssh_cmd[@]}" "MODE=${mode} REVERT_AFTER=${revert_after} bash -s" <<'REMOTE'
 set -euo pipefail
