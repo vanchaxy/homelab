@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: victoria-logs-syslog
+  annotations:
+    lbipam.cilium.io/ips: "10.10.61.214"
+spec:
+  type: LoadBalancer
+  selector:
+    app.kubernetes.io/name: vlsingle
+    app.kubernetes.io/instance: victoria-logs
+  ports:
+    - name: syslog-udp
+      protocol: UDP
+      port: 514
+      targetPort: 5514
