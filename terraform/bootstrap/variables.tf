@@ -4,3 +4,8 @@ variable "infisical" {
     client_secret = string
   })
 }
+
+variable "state_passphrase" {
+  type      = string
+  sensitive = true
+}

@@ -14,3 +14,8 @@ variable "cloudflare" {
     account_id = string
   })
 }
+
+variable "state_passphrase" {
+  type      = string
+  sensitive = true
+}

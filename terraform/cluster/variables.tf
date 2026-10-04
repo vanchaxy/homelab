@@ -9,3 +9,8 @@ variable "tailscale" {
   })
   sensitive = true
 }
+
+variable "state_passphrase" {
+  type      = string
+  sensitive = true
+}
