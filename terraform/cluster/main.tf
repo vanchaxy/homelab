@@ -84,3 +84,17 @@ module "node-saturn" {
   machine_secrets      = module.talos.machine_secrets
   client_configuration = module.talos.client_configuration
 }
+
+module "tailscale" {
+  source = "./tailscale"
+}
+
+import {
+  to = module.tailscale.tailscale_acl.this
+  id = "acl"
+}
+
+import {
+  to = module.tailscale.tailscale_dns_configuration.this
+  id = "dns_configuration"
+}
