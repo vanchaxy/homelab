@@ -1,0 +1,17 @@
+domain: ivanchenko.io
+
+hosts:
+  router: 10.10.10.1
+  vymanager: 10.10.10.1
+  ap: 10.10.10.2
+  switch: 10.10.10.3
+  vr-ap: 10.10.20.3
+  unraid: 10.10.60.10
+  mars: 10.10.60.201
+  jupiter: 10.10.60.202
+  saturn: 10.10.60.203
+  vps: 202.61.245.36
+
+adguard:
+  address: 10.10.60.1
+  port: 3001
