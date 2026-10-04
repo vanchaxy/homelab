@@ -1,27 +1,12 @@
-apiVersion: v1
-kind: Service
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: Backend
 metadata:
   name: adguard
 spec:
-  ports:
-    - name: http
-      port: {{ .Values.adguard.port }}
-      targetPort: {{ .Values.adguard.port }}
----
-apiVersion: discovery.k8s.io/v1
-kind: EndpointSlice
-metadata:
-  name: adguard
-  labels:
-    kubernetes.io/service-name: adguard
-addressType: IPv4
-ports:
-  - name: http
-    port: {{ .Values.adguard.port }}
-    protocol: TCP
-endpoints:
-  - addresses:
-      - {{ .Values.adguard.address | quote }}
+  endpoints:
+    - ip:
+        address: {{ .Values.adguard.address | quote }}
+        port: {{ .Values.adguard.port }}
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
@@ -36,5 +21,6 @@ spec:
       sectionName: https
   rules:
     - backendRefs:
-        - name: adguard
-          port: {{ .Values.adguard.port }}
+        - group: gateway.envoyproxy.io
+          kind: Backend
+          name: adguard
