@@ -46,7 +46,7 @@ terraform {
 
 
 provider "helm" {
-  kubernetes {
+  kubernetes = {
     config_path = "${path.module}/../output/kube-config.yaml"
   }
 }
