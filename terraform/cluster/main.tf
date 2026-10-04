@@ -27,19 +27,16 @@ locals {
     }
   }
 
-  vps_main_ip    = "202.61.245.36"
-  vps_forward_ip = "46.38.230.69"
-
-  vps_wg_public_key         = "FQ195EfT3uufNS7VUfZtqfPbVRRWEQasgRoKdOTiXhg="
-  home_router_wg_public_key = "ApEMEGPpQS/xNDvFFF8F8S+GEjqhdBHBJgrIxqSoHlo="
+  routers = {
+    home = "10.10.20.1"
+    vps  = "202.61.245.36"
+  }
 }
 
 module "vyos" {
   source = "./vyos"
 
-  laptop_public_ed25519     = var.laptop_public_ed25519
-  forward_ip                = local.vps_forward_ip
-  home_router_wg_public_key = local.home_router_wg_public_key
+  laptop_public_ed25519 = var.laptop_public_ed25519
 }
 
 module "talos" {

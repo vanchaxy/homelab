@@ -14,3 +14,9 @@ variable "state_passphrase" {
   type      = string
   sensitive = true
 }
+
+variable "vyos_apply_mode" {
+  type        = string
+  default     = "apply"
+  description = "apply: push router configs when they change; dry-run: only print the VyOS diff"
+}
