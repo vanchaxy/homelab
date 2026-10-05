@@ -67,7 +67,7 @@
       "groupName": "tofu providers"
     },
     {
-      "description": "Talos and Kubernetes are rolled out to the nodes together by tofu",
+      "description": "Talos and Kubernetes must be upgraded one minor version at a time: a PR per minor, not grouped (a group collapses them into a single jump)",
       "matchFileNames": [
         "tofu/**"
       ],
@@ -75,7 +75,7 @@
         "siderolabs/talos",
         "kubernetes/kubernetes"
       ],
-      "groupName": "talos"
+      "separateMultipleMinor": true
     },
     {
       "description": "Cilium: the k8s Helm release, the tofu bootstrap version and the CLI that installs it",
