@@ -148,3 +148,6 @@ helpers:
         app.kubernetes.io/part-of: argocd
       infisical:
         path: "/argocd/argocd-secret"
+    - name: argocd-redis
+      infisical:
+        path: "/argocd/argocd-redis"

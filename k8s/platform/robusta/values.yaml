@@ -6,7 +6,7 @@ robusta:
   enabledManagedConfiguration: true
   globalConfig:
     account_id: 0111ef51-88c5-46fc-8b46-cf765381b053
-    signing_key: 979efb36-5ce2-44bf-b3c3-c6e224d9bfd9
+    signing_key: "{{ env.SIGNING_KEY }}"
   holmes:
     additionalEnvVars:
       - name: ROBUSTA_AI
@@ -23,6 +23,11 @@ robusta:
   isSmallCluster: false
   runner:
     additional_env_vars:
+      - name: SIGNING_KEY
+        valueFrom:
+          secretKeyRef:
+            key: SIGNING_KEY
+            name: robusta-secrets
       - name: RELAY_EXTERNAL_ACTIONS_URL
         value: https://api.eu.robusta.dev/integrations/generic/actions
       - name: WEBSOCKET_RELAY_ADDRESS
