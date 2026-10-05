@@ -2,7 +2,9 @@ locals {
   cluster = {
     name               = "talos-homelab"
     endpoint           = "10.10.60.201"
-    talos_version      = "v1.11.3"
+    # renovate: datasource=github-releases depName=siderolabs/talos
+    talos_version = "v1.11.3"
+    # renovate: datasource=github-releases depName=kubernetes/kubernetes
     kubernetes_version = "v1.34.2"
   }
 

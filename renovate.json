@@ -16,9 +16,9 @@
     },
     {
       "customType": "regex",
-      "description": "Track versions pinned in Terraform/OpenTofu locals via a `# renovate:` comment (e.g. the VyOS Stream release)",
+      "description": "Track versions pinned in OpenTofu locals via a `# renovate:` comment (VyOS Stream, Talos, Kubernetes, Cilium bootstrap)",
       "managerFilePatterns": [
-        "/^terraform/.+\\.tf$/"
+        "/^tofu/.+\\.tf$/"
       ],
       "matchStrings": [
         "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)(?: versioning=(?<versioning>\\S+))?\\s+\\S+\\s*=\\s*\"(?<currentValue>[^\"]+)\""
@@ -40,6 +40,19 @@
       ],
       "extractVersion": "^https://community-downloads\\.vyos\\.dev/stream/(?<version>\\d{4}\\.\\d{2})/",
       "versioning": "regex:^(?<major>\\d{4})\\.(?<minor>\\d{2})$"
+    },
+    {
+      "description": "Talos, Kubernetes and the Cilium bootstrap are applied to the nodes by tofu: one PR to review together",
+      "matchFileNames": [
+        "tofu/**"
+      ],
+      "matchDepNames": [
+        "siderolabs/talos",
+        "kubernetes/kubernetes",
+        "cilium/cilium",
+        "quay.io/cilium/cilium-cli"
+      ],
+      "groupName": "cluster platform (tofu)"
     }
   ]
 }
