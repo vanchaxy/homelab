@@ -45,7 +45,7 @@ jobs:
         env:
           ARGOCD_KUBECONFIG: ${{ secrets.ARGOCD_KUBECONFIG }}
         run: |
-          if ! grep -q 'token:' <<<"$ARGOCD_KUBECONFIG"; then
+          if ! grep -qE 'token: *"?[A-Za-z0-9]' <<<"$ARGOCD_KUBECONFIG"; then
             echo "::error::ARGOCD_KUBECONFIG secret is missing or has no token"
             exit 1
           fi
