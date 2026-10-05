@@ -31,4 +31,5 @@ resource "talos_machine_configuration_apply" "this" {
   endpoint                    = "${var.node.ip}${substr(var.after, 0, 0)}"
   client_configuration        = var.client_configuration
   machine_configuration_input = data.talos_machine_configuration.this.machine_configuration
+  apply_mode                  = "staged_if_needing_reboot"
 }
