@@ -5,7 +5,7 @@ iperf3:
         main:
           image:
             repository: networkstatic/iperf3
-            tag: latest@sha256:0592f012c63664ff378f66e8bccb820ff650c75dff425679965949ae04a934ee
+            tag: latest@sha256:bc267517f534d9f7cced2669f325799a1fd7fe1d5953c2ca2c6ea1db61affa08
           args: ["-s"]
 
   service:
