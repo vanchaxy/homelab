@@ -99,11 +99,14 @@ media:
             PUID: 568
             PGID: 568
             TZ: Etc/UTC
+          envFrom:
+            - secretRef:
+                name: cross-seed-secret
           args:
             - daemon
             - "-T"
-            - http://media-prowlarr:9696/9/api?apikey=6e4a625420f84dd38d474f3b9664ea1a
-            - http://media-prowlarr:9696/10/api?apikey=6e4a625420f84dd38d474f3b9664ea1a
+            - http://media-prowlarr:9696/9/api?apikey=$(PROWLARR_API_KEY)
+            - http://media-prowlarr:9696/10/api?apikey=$(PROWLARR_API_KEY)
             - "-A"
             - inject
             - "--qbittorrent-url"
@@ -118,9 +121,9 @@ media:
             - "--rss-cadence"
             - "15min"
             - "--sonarr"
-            - "http://media-sonarr:8989/?apikey=356f923e63d14f7ebf16571f8534bbcc"
+            - "http://media-sonarr:8989/?apikey=$(SONARR_API_KEY)"
             - "--radarr"
-            - "http://media-radarr:7878/?apikey=e7e28d0f747f4b1d9809211862e45eee"
+            - "http://media-radarr:7878/?apikey=$(RADARR_API_KEY)"
           probes:
             liveness:
               enabled: true
@@ -557,6 +560,9 @@ helpers:
     - name: wireguard-secret
       infisical:
         path: "/media/wireguard"
+    - name: cross-seed-secret
+      infisical:
+        path: "/media/cross-seed"
   backups:
     - pvcName: media-config-rwo
       resticRepoSuffix: media/config
