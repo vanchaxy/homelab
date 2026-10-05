@@ -45,6 +45,10 @@ jobs:
         env:
           ARGOCD_KUBECONFIG: ${{ secrets.ARGOCD_KUBECONFIG }}
         run: |
+          if ! grep -q 'token:' <<<"$ARGOCD_KUBECONFIG"; then
+            echo "::error::ARGOCD_KUBECONFIG secret is missing or has no token"
+            exit 1
+          fi
           install -d -m 700 .ci
           printf '%s\n' "$ARGOCD_KUBECONFIG" > "$KUBECONFIG"
           chmod 600 "$KUBECONFIG"
