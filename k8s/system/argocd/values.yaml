@@ -13,6 +13,9 @@ argo-cd:
     cm:
       admin.enabled: true
       resource.ignoreResourceUpdatesEnabled: true
+      resource.customizations.ignoreDifferences.argoproj.io_ApplicationSet: |
+        jqPathExpressions:
+          - '.spec.generators[].git.template | select(. == {"metadata": {}, "spec": {"destination": {}, "project": ""}})'
       oidc.config: |
         name: Pocket ID
         issuer: https://id.ivanchenko.io
