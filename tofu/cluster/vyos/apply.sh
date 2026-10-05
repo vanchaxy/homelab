@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Apply a complete VyOS config (set commands) declaratively over SSH.
 #
-#   apply.sh <host> <config-file>        VYOS_APPLY_MODE=apply (default) | dry-run
+#   apply.sh <host> <config-file>        APPLY_MODE=apply (default) | dry-run
 #
 # On the router: delete every top-level node, source the desired set commands
 # and print `compare`. VyOS commits only the difference, so unchanged parts are
@@ -13,7 +13,7 @@ set -euo pipefail
 
 host="$1"
 config="$2"
-mode="${VYOS_APPLY_MODE:-apply}"
+mode="${APPLY_MODE:-apply}"
 revert_after="${VYOS_REVERT_AFTER:-300}"
 ssh_cmd=(ssh -o BatchMode=yes -o ConnectTimeout=15 -o ServerAliveInterval=5 "vyos@${host}")
 

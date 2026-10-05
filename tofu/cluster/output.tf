@@ -36,12 +36,12 @@ resource "local_file" "home_router_config" {
 
 resource "terraform_data" "upgrade_router" {
   for_each         = local.routers
-  triggers_replace = [local.vyos_version, var.vyos_apply_mode]
+  triggers_replace = [local.vyos_version, var.apply_mode]
 
   provisioner "local-exec" {
     command = "${path.module}/vyos/upgrade.sh ${each.value} ${local.vyos_version}"
     environment = {
-      VYOS_APPLY_MODE = var.vyos_apply_mode
+      APPLY_MODE = var.apply_mode
     }
   }
 }
@@ -56,13 +56,13 @@ resource "terraform_data" "apply_router" {
     sha256(each.value.content),
     sha256(jsonencode(module.vyos.bundles[each.key])),
     local.vyos_version,
-    var.vyos_apply_mode,
+    var.apply_mode,
   ]
 
   provisioner "local-exec" {
     command = "${path.module}/vyos/apply.sh ${local.routers[each.key]} ${each.value.filename}"
     environment = {
-      VYOS_APPLY_MODE = var.vyos_apply_mode
+      APPLY_MODE = var.apply_mode
       VYOS_BUNDLE     = jsonencode(module.vyos.bundles[each.key])
     }
   }
@@ -81,12 +81,12 @@ output "adguard_admin_password" {
 }
 
 resource "terraform_data" "apply_gl" {
-  triggers_replace = [sha256(jsonencode(module.gl.files)), var.vyos_apply_mode]
+  triggers_replace = [sha256(jsonencode(module.gl.files)), var.apply_mode]
 
   provisioner "local-exec" {
     command = "${path.module}/gl/apply.sh 10.10.10.2"
     environment = {
-      VYOS_APPLY_MODE = var.vyos_apply_mode
+      APPLY_MODE = var.apply_mode
       GL_FILES        = jsonencode(module.gl.files)
     }
   }
@@ -98,7 +98,7 @@ output "wifi_keys" {
 }
 
 resource "terraform_data" "upgrade_talos" {
-  triggers_replace = [local.cluster.talos_version, module.talos.installer_url, var.vyos_apply_mode]
+  triggers_replace = [local.cluster.talos_version, module.talos.installer_url, var.apply_mode]
 
   provisioner "local-exec" {
     command = join(" ", concat(
@@ -106,18 +106,18 @@ resource "terraform_data" "upgrade_talos" {
       [for name in ["mars", "jupiter", "saturn"] : "${name}=${local.nodes[name].ip}"],
     ))
     environment = {
-      UPGRADE_MODE = var.vyos_apply_mode
+      APPLY_MODE = var.apply_mode
     }
   }
 }
 
 resource "terraform_data" "upgrade_k8s" {
-  triggers_replace = [local.cluster.kubernetes_version, var.vyos_apply_mode]
+  triggers_replace = [local.cluster.kubernetes_version, var.apply_mode]
 
   provisioner "local-exec" {
     command = "${path.module}/talos/upgrade-k8s.sh ${local.cluster.kubernetes_version} ${local.nodes.mars.ip}"
     environment = {
-      UPGRADE_MODE = var.vyos_apply_mode
+      APPLY_MODE = var.apply_mode
     }
   }
 

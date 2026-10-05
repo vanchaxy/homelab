@@ -2,11 +2,11 @@
 # Upgrade Kubernetes with talosctl upgrade-k8s (control plane and kubelets in
 # the right order, bootstrap manifests synced, node configs updated by Talos).
 #
-#   upgrade-k8s.sh <version> <node-ip>      UPGRADE_MODE=apply | dry-run
+#   upgrade-k8s.sh <version> <node-ip>      APPLY_MODE=apply | dry-run
 set -euo pipefail
 
 want="${1#v}"; node="$2"
-mode="${UPGRADE_MODE:-apply}"
+mode="${APPLY_MODE:-apply}"
 
 have=$(kubectl version -o json | python3 -c 'import json,sys;print(json.load(sys.stdin)["serverVersion"]["gitVersion"].lstrip("v"))')
 if [ "$have" = "$want" ]; then echo "Kubernetes ${have}, nothing to do"; exit 0; fi

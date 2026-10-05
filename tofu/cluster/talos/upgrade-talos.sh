@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Upgrade Talos on the nodes, strictly one node at a time.
 #
-#   upgrade-talos.sh <version> <installer-image> <name=ip>...   UPGRADE_MODE=apply | dry-run
+#   upgrade-talos.sh <version> <installer-image> <name=ip>...   APPLY_MODE=apply | dry-run
 #
 # Per node: skip if already on <version>; refuse jumps of more than one minor
 # version; check the cluster is healthy; drain (best effort); talosctl upgrade
@@ -11,7 +11,7 @@
 set -euo pipefail
 
 want="$1"; image="$2"; shift 2
-mode="${UPGRADE_MODE:-apply}"
+mode="${APPLY_MODE:-apply}"
 longhorn_timeout="${LONGHORN_WAIT_TIMEOUT:-5400}"
 
 minor() { echo "$1" | sed -E 's/^v?([0-9]+)\.([0-9]+).*/\1 \2/'; }

@@ -10,7 +10,7 @@ as VyOS set commands. `tofu apply` in `tofu/cluster` brings both routers to it:
    directories, pull container images, then load the config and commit only the
    difference, with a 5-minute auto-revert until SSH access is re-verified.
 
-`-var vyos_apply_mode=dry-run` only prints the VyOS diff (read it from
+`-var apply_mode=dry-run` only prints the VyOS diff (read it from
 `/config/tofu/compare.txt` on the router; tofu hides provisioner output because
 the bundle is sensitive).
 
