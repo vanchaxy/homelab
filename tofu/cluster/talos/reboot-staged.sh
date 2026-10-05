@@ -6,9 +6,10 @@
 #   reboot-staged.sh <name=ip=resolved-apply-mode>...   APPLY_MODE=apply | dry-run
 #
 # Per staged node: check the cluster is healthy and Longhorn has no degraded
-# volumes; cordon and drain (talosctl reboot does neither); reboot, which boots
-# into the staged config; wait for Ready, uncordon, then wait for etcd and
+# volumes; reboot, which boots into the staged config; wait for Ready, etcd and
 # Longhorn again. Any failure stops the loop.
+# No drain: Talos stops all pods gracefully before a reboot and the node is
+# back within minutes (siderolabs/talos#9603).
 set -euo pipefail
 . "$(dirname "$0")/node-lib.sh"
 
@@ -23,12 +24,8 @@ for t in "$@"; do
 
   cluster_healthy "${ips[@]}"
   wait_longhorn
-  kubectl cordon "$name"
-  kubectl drain "$name" --ignore-daemonsets --delete-emptydir-data --timeout=5m \
-    || echo "${name}: drain incomplete, rebooting anyway"
   talosctl -n "$ip" reboot --wait --timeout 30m
   wait_ready "$name"
-  kubectl uncordon "$name"
   cluster_healthy "${ips[@]}"
   wait_longhorn
   echo "${name}: rebooted into the staged config, cluster healthy"
