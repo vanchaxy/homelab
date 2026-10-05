@@ -8,3 +8,8 @@ data "talos_client_configuration" "this" {
   nodes                = var.nodes_ips
   endpoints            = var.nodes_ips
 }
+
+resource "talos_cluster_kubeconfig" "this" {
+  client_configuration = talos_machine_secrets.this.client_configuration
+  node                 = var.cluster.endpoint
+}

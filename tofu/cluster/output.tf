@@ -4,6 +4,7 @@ output "files" {
     "talos-machine-config-jupiter.yaml" = module.node-jupiter.machine_config.machine_configuration
     "talos-machine-config-saturn.yaml"  = module.node-saturn.machine_config.machine_configuration
     "talos-config.yaml"                 = module.talos.talos_config
+    "kube-config.yaml"                  = module.talos.kubeconfig
     "vps-router-config.sh"              = module.vyos.vps_router_config
     "home-router-config.sh"             = module.vyos.home_router_config
   }
