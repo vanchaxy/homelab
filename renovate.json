@@ -13,6 +13,33 @@
       "matchStrings": [
         "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)(?: versioning=(?<versioning>\\S+))?\\s+\\S+:\\s*[\"']?(?<currentValue>[^\"'@\\s]+)(?:@(?<currentDigest>sha256:[a-f0-9]+))?[\"']?"
       ]
+    },
+    {
+      "customType": "regex",
+      "description": "Track versions pinned in Terraform/OpenTofu locals via a `# renovate:` comment (e.g. the VyOS Stream release)",
+      "managerFilePatterns": [
+        "/^terraform/.+\\.tf$/"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)(?: versioning=(?<versioning>\\S+))?\\s+\\S+\\s*=\\s*\"(?<currentValue>[^\"]+)\""
+      ]
+    }
+  ],
+  "customDatasources": {
+    "vyos-stream": {
+      "description": "VyOS Stream releases, read from the official download page",
+      "defaultRegistryUrlTemplate": "https://vyos.net/get/stream/",
+      "format": "html"
+    }
+  },
+  "packageRules": [
+    {
+      "description": "VyOS Stream: versions are YYYY.MM, taken from the ISO links on the download page",
+      "matchDatasources": [
+        "custom.vyos-stream"
+      ],
+      "extractVersion": "^https://community-downloads\\.vyos\\.dev/stream/(?<version>\\d{4}\\.\\d{2})/",
+      "versioning": "regex:^(?<major>\\d{4})\\.(?<minor>\\d{2})$"
     }
   ]
 }

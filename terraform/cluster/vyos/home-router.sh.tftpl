@@ -1,9 +1,7 @@
-# Home router (VyOS) configuration, exported with `show configuration commands`.
-# Secrets are redacted: they live only in /config/config.boot on the router.
-# The WireGuard private key is read from /config/auth/wg-pub.priv on the box.
-# Login password: set interactively, never stored here.
-# AdGuard Home config lives in /config/containers/adguard/conf/AdGuardHome.yaml on the router.
-# The mdns-log container runs /config/containers/mdns-log/run.sh (copy in vyos/mdns-log.sh).
+# Home router (VyOS): the complete desired config as set commands, applied by tofu
+# (terraform/cluster/vyos/apply.sh). Secrets live in /config/auth on the router and are
+# read with $(cat ...) at apply time. AdGuard config: /config/containers/adguard/conf,
+# mdns-log script: /config/containers/mdns-log/run.sh (copy in vyos/mdns-log.sh).
 
 set container name adguard allow-host-networks
 set container name adguard description 'AdGuard Home DNS'
@@ -31,6 +29,7 @@ set container name tailscale description 'Tailscale'
 set container name tailscale device tun destination '/dev/net/tun'
 set container name tailscale device tun source '/dev/net/tun'
 set container name tailscale environment TS_AUTH_ONCE value 'true'
+set container name tailscale environment TS_AUTHKEY value 'file:/run/ts-authkey'
 set container name tailscale environment TS_EXTRA_ARGS value '--snat-subnet-routes=false --accept-routes=false --advertise-exit-node'
 set container name tailscale environment TS_HOSTNAME value 'home-router'
 set container name tailscale environment TS_ROUTES value '10.10.0.0/16'
@@ -38,16 +37,18 @@ set container name tailscale environment TS_STATE_DIR value '/var/lib/tailscale'
 set container name tailscale environment TS_USERSPACE value 'false'
 set container name tailscale image 'docker.io/tailscale/tailscale:stable'
 set container name tailscale restart 'always'
+set container name tailscale volume authkey destination '/run/ts-authkey'
+set container name tailscale volume authkey source '/config/auth/tailscale-authkey'
 set container name tailscale volume state destination '/var/lib/tailscale'
 set container name tailscale volume state source '/config/containers/tailscale'
-set container name vymanager-backend environment BETTER_AUTH_SECRET value '<secret: kept on the router>'
-set container name vymanager-backend environment DATABASE_URL value '<secret: kept on the router>'
+set container name vymanager-backend environment BETTER_AUTH_SECRET value "$(cat /config/auth/vymanager-backend.BETTER_AUTH_SECRET)"
+set container name vymanager-backend environment DATABASE_URL value "$(cat /config/auth/vymanager-backend.DATABASE_URL)"
 set container name vymanager-backend environment FRONTEND_INTERNAL_URL value 'http://172.31.255.4:3000'
 set container name vymanager-backend environment FRONTEND_URL value 'http://10.10.10.1:3000'
 set container name vymanager-backend environment NODE_ENV value 'production'
-set container name vymanager-backend environment SSH_ENCRYPTION_KEY value '<secret: kept on the router>'
+set container name vymanager-backend environment SSH_ENCRYPTION_KEY value "$(cat /config/auth/vymanager-backend.SSH_ENCRYPTION_KEY)"
 set container name vymanager-backend environment TRUSTED_ORIGINS value 'http://10.10.10.1:3000'
-set container name vymanager-backend environment VYMANAGER_APPLIANCE_API_KEY value '<secret: kept on the router>'
+set container name vymanager-backend environment VYMANAGER_APPLIANCE_API_KEY value "$(cat /config/auth/vymanager-backend.VYMANAGER_APPLIANCE_API_KEY)"
 set container name vymanager-backend environment VYMANAGER_APPLIANCE_HOST value '10.10.10.1'
 set container name vymanager-backend environment VYMANAGER_APPLIANCE_PORT value '443'
 set container name vymanager-backend environment VYMANAGER_APPLIANCE_PROTOCOL value 'https'
@@ -58,9 +59,9 @@ set container name vymanager-backend network vymanager address '172.31.255.3'
 set container name vymanager-backend network vymanager mac '02:8d:44:d1:45:1c'
 set container name vymanager-backend restart 'always'
 set container name vymanager-frontend environment BACKEND_URL value 'http://172.31.255.3:8000'
-set container name vymanager-frontend environment BETTER_AUTH_SECRET value '<secret: kept on the router>'
+set container name vymanager-frontend environment BETTER_AUTH_SECRET value "$(cat /config/auth/vymanager-frontend.BETTER_AUTH_SECRET)"
 set container name vymanager-frontend environment BETTER_AUTH_URL value 'http://10.10.10.1:3000'
-set container name vymanager-frontend environment DATABASE_URL value '<secret: kept on the router>'
+set container name vymanager-frontend environment DATABASE_URL value "$(cat /config/auth/vymanager-frontend.DATABASE_URL)"
 set container name vymanager-frontend environment NEXT_PUBLIC_APP_URL value 'http://10.10.10.1:3000'
 set container name vymanager-frontend environment NODE_ENV value 'production'
 set container name vymanager-frontend environment PUBLIC_WS_URL value 'ws://10.10.10.1:8000'
@@ -70,7 +71,7 @@ set container name vymanager-frontend network vymanager address '172.31.255.4'
 set container name vymanager-frontend network vymanager mac '02:95:3e:df:e5:b3'
 set container name vymanager-frontend restart 'always'
 set container name vymanager-postgres environment POSTGRES_DB value 'vymanager'
-set container name vymanager-postgres environment POSTGRES_PASSWORD value '<secret: kept on the router>'
+set container name vymanager-postgres environment POSTGRES_PASSWORD value "$(cat /config/auth/vymanager-postgres.POSTGRES_PASSWORD)"
 set container name vymanager-postgres environment POSTGRES_USER value 'vymanager'
 set container name vymanager-postgres image 'postgres:16-alpine'
 set container name vymanager-postgres network vymanager address '172.31.255.2'
@@ -293,7 +294,7 @@ set interfaces wireguard wg0 peer vps-router address '202.61.245.36'
 set interfaces wireguard wg0 peer vps-router allowed-ips '0.0.0.0/0'
 set interfaces wireguard wg0 peer vps-router persistent-keepalive '25'
 set interfaces wireguard wg0 peer vps-router port '51820'
-set interfaces wireguard wg0 peer vps-router public-key 'FQ195EfT3uufNS7VUfZtqfPbVRRWEQasgRoKdOTiXhg='
+set interfaces wireguard wg0 peer vps-router public-key '${vps_wg_public_key}'
 set interfaces wireguard wg0 private-key "$(cat /config/auth/wg-pub.priv)"
 set nat destination rule 200 description 'force DNS to AdGuard (IF-CLIENTS)'
 set nat destination rule 200 destination group address-group '!ROUTER-DNS'
@@ -424,7 +425,7 @@ set service dhcp-server shared-network-name WORK subnet 10.10.30.0/24 range 0 st
 set service dhcp-server shared-network-name WORK subnet 10.10.30.0/24 range 0 stop '10.10.30.199'
 set service dhcp-server shared-network-name WORK subnet 10.10.30.0/24 subnet-id '30'
 set service https api graphql authentication type 'key'
-set service https api keys id vymanager key '<secret: kept on the router>'
+set service https api keys id vymanager key "$(cat /config/auth/https-api-key.vymanager)"
 set service https api rest
 set service https listen-address '10.10.10.1'
 set service mdns repeater allow-service '_googlecast._tcp'
@@ -452,6 +453,8 @@ set system config-management commit-confirm action 'reload'
 set system config-management commit-revisions '100'
 set system console device ttyS0 speed '115200'
 set system host-name 'vyos'
+set system login user vyos authentication encrypted-password "$(cat /config/auth/login-hash.vyos)"
+set system login user vyos authentication plaintext-password ''
 set system login user vyos authentication public-keys wsl key '${laptop_public_ed25519_key}'
 set system login user vyos authentication public-keys wsl type 'ssh-ed25519'
 set system name-server '10.10.10.1'

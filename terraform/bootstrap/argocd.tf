@@ -17,10 +17,12 @@ data "helm_template" "argocd-template" {
     yamlencode(local.argo.values)
   ]
 
-  set {
-    name  = "configs.secret.createSecret"
-    value = true
-  }
+  set = [
+    {
+      name  = "configs.secret.createSecret"
+      value = true
+    }
+  ]
 
   namespace    = "argocd"
   kube_version = "v1.30.0"
