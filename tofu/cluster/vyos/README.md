@@ -1,7 +1,7 @@
 # VyOS routers
 
 `home-router.sh.tftpl` and `vps-router.sh.tftpl` are each router's complete config
-as VyOS set commands. `tofu apply` in `terraform/cluster` brings both routers to it:
+as VyOS set commands. `tofu apply` in `tofu/cluster` brings both routers to it:
 
 1. `upgrade.sh`: install the VyOS Stream release in `vyos_version` if the router
    runs a different one (signed ISO, reboot, verify). Renovate bumps the version.
@@ -25,7 +25,7 @@ pre-approved `tag:router` Tailscale auth key per router.
 2. On the console: give `eth0` an address with internet access (`dhcp` is fine),
    `set system name-server 1.1.1.1`, enable SSH and add the laptop key
    (`set system login user vyos authentication public-keys laptop ...`), commit.
-3. `tofu apply` in `terraform/cluster` (env files in `~/.config/homelab`).
+3. `tofu apply` in `tofu/cluster` (env files in `~/.config/homelab`).
 
 AdGuard's `*.ivanchenko.io` rewrites come back on their own: external-dns
 rewrites them into AdGuard after it starts.

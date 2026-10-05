@@ -1,8 +1,10 @@
 locals {
   cluster = {
-    name               = "talos-homelab"
-    endpoint           = "10.10.60.201"
-    talos_version      = "v1.11.3"
+    name     = "talos-homelab"
+    endpoint = "10.10.60.201"
+    # renovate: datasource=github-releases depName=siderolabs/talos
+    talos_version = "v1.11.3"
+    # renovate: datasource=github-releases depName=kubernetes/kubernetes
     kubernetes_version = "v1.34.2"
   }
 
@@ -52,6 +54,8 @@ module "talos" {
 module "node-mars" {
   source = "./node"
 
+  after = terraform_data.upgrade_k8s.id
+
   cluster = local.cluster
   node    = local.nodes.mars
 
@@ -64,6 +68,8 @@ module "node-mars" {
 module "node-jupiter" {
   source = "./node"
 
+  after = module.node-mars.talos_machine_configuration_apply_id
+
   cluster = local.cluster
   node    = local.nodes.jupiter
 
@@ -75,6 +81,8 @@ module "node-jupiter" {
 
 module "node-saturn" {
   source = "./node"
+
+  after = module.node-jupiter.talos_machine_configuration_apply_id
 
   cluster = local.cluster
   node    = local.nodes.saturn

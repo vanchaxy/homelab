@@ -1,3 +1,10 @@
+locals {
+  # renovate: datasource=github-releases depName=cilium/cilium
+  cilium_version = "v1.18.6"
+  # renovate: datasource=docker depName=quay.io/cilium/cilium-cli
+  cilium_cli_version = "v0.20.1"
+}
+
 data "talos_machine_configuration" "this" {
   cluster_name       = var.cluster.name
   cluster_endpoint   = "https://${var.cluster.endpoint}:6443"
@@ -12,7 +19,7 @@ data "talos_machine_configuration" "this" {
       cluster_name    = var.cluster.name
       install_image   = var.talos_installer_url
       cilium_values   = yamlencode(yamldecode(file("${path.module}/../../../k8s/system/cilium/values.yaml")).cilium)
-      cilium_install  = file("${path.module}/manifests/cilium-install.yaml")
+      cilium_install  = templatefile("${path.module}/manifests/cilium-install.yaml.tftpl", { cilium_version = local.cilium_version, cilium_cli_image = "quay.io/cilium/cilium-cli:${local.cilium_cli_version}" })
       ssd_disk_id     = var.node.ssd_disk_id
       install_disk_id = var.node.install_disk_id
     })
@@ -21,7 +28,7 @@ data "talos_machine_configuration" "this" {
 
 resource "talos_machine_configuration_apply" "this" {
   node                        = var.node.name
-  endpoint                    = var.node.ip
+  endpoint                    = "${var.node.ip}${substr(var.after, 0, 0)}"
   client_configuration        = var.client_configuration
   machine_configuration_input = data.talos_machine_configuration.this.machine_configuration
 }

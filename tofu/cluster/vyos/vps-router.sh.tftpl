@@ -1,5 +1,5 @@
 # VPS (VyOS): the complete desired config as set commands, applied by tofu
-# (terraform/cluster/vyos/apply.sh). Secrets live in /config/auth on the VPS and are
+# (tofu/cluster/vyos/apply.sh). Secrets live in /config/auth on the VPS and are
 # read with $(cat ...) at apply time.
 
 set container name tailscale allow-host-networks
@@ -56,7 +56,7 @@ set firewall ipv4 input filter rule 45 protocol 'udp'
 set interfaces ethernet eth0 address 'dhcp'
 set interfaces ethernet eth0 description 'WAN'
 set interfaces ethernet eth0 ip
-set interfaces loopback lo description 'managed by tofu (terraform/cluster/vyos)'
+set interfaces loopback lo description 'managed by tofu (tofu/cluster/vyos)'
 set interfaces wireguard wg0 address '10.255.254.1/30'
 set interfaces wireguard wg0 description 'public address to home-router'
 set interfaces wireguard wg0 ip adjust-mss '1380'

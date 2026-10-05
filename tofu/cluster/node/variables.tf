@@ -29,3 +29,9 @@ variable "cluster" {
 variable "talos_installer_url" {
   type = string
 }
+
+variable "after" {
+  type        = string
+  default     = ""
+  description = "ID of something that must finish before this node's config is applied (adds nothing to the endpoint value)"
+}
