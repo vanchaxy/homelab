@@ -13,7 +13,6 @@ data "cloudflare_zone" "zone" {
 resource "cloudflare_zero_trust_tunnel_cloudflared" "homelab" {
   account_id    = var.cloudflare.account_id
   name          = "homelab"
-  config_src    = "local"
   tunnel_secret = base64encode(data.infisical_secrets.cloudflare-secret.secrets["tunnel-secret"].value)
 }
 
@@ -36,5 +35,5 @@ resource "infisical_secret" "cloudflare-tunnel-secret" {
   })
   env_slug     = var.infisical.env_slug
   workspace_id = var.infisical.workspace_id
-  folder_path  = "/cloudflare/"
+  folder_path  = "/cloudflare"
 }
