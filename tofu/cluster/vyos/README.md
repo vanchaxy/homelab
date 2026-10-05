@@ -25,7 +25,7 @@ pre-approved `tag:router` Tailscale auth key per router.
 2. On the console: give `eth0` an address with internet access (`dhcp` is fine),
    `set system name-server 1.1.1.1`, enable SSH and add the laptop key
    (`set system login user vyos authentication public-keys laptop ...`), commit.
-3. `tofu apply` in `tofu/cluster` (env files in `~/.config/homelab`).
+3. `source ~/.config/homelab/tofu.env && tofu apply` in `tofu/cluster`.
 
 AdGuard's `*.ivanchenko.io` rewrites come back on their own: external-dns
 rewrites them into AdGuard after it starts.
