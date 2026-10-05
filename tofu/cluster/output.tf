@@ -96,3 +96,30 @@ output "wifi_keys" {
   value     = module.gl.wifi_keys
   sensitive = true
 }
+
+resource "terraform_data" "upgrade_talos" {
+  triggers_replace = [local.cluster.talos_version, module.talos.installer_url, var.vyos_apply_mode]
+
+  provisioner "local-exec" {
+    command = join(" ", concat(
+      ["${path.module}/talos/upgrade-talos.sh", local.cluster.talos_version, module.talos.installer_url],
+      [for name in ["mars", "jupiter", "saturn"] : "${name}=${local.nodes[name].ip}"],
+    ))
+    environment = {
+      UPGRADE_MODE = var.vyos_apply_mode
+    }
+  }
+}
+
+resource "terraform_data" "upgrade_k8s" {
+  triggers_replace = [local.cluster.kubernetes_version, var.vyos_apply_mode]
+
+  provisioner "local-exec" {
+    command = "${path.module}/talos/upgrade-k8s.sh ${local.cluster.kubernetes_version} ${local.nodes.mars.ip}"
+    environment = {
+      UPGRADE_MODE = var.vyos_apply_mode
+    }
+  }
+
+  depends_on = [terraform_data.upgrade_talos]
+}

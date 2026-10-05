@@ -18,5 +18,5 @@ variable "state_passphrase" {
 variable "vyos_apply_mode" {
   type        = string
   default     = "apply"
-  description = "apply: push router configs when they change; dry-run: only print the VyOS diff"
+  description = "apply: push router/AP configs and run Talos/Kubernetes upgrades when they change; dry-run: only report what would change"
 }

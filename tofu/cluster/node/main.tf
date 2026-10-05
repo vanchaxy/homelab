@@ -28,7 +28,7 @@ data "talos_machine_configuration" "this" {
 
 resource "talos_machine_configuration_apply" "this" {
   node                        = var.node.name
-  endpoint                    = var.node.ip
+  endpoint                    = "${var.node.ip}${substr(var.after, 0, 0)}"
   client_configuration        = var.client_configuration
   machine_configuration_input = data.talos_machine_configuration.this.machine_configuration
 }
