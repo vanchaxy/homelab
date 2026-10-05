@@ -4,9 +4,11 @@
 #   upgrade-talos.sh <version> <installer-image> <name=ip>...   APPLY_MODE=apply | dry-run
 #
 # Per node: skip if already on <version>; refuse jumps of more than one minor
-# version; check the cluster is healthy; drain (best effort); talosctl upgrade
-# --preserve --wait; wait for the node to be Ready on the new version, etcd to
-# have all members healthy and Longhorn to have no degraded volumes; uncordon.
+# version; check the cluster is healthy; talosctl upgrade --preserve --wait
+# (Talos cordons and drains the node itself, and uncordons it after boot);
+# wait for the node to be Ready on the new version (retrying while the API is
+# down, since the endpoint is mars itself), etcd to have all members healthy
+# and Longhorn to have no degraded volumes.
 # Any failure stops the loop, so at most one node is ever mid-upgrade.
 set -euo pipefail
 
@@ -41,6 +43,14 @@ wait_longhorn() {
   done
 }
 
+wait_ready() {
+  local deadline=$(( $(date +%s) + 900 ))
+  until kubectl get node "$1" -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}' 2>/dev/null | grep -qx True; do
+    [ "$(date +%s)" -lt "$deadline" ] || { echo "$1 not Ready after 900s"; return 1; }
+    sleep 10
+  done
+}
+
 client=$(talosctl version --client 2>/dev/null | awk '/Tag:/{print $2; exit}')
 [ "$client" = "$want" ] || echo "note: talosctl client is ${client}, nodes go to ${want}; update talosctl to match"
 
@@ -55,13 +65,10 @@ for pair in "$@"; do
 
   cluster_healthy "${ips[@]}"
   wait_longhorn
-  kubectl drain "$name" --ignore-daemonsets --delete-emptydir-data --timeout=300s >/dev/null 2>&1 \
-    || echo "  drain did not finish in 5m (e.g. single-replica PDBs), continuing; the reboot stops the rest"
   talosctl -n "$ip" upgrade --image "$image" --preserve --wait --timeout 30m
-  kubectl wait --for=condition=Ready "node/${name}" --timeout=900s >/dev/null
+  wait_ready "$name"
   now=$(talos_version "$ip")
   [ "$now" = "$want" ] || { echo "${name}: still on ${now} after the upgrade"; exit 1; }
-  kubectl uncordon "$name" >/dev/null
   cluster_healthy "${ips[@]}"
   wait_longhorn
   echo "${name}: now on Talos ${now}, cluster healthy"
