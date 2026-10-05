@@ -16,8 +16,8 @@ toloka-torznab:
       containers:
         main:
           image:
-            repository: electricsql/electric
-            tag: 1.8.1@sha256:efb6fa43859d67cb8c73439e0c8bc0f7a3daa467500fb06f2a924bcb2070c139
+            repository: electricsql/electric-temp
+            tag: 1.8.1@sha256:910d5ebeca68c87c930ccd1b35426c7bc94d79c099ccacc8f27547b74fb4353a
           env:
             ELECTRIC_INSECURE: 'true'
             ELECTRIC_MANUAL_TABLE_PUBLISHING: 'true'
