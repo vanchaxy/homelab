@@ -14,8 +14,11 @@ resource "random_password" "wifi" {
 locals {
   wifi_keys = { for s in local.ssids : s => random_password.wifi[s].result }
 
-  files = {
-    for name in ["network", "wireless", "dhcp", "system", "firewall"] :
-    "/etc/config/${name}" => templatefile("${path.module}/config/${name}.tftpl", { wifi_keys = local.wifi_keys })
-  }
+  files = merge(
+    {
+      for name in ["network", "wireless", "dhcp", "system", "firewall"] :
+      "/etc/config/${name}" => templatefile("${path.module}/config/${name}.tftpl", { wifi_keys = local.wifi_keys })
+    },
+    { "/etc/dropbear/authorized_keys" = join("", [for k in var.authorized_keys : "${trimspace(k)}\n"]) },
+  )
 }

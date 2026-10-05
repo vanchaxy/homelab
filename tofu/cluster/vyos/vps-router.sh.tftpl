@@ -87,6 +87,8 @@ set system host-name 'vyos'
 set system login user vyos authentication encrypted-password "$(cat /config/auth/login-hash.vyos)"
 set system login user vyos authentication plaintext-password ''
 set system login user vyos authentication public-keys laptop key '${laptop_public_ed25519_key}'
+set system login user vyos authentication public-keys ci key '${ci_public_ed25519_key}'
+set system login user vyos authentication public-keys ci type 'ssh-ed25519'
 set system login user vyos authentication public-keys laptop type 'ssh-ed25519'
 set system name-server 'eth0'
 set system option reboot-on-upgrade-failure '5'

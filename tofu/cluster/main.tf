@@ -34,6 +34,8 @@ locals {
     vps  = "202.61.245.36"
   }
 
+  ci_public_ed25519 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIJJrSnA851nBzfeHUNWDvUKuoVO4HBiqLMJ/DpOA2EK homelab-ci"
+
   # renovate: datasource=custom.vyos-stream depName=vyos-stream
   vyos_version = "2026.03"
 }
@@ -42,6 +44,7 @@ module "vyos" {
   source = "./vyos"
 
   laptop_public_ed25519 = var.laptop_public_ed25519
+  ci_public_ed25519     = local.ci_public_ed25519
 }
 
 module "talos" {
@@ -109,4 +112,6 @@ import {
 
 module "gl" {
   source = "./gl"
+
+  authorized_keys = [var.laptop_public_ed25519, local.ci_public_ed25519]
 }
