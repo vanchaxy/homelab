@@ -1,37 +1,55 @@
-resource "local_file" "machine_configs_mars" {
-  content         = module.node-mars.machine_config.machine_configuration
-  filename        = "../output/talos-machine-config-mars.yaml"
-  file_permission = "0600"
+output "files" {
+  value = {
+    "talos-machine-config-mars.yaml"    = module.node-mars.machine_config.machine_configuration
+    "talos-machine-config-jupiter.yaml" = module.node-jupiter.machine_config.machine_configuration
+    "talos-machine-config-saturn.yaml"  = module.node-saturn.machine_config.machine_configuration
+    "talos-config.yaml"                 = module.talos.talos_config
+    "vps-router-config.sh"              = module.vyos.vps_router_config
+    "home-router-config.sh"             = module.vyos.home_router_config
+  }
+  sensitive = true
 }
 
-resource "local_file" "machine_configs_jupiter" {
-  content         = module.node-jupiter.machine_config.machine_configuration
-  filename        = "../output/talos-machine-config-jupiter.yaml"
-  file_permission = "0600"
+removed {
+  from = local_file.machine_configs_mars
+  lifecycle {
+    destroy = false
+  }
 }
 
-resource "local_file" "machine_configs_saturn" {
-  content         = module.node-saturn.machine_config.machine_configuration
-  filename        = "../output/talos-machine-config-saturn.yaml"
-  file_permission = "0600"
+removed {
+  from = local_file.machine_configs_jupiter
+  lifecycle {
+    destroy = false
+  }
 }
 
-resource "local_file" "talos_config" {
-  content         = module.talos.talos_config
-  filename        = "../output/talos-config.yaml"
-  file_permission = "0600"
+removed {
+  from = local_file.machine_configs_saturn
+  lifecycle {
+    destroy = false
+  }
 }
 
-resource "local_file" "vps_router_config" {
-  content         = module.vyos.vps_router_config
-  filename        = "../output/vps-router-config.sh"
-  file_permission = "0600"
+removed {
+  from = local_file.talos_config
+  lifecycle {
+    destroy = false
+  }
 }
 
-resource "local_file" "home_router_config" {
-  content         = module.vyos.home_router_config
-  filename        = "../output/home-router-config.sh"
-  file_permission = "0600"
+removed {
+  from = local_file.vps_router_config
+  lifecycle {
+    destroy = false
+  }
+}
+
+removed {
+  from = local_file.home_router_config
+  lifecycle {
+    destroy = false
+  }
 }
 
 resource "terraform_data" "upgrade_router" {
@@ -48,22 +66,23 @@ resource "terraform_data" "upgrade_router" {
 
 resource "terraform_data" "apply_router" {
   for_each = {
-    home = { content = local_file.home_router_config.content, filename = local_file.home_router_config.filename }
-    vps  = { content = local_file.vps_router_config.content, filename = local_file.vps_router_config.filename }
+    home = module.vyos.home_router_config
+    vps  = module.vyos.vps_router_config
   }
 
   triggers_replace = [
-    sha256(each.value.content),
+    sha256(each.value),
     sha256(jsonencode(module.vyos.bundles[each.key])),
     local.vyos_version,
     var.apply_mode,
   ]
 
   provisioner "local-exec" {
-    command = "${path.module}/vyos/apply.sh ${local.routers[each.key]} ${each.value.filename}"
+    command = "${path.module}/vyos/apply.sh ${local.routers[each.key]}"
     environment = {
-      APPLY_MODE = var.apply_mode
-      VYOS_BUNDLE     = jsonencode(module.vyos.bundles[each.key])
+      APPLY_MODE  = var.apply_mode
+      VYOS_CONFIG = each.value
+      VYOS_BUNDLE = jsonencode(module.vyos.bundles[each.key])
     }
   }
 
@@ -87,7 +106,7 @@ resource "terraform_data" "apply_gl" {
     command = "${path.module}/gl/apply.sh 10.10.10.2"
     environment = {
       APPLY_MODE = var.apply_mode
-      GL_FILES        = jsonencode(module.gl.files)
+      GL_FILES   = jsonencode(module.gl.files)
     }
   }
 }
