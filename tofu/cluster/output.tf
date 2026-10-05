@@ -176,3 +176,25 @@ resource "terraform_data" "upgrade_k8s" {
 
   depends_on = [terraform_data.upgrade_talos]
 }
+
+resource "terraform_data" "reboot_staged" {
+  triggers_replace = [
+    module.node-mars.machine_configuration_sha,
+    module.node-jupiter.machine_configuration_sha,
+    module.node-saturn.machine_configuration_sha,
+  ]
+
+  provisioner "local-exec" {
+    command = join(" ", concat(
+      ["${path.module}/talos/reboot-staged.sh"],
+      [for n in [
+        { name = "mars", mode = module.node-mars.resolved_apply_mode },
+        { name = "jupiter", mode = module.node-jupiter.resolved_apply_mode },
+        { name = "saturn", mode = module.node-saturn.resolved_apply_mode },
+      ] : "${n.name}=${local.nodes[n.name].ip}=${n.mode}"],
+    ))
+    environment = {
+      APPLY_MODE = var.apply_mode
+    }
+  }
+}
