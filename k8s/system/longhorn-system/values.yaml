@@ -17,6 +17,15 @@ longhorn:
     defaultReplicaCount: "2"
     autoDeletePodWhenVolumeDetachedUnexpectedly: "true"
     nodeDownPodDeletionPolicy: delete-both-statefulset-and-deployment-pod
+    snapshotDataIntegrity:
+      v1: fast-check
+      v2: fast-check
+    snapshotDataIntegrityImmediateCheckAfterSnapshotCreation:
+      v1: "true"
+      v2: "true"
+    fastReplicaRebuildEnabled:
+      v1: "true"
+      v2: "true"
   httproute:
     enabled: true
     hostnames:
