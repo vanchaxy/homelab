@@ -40,7 +40,7 @@ jobs:
       TALOSCONFIG: ${{ github.workspace }}/.ci/talosconfig
       KUBECONFIG: ${{ github.workspace }}/.ci/kubeconfig
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Versions
         id: versions
@@ -48,7 +48,7 @@ jobs:
           echo "talos=$(grep -oP 'talos_version\s*=\s*"\Kv[^"]+' main.tf)" >> "$GITHUB_OUTPUT"
           echo "kubernetes=$(grep -oP 'kubernetes_version\s*=\s*"\Kv[^"]+' main.tf)" >> "$GITHUB_OUTPUT"
 
-      - uses: opentofu/setup-opentofu@9d84900f3238fab8cd84ce47d658d25dd008be2f # v1
+      - uses: opentofu/setup-opentofu@a1320f892987e89d278cc92dc5adc984fb93aca4 # v2
         with:
           tofu_version: 1.13.1
           tofu_wrapper: false
@@ -114,7 +114,7 @@ jobs:
 
       - name: Comment plan
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
           script: |
             const fs = require('fs');
