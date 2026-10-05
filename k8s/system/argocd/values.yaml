@@ -130,6 +130,7 @@ appsSync:
   privilegedNamespaces:
     - amdgpu
     - csi-driver-nfs
+    - generic-device-plugin
     - longhorn-system
     - media
     - telemetry
