@@ -64,15 +64,11 @@ jobs:
       - name: Credentials
         env:
           CI_SSH_KEY: ${{ secrets.CI_SSH_PRIVATE_KEY }}
-          CI_TALOSCONFIG: ${{ secrets.TALOSCONFIG }}
-          CI_KUBECONFIG: ${{ secrets.KUBECONFIG }}
         run: |
           install -d -m 700 "$HOME/.ssh" "$GITHUB_WORKSPACE/.ci"
           printf '%s\n' "$CI_SSH_KEY" > "$HOME/.ssh/id_ed25519"
           cp "$GITHUB_WORKSPACE/.github/known_hosts" "$HOME/.ssh/known_hosts"
-          printf '%s\n' "$CI_TALOSCONFIG" > "$TALOSCONFIG"
-          printf '%s\n' "$CI_KUBECONFIG" > "$KUBECONFIG"
-          chmod 600 "$HOME/.ssh/id_ed25519" "$TALOSCONFIG" "$KUBECONFIG"
+          chmod 600 "$HOME/.ssh/id_ed25519"
 
       - uses: tailscale/github-action@v4
         with:
@@ -90,6 +86,14 @@ jobs:
           exit 1
 
       - run: tofu init -input=false
+
+      - name: Talos and Kubernetes configs from the state
+        run: |
+          umask 077
+          tofu output -json files > files.json
+          jq -r '."talos-config.yaml" // empty' files.json > "$TALOSCONFIG"
+          jq -r '."kube-config.yaml" // empty' files.json > "$KUBECONFIG"
+          rm files.json
 
       - name: Plan
         id: plan
