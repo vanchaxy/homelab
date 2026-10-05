@@ -42,17 +42,113 @@
       "versioning": "regex:^(?<major>\\d{4})\\.(?<minor>\\d{2})$"
     },
     {
-      "description": "Talos, Kubernetes and the Cilium bootstrap are applied to the nodes by tofu: one PR to review together",
+      "description": "Digest-only refreshes of floating or already-pinned tags carry no version change: batch them into one PR",
+      "matchUpdateTypes": [
+        "digest"
+      ],
+      "groupName": "image digests"
+    },
+    {
+      "description": "GitHub Actions only run CI, and the PR's own checks exercise them: one PR for all of them",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "groupName": "github actions"
+    },
+    {
+      "description": "OpenTofu providers share one lock file per root module: bump them together",
+      "matchManagers": [
+        "terraform"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "tofu providers"
+    },
+    {
+      "description": "Talos and Kubernetes are rolled out to the nodes together by tofu",
       "matchFileNames": [
         "tofu/**"
       ],
-      "matchDepNames": [
+      "matchPackageNames": [
         "siderolabs/talos",
-        "kubernetes/kubernetes",
+        "kubernetes/kubernetes"
+      ],
+      "groupName": "talos"
+    },
+    {
+      "description": "Cilium: the k8s Helm release, the tofu bootstrap version and the CLI that installs it",
+      "matchPackageNames": [
+        "cilium",
         "cilium/cilium",
         "quay.io/cilium/cilium-cli"
       ],
-      "groupName": "cluster platform (tofu)"
+      "groupName": "cilium"
+    },
+    {
+      "description": "Argo CD: Helm chart and the image tag it is pinned to",
+      "matchPackageNames": [
+        "argo-cd",
+        "quay.io/argoproj/argocd"
+      ],
+      "groupName": "argocd"
+    },
+    {
+      "description": "external-dns: both releases of the chart and the AdGuard webhook provider",
+      "matchPackageNames": [
+        "external-dns",
+        "ghcr.io/muhlba91/external-dns-provider-adguard"
+      ],
+      "groupName": "external-dns"
+    },
+    {
+      "description": "VictoriaMetrics stack together with the Prometheus Operator CRDs it consumes",
+      "matchPackageNames": [
+        "victoria-metrics-k8s-stack",
+        "prometheus-operator-crds"
+      ],
+      "groupName": "telemetry"
+    },
+    {
+      "description": "VolSync and the snapshot controller it relies on",
+      "matchPackageNames": [
+        "volsync",
+        "snapshot-controller"
+      ],
+      "groupName": "volsync"
+    },
+    {
+      "description": "Backrest and its VolSync operator (chart and image)",
+      "matchPackageNames": [
+        "garethgeorge/backrest",
+        "/backrest-volsync-operator/"
+      ],
+      "groupName": "backrest"
+    },
+    {
+      "description": "Immich server, machine learning and chart must run the same release",
+      "matchPackageNames": [
+        "immich",
+        "ghcr.io/immich-app/**"
+      ],
+      "groupName": "immich"
+    },
+    {
+      "description": "Kaneo API and web are released together",
+      "matchPackageNames": [
+        "ghcr.io/usekaneo/**"
+      ],
+      "groupName": "kaneo"
+    },
+    {
+      "description": "Paperless-ngx with its Gotenberg and Tika sidecars",
+      "matchPackageNames": [
+        "ghcr.io/paperless-ngx/paperless-ngx",
+        "docker.io/gotenberg/gotenberg",
+        "docker.io/apache/tika"
+      ],
+      "groupName": "paperless-ngx"
     }
   ]
 }
