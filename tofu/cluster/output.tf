@@ -117,8 +117,34 @@ output "wifi_keys" {
   sensitive = true
 }
 
+data "external" "running_versions" {
+  program = concat(["${path.module}/talos/versions.sh"], [for k, v in local.nodes : v.ip])
+}
+
+locals {
+  wanted_versions = {
+    talos      = local.cluster.talos_version
+    kubernetes = local.cluster.kubernetes_version
+  }
+  version_jumps = {
+    for k, to in local.wanted_versions : k => {
+      from  = data.external.running_versions.result[k]
+      to    = to
+      major = tonumber(regex("^v?(\\d+)", to)[0]) - tonumber(regex("^v?(\\d+)", data.external.running_versions.result[k])[0])
+      minor = tonumber(regex("^v?\\d+\\.(\\d+)", to)[0]) - tonumber(regex("^v?\\d+\\.(\\d+)", data.external.running_versions.result[k])[0])
+    }
+  }
+}
+
 resource "terraform_data" "upgrade_talos" {
   triggers_replace = [local.cluster.talos_version, module.talos.installer_url, var.apply_mode]
+
+  lifecycle {
+    precondition {
+      condition     = local.version_jumps.talos.major == 0 && local.version_jumps.talos.minor >= 0 && local.version_jumps.talos.minor <= 1
+      error_message = "Talos ${local.version_jumps.talos.from} -> ${local.version_jumps.talos.to}: upgrade one minor version at a time, never down."
+    }
+  }
 
   provisioner "local-exec" {
     command = join(" ", concat(
@@ -133,6 +159,13 @@ resource "terraform_data" "upgrade_talos" {
 
 resource "terraform_data" "upgrade_k8s" {
   triggers_replace = [local.cluster.kubernetes_version, var.apply_mode]
+
+  lifecycle {
+    precondition {
+      condition     = local.version_jumps.kubernetes.major == 0 && local.version_jumps.kubernetes.minor >= 0 && local.version_jumps.kubernetes.minor <= 1
+      error_message = "Kubernetes ${local.version_jumps.kubernetes.from} -> ${local.version_jumps.kubernetes.to}: upgrade one minor version at a time, never down."
+    }
+  }
 
   provisioner "local-exec" {
     command = "${path.module}/talos/upgrade-k8s.sh ${local.cluster.kubernetes_version} ${local.nodes.mars.ip}"

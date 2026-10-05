@@ -29,6 +29,10 @@ terraform {
   }
 
   required_providers {
+    external = {
+      source  = "hashicorp/external"
+      version = "2.4.2"
+    }
     talos = {
       source  = "siderolabs/talos"
       version = "0.12.0"
