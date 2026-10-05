@@ -9,7 +9,10 @@
 	// "tagOwners": {
 	//  	"tag:example": ["autogroup:admin"],
 	// },
-	"tagOwners": {"tag:router": ["autogroup:admin"]},
+	"tagOwners": {
+		"tag:router": ["autogroup:admin"],
+		"tag:ci":     ["autogroup:admin"],
+	},
 
 	// Define grants that govern access for users, groups, autogroups, tags,
 	// Tailscale IP addresses, and subnet ranges.
@@ -22,7 +25,7 @@
 		{"src": ["autogroup:member"], "dst": ["autogroup:self"], "ip": ["*"]},
 		{"src": ["autogroup:member"], "dst": ["10.10.61.0/24"], "ip": ["*"]},
 		{
-			"src": ["autogroup:member", "tag:router"],
+			"src": ["autogroup:member", "tag:router", "tag:ci"],
 			"dst": ["tag:router"],
 			"app": {"tailscale.com/cap/relay": []},
 		},
@@ -32,6 +35,9 @@
 			"ip":  ["udp:53", "tcp:53"],
 		},
 		{"src": ["vanchaxy@github"], "dst": ["autogroup:internet"], "ip": ["*"]},
+		// GitHub Actions (ephemeral tag:ci nodes): only what tofu needs.
+		{"src": ["tag:ci"], "dst": ["10.10.20.1", "10.10.10.2"], "ip": ["tcp:22"]},
+		{"src": ["tag:ci"], "dst": ["10.10.60.201", "10.10.60.202", "10.10.60.203"], "ip": ["tcp:6443", "tcp:50000"]},
 		// Allow users in "group:example" to access "tag:example", but only from
 		// devices that are running macOS and have enabled Tailscale client auto-updating.
 		// {"src": ["group:example"], "dst": ["tag:example"], "ip": ["*"], "srcPosture":["posture:autoUpdateMac"]},

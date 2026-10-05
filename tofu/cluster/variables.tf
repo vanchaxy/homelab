@@ -15,7 +15,7 @@ variable "state_passphrase" {
   sensitive = true
 }
 
-variable "vyos_apply_mode" {
+variable "apply_mode" {
   type        = string
   default     = "apply"
   description = "apply: push router/AP configs and run Talos/Kubernetes upgrades when they change; dry-run: only report what would change"

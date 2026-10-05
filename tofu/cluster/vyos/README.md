@@ -10,7 +10,7 @@ as VyOS set commands. `tofu apply` in `tofu/cluster` brings both routers to it:
    directories, pull container images, then load the config and commit only the
    difference, with a 5-minute auto-revert until SSH access is re-verified.
 
-`-var vyos_apply_mode=dry-run` only prints the VyOS diff (read it from
+`-var apply_mode=dry-run` only prints the VyOS diff (read it from
 `/config/tofu/compare.txt` on the router; tofu hides provisioner output because
 the bundle is sensitive).
 
@@ -25,7 +25,7 @@ pre-approved `tag:router` Tailscale auth key per router.
 2. On the console: give `eth0` an address with internet access (`dhcp` is fine),
    `set system name-server 1.1.1.1`, enable SSH and add the laptop key
    (`set system login user vyos authentication public-keys laptop ...`), commit.
-3. `tofu apply` in `tofu/cluster` (env files in `~/.config/homelab`).
+3. `source ~/.config/homelab/tofu.env && tofu apply` in `tofu/cluster`.
 
 AdGuard's `*.ivanchenko.io` rewrites come back on their own: external-dns
 rewrites them into AdGuard after it starts.

@@ -1,0 +1,76 @@
+name: argocd-refresh
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - k8s/**
+  workflow_dispatch:
+
+concurrency:
+  group: argocd-refresh
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      KUBECONFIG: ${{ github.workspace }}/.ci/kubeconfig
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Changed applications
+        id: apps
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          if [ "${{ github.event_name }}" = push ] && git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
+            changed=$(git diff --name-only "$BEFORE" "$GITHUB_SHA" -- k8s)
+          else
+            changed=k8s/_helpers
+          fi
+          if grep -q '^k8s/_helpers/' <<<"$changed" || [ "$changed" = k8s/_helpers ]; then
+            echo "apps=*" >> "$GITHUB_OUTPUT"
+          else
+            echo "apps=$(awk -F/ 'NF>3 {print $3}' <<<"$changed" | sort -u | xargs)" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Kubeconfig
+        env:
+          ARGOCD_KUBECONFIG: ${{ secrets.ARGOCD_KUBECONFIG }}
+        run: |
+          install -d -m 700 .ci
+          printf '%s\n' "$ARGOCD_KUBECONFIG" > "$KUBECONFIG"
+          chmod 600 "$KUBECONFIG"
+
+      - uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+
+      - name: Refresh
+        env:
+          APPS: ${{ steps.apps.outputs.apps }}
+        run: |
+          for i in $(seq 30); do
+            kubectl -n argocd get applicationset root -o name >/dev/null 2>&1 && break
+            sleep 2
+          done
+          kubectl -n argocd annotate applicationset root argocd.argoproj.io/application-set-refresh=true --overwrite
+          if [ "$APPS" = "*" ]; then
+            set -- $(kubectl -n argocd get applications -o name)
+          else
+            set --
+            for app in $APPS; do
+              kubectl -n argocd get "application/$app" -o name >/dev/null 2>&1 && set -- "$@" "application/$app"
+            done
+          fi
+          [ $# -eq 0 ] && { echo "no existing applications changed"; exit 0; }
+          kubectl -n argocd annotate "$@" argocd.argoproj.io/refresh=normal --overwrite

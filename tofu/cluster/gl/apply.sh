@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Apply the GL-A1300's OpenWrt config files over SSH.
 #
-#   apply.sh <host>      GL_FILES (JSON path -> content), VYOS_APPLY_MODE=apply | dry-run
+#   apply.sh <host>      GL_FILES (JSON path -> content), APPLY_MODE=apply | dry-run
 #
 # Compares each file with the live one; no difference -> nothing. Otherwise backs
 # up the current files, arms a background revert, writes the files, runs
@@ -10,7 +10,7 @@
 set -euo pipefail
 
 host="$1"
-mode="${VYOS_APPLY_MODE:-apply}"
+mode="${APPLY_MODE:-apply}"
 revert_after="${VYOS_REVERT_AFTER:-300}"
 ssh_cmd=(ssh -o BatchMode=yes -o ConnectTimeout=15 -o ServerAliveInterval=5 "root@${host}")
 work=$(mktemp -d)

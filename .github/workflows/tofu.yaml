@@ -1,0 +1,129 @@
+name: tofu
+
+on:
+  pull_request:
+    paths:
+      - tofu/cluster/**
+      - .github/workflows/tofu.yaml
+      - .github/known_hosts
+  push:
+    branches: [main]
+    paths:
+      - tofu/cluster/**
+      - .github/workflows/tofu.yaml
+      - .github/known_hosts
+  workflow_dispatch:
+
+concurrency:
+  group: tofu-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'main' }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  tofu:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    defaults:
+      run:
+        working-directory: tofu/cluster
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.B2_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.B2_APPLICATION_KEY }}
+      TF_VAR_state_passphrase: ${{ secrets.TOFU_STATE_PASSPHRASE }}
+      TF_VAR_tailscale: ${{ secrets.TOFU_TAILSCALE }}
+      TF_VAR_laptop_public_ed25519: ${{ secrets.LAPTOP_PUBLIC_ED25519 }}
+      TF_IN_AUTOMATION: "1"
+      TALOSCONFIG: ${{ github.workspace }}/.ci/talosconfig
+      KUBECONFIG: ${{ github.workspace }}/.ci/kubeconfig
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Versions
+        id: versions
+        run: |
+          echo "talos=$(grep -oP 'talos_version\s*=\s*"\Kv[^"]+' main.tf)" >> "$GITHUB_OUTPUT"
+          echo "kubernetes=$(grep -oP 'kubernetes_version\s*=\s*"\Kv[^"]+' main.tf)" >> "$GITHUB_OUTPUT"
+
+      - uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: 1.13.1
+          tofu_wrapper: false
+
+      - name: Install talosctl and kubectl
+        run: |
+          mkdir -p "$HOME/.local/bin"
+          curl -fsSLo "$HOME/.local/bin/talosctl" "https://github.com/siderolabs/talos/releases/download/${{ steps.versions.outputs.talos }}/talosctl-linux-amd64"
+          curl -fsSLo "$HOME/.local/bin/kubectl" "https://dl.k8s.io/release/${{ steps.versions.outputs.kubernetes }}/bin/linux/amd64/kubectl"
+          chmod +x "$HOME/.local/bin/talosctl" "$HOME/.local/bin/kubectl"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Credentials
+        env:
+          CI_SSH_KEY: ${{ secrets.CI_SSH_PRIVATE_KEY }}
+          CI_TALOSCONFIG: ${{ secrets.TALOSCONFIG }}
+          CI_KUBECONFIG: ${{ secrets.KUBECONFIG }}
+        run: |
+          install -d -m 700 "$HOME/.ssh" "$GITHUB_WORKSPACE/.ci"
+          printf '%s\n' "$CI_SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          cp "$GITHUB_WORKSPACE/.github/known_hosts" "$HOME/.ssh/known_hosts"
+          printf '%s\n' "$CI_TALOSCONFIG" > "$TALOSCONFIG"
+          printf '%s\n' "$CI_KUBECONFIG" > "$KUBECONFIG"
+          chmod 600 "$HOME/.ssh/id_ed25519" "$TALOSCONFIG" "$KUBECONFIG"
+
+      - uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+
+      - name: Wait for the home network
+        run: |
+          for i in $(seq 30); do
+            timeout 3 bash -c '</dev/tcp/10.10.20.1/22' 2>/dev/null && exit 0
+            sleep 2
+          done
+          echo "10.10.20.1:22 unreachable over the tailnet" >&2
+          exit 1
+
+      - run: tofu init -input=false
+
+      - name: Plan
+        id: plan
+        run: |
+          set -o pipefail
+          tofu plan -input=false -no-color -lock=false -out=tfplan > plan.log 2>&1 || { grep -A20 -E '^(Error|│ Error)' plan.log >&2 || tail -40 plan.log >&2; exit 1; }
+          {
+            echo '### tofu plan'
+            echo
+            grep -E '^(Plan:|No changes\.)' plan.log || true
+            echo
+            tofu show -json tfplan | jq -r '
+              .resource_changes[]
+              | select(.change.actions != ["no-op"] and .change.actions != ["read"])
+              | "- `\(.change.actions | join("/"))` \(.address)"'
+          } > summary.md
+          cat summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comment plan
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- tofu-plan -->';
+            const body = `${marker}\n${fs.readFileSync('tofu/cluster/summary.md', 'utf8')}\n<sub>${context.sha.slice(0, 7)} · [run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})</sub>`;
+            const { data: comments } = await github.rest.issues.listComments({ ...context.repo, issue_number: context.issue.number, per_page: 100 });
+            const existing = comments.find(c => c.user.type === 'Bot' && c.body.startsWith(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ ...context.repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body });
+            }
+
+      - name: Apply
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        run: tofu apply -input=false -no-color -lock=false tfplan
