@@ -17,6 +17,7 @@ longhorn:
     defaultReplicaCount: "2"
     autoDeletePodWhenVolumeDetachedUnexpectedly: "true"
     nodeDownPodDeletionPolicy: delete-both-statefulset-and-deployment-pod
+    nodeDrainPolicy: allow-if-replica-is-stopped
     snapshotDataIntegrity:
       v1: fast-check
       v2: fast-check

@@ -5,6 +5,7 @@ metadata:
 spec:
   imageName: ghcr.io/tensorchord/cloudnative-vectorchord:16-0.3.0
   instances: 1
+  enablePDB: false
 
   monitoring:
     enablePodMonitor: true
