@@ -5,7 +5,7 @@ factorio:
         main:
           image:
             repository: factoriotools/factorio
-            tag: 2.0.77
+            tag: 2.1.20@sha256:e91a03290ef860ee8ec1a15bd6bb63732c1c89c4cb7d80cff8d49bc642e01913
 
   service:
     main:
