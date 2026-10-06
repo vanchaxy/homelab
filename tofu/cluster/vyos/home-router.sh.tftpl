@@ -406,6 +406,7 @@ set protocols bgp parameters router-id '10.10.60.1'
 set protocols bgp system-as '64512'
 set protocols static table 100 description 'public address return via VPS'
 set protocols static table 100 route 0.0.0.0/0 interface wg0
+set service dhcp-server hostfile-update
 set service dhcp-server shared-network-name GUEST subnet 10.10.70.0/24 lease '86400'
 set service dhcp-server shared-network-name GUEST subnet 10.10.70.0/24 option default-router '10.10.70.1'
 set service dhcp-server shared-network-name GUEST subnet 10.10.70.0/24 option name-server '10.10.70.1'
@@ -462,6 +463,9 @@ set service dhcp-server shared-network-name WORK subnet 10.10.30.0/24 option nam
 set service dhcp-server shared-network-name WORK subnet 10.10.30.0/24 range 0 start '10.10.30.100'
 set service dhcp-server shared-network-name WORK subnet 10.10.30.0/24 range 0 stop '10.10.30.199'
 set service dhcp-server shared-network-name WORK subnet 10.10.30.0/24 subnet-id '30'
+set service dns forwarding allow-from '127.0.0.0/8'
+set service dns forwarding listen-address '127.0.0.1'
+set service dns forwarding port '5300'
 set service https api graphql authentication type 'key'
 set service https api keys id vymanager key "$(cat /config/auth/https-api-key.vymanager)"
 set service https api rest
