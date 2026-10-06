@@ -407,6 +407,13 @@ set protocols bgp system-as '64512'
 set protocols static table 100 description 'public address return via VPS'
 set protocols static table 100 route 0.0.0.0/0 interface wg0
 set service dhcp-server hostfile-update
+set service dhcp-server listen-interface 'br10'
+set service dhcp-server listen-interface 'br20'
+set service dhcp-server listen-interface 'eth1.30'
+set service dhcp-server listen-interface 'eth1.40'
+set service dhcp-server listen-interface 'eth1.50'
+set service dhcp-server listen-interface 'eth1.70'
+set service dhcp-server listen-interface 'eth2.60'
 set service dhcp-server shared-network-name GUEST subnet 10.10.70.0/24 lease '86400'
 set service dhcp-server shared-network-name GUEST subnet 10.10.70.0/24 option default-router '10.10.70.1'
 set service dhcp-server shared-network-name GUEST subnet 10.10.70.0/24 option name-server '10.10.70.1'
