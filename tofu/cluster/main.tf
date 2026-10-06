@@ -31,7 +31,7 @@ locals {
 
   routers = {
     home = "10.10.20.1"
-    vps  = "202.61.245.36"
+    vps  = "202.61.245.36:47823"
   }
 
   ci_public_ed25519 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIJJrSnA851nBzfeHUNWDvUKuoVO4HBiqLMJ/DpOA2EK homelab-ci"

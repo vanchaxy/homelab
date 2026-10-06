@@ -39,7 +39,7 @@ set firewall ipv4 input filter rule 20 action 'accept'
 set firewall ipv4 input filter rule 20 protocol 'icmp'
 set firewall ipv4 input filter rule 30 action 'accept'
 set firewall ipv4 input filter rule 30 description 'SSH, key-only'
-set firewall ipv4 input filter rule 30 destination port '22,222'
+set firewall ipv4 input filter rule 30 destination port '47823'
 set firewall ipv4 input filter rule 30 protocol 'tcp'
 set firewall ipv4 input filter rule 40 action 'accept'
 set firewall ipv4 input filter rule 40 description 'Tailscale'
@@ -79,8 +79,7 @@ set service ntp server time1.vyos.net
 set service ntp server time2.vyos.net
 set service ntp server time3.vyos.net
 set service ssh disable-password-authentication
-set service ssh port '222'
-set service ssh port '22'
+set service ssh port '47823'
 set system config-management commit-revisions '100'
 set system console device ttyS0 speed '115200'
 set system host-name 'vyos'
