@@ -1,8 +1,7 @@
 locals {
   argo = {
-    chart = yamldecode(file("${path.module}/../../k8s/system/argocd/Chart.yaml"))
+    chart  = yamldecode(file("${path.module}/../../k8s/system/argocd/Chart.yaml"))
     values = yamldecode(file("${path.module}/../../k8s/system/argocd/values.yaml")).argo-cd
-    redis-secret = file("${path.module}/../../k8s/system/argocd/templates/redis-secret.yaml")
   }
   ignore_fields = ["metadata.labels.\"argocd.argoproj.io/instance\""]
 }
@@ -14,7 +13,9 @@ data "helm_template" "argocd-template" {
   version    = local.argo.chart.dependencies[0].version
 
   values = [
-    yamlencode(local.argo.values)
+    yamlencode(merge(local.argo.values, {
+      redisSecretInit = { enabled = true }
+    }))
   ]
 
   set = [
@@ -37,20 +38,13 @@ metadata:
 YAML
 }
 
-resource "kubectl_manifest" "argocd-redis-secret" {
-  ignore_fields = local.ignore_fields
-  yaml_body     = local.argo.redis-secret
-
-  depends_on = [kubectl_manifest.argocd-ns]
-}
-
 resource "kubectl_manifest" "argocd-apply" {
   for_each = data.helm_template.argocd-template.manifests
 
   ignore_fields = local.ignore_fields
   yaml_body     = each.value
 
-  depends_on = [kubectl_manifest.argocd-ns, kubectl_manifest.argocd-redis-secret]
+  depends_on = [kubectl_manifest.argocd-ns]
 }
 
 resource "null_resource" "wait_for_crd" {
@@ -101,7 +95,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/vanchaxy/homelab-new
+    repoURL: https://github.com/vanchaxy/homelab
     path: k8s/system/argocd
     targetRevision: main
   destination:
