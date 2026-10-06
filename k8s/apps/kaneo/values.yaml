@@ -5,7 +5,7 @@ kaneo:
         main:
           image:
             repository: ghcr.io/usekaneo/api
-            tag: 2.33.0@sha256:b58cf299cc03121751ba5b22c520a0337d8206dc984540e74147d221c8e75b54
+            tag: 2.34.0@sha256:e06753effedfc9871b1a4825f71ffb0efe57cdc50e28a10de8f29df81161f67f
           envFrom:
             - secretRef:
                 name: kaneo-s3
@@ -41,7 +41,7 @@ kaneo:
         main:
           image:
             repository: ghcr.io/usekaneo/web
-            tag: 2.33.0@sha256:1dfb1807eec4aab18771ad561ba6cd1b9b9c095ec63fba0bbbc822ec33494c23
+            tag: 2.34.0@sha256:30722f9ac9f0627ea06f127c1dd936427561266f47bd19056c8e7232ec67f451
           env:
             KANEO_API_URL: "https://kaneo.ivanchenko.io"
             KANEO_CLIENT_URL: "https://kaneo.ivanchenko.io"
