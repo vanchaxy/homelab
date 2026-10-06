@@ -25,6 +25,7 @@ metadata:
   namespace: kube-system
 spec:
   backoffLimit: 10
+  ttlSecondsAfterFinished: 300
   template:
     metadata:
       labels:
