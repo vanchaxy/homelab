@@ -5,9 +5,9 @@
 #
 # Per node: skip if already on <version>; refuse jumps of more than one minor
 # version; check the cluster is healthy; pre-pull the installer
-# into the system namespace (the legacy Upgrade RPC blocks silently while it
+# into the system namespace (a legacy Upgrade RPC fallback blocks silently while it
 # pulls, and a newer talosctl's keepalive pings get the connection killed with
-# too_many_pings, cancelling the pull); talosctl upgrade --preserve --wait
+# too_many_pings, cancelling the pull); talosctl upgrade --wait
 # (Talos cordons and drains the node itself, and uncordons it after boot);
 # wait for the node to be Ready on the new version (retrying while the API is
 # down, since the endpoint is mars itself), etcd to have all members healthy
@@ -43,7 +43,7 @@ for pair in "$@"; do
   cluster_healthy "${ips[@]}"
   wait_longhorn
   for i in 1 2 3; do talosctl -n "$ip" image pull --namespace system "$image" && break; [ "$i" -lt 3 ] || exit 1; sleep 10; done
-  talosctl -n "$ip" upgrade --image "$image" --preserve --wait --timeout 30m
+  talosctl -n "$ip" upgrade --image "$image" --wait --timeout 30m
   wait_ready "$name"
   now=$(talos_version "$ip")
   [ "$now" = "$want" ] || { echo "${name}: still on ${now} after the upgrade"; exit 1; }
