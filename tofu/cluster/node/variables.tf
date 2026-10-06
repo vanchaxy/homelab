@@ -33,5 +33,5 @@ variable "talos_installer_url" {
 variable "after" {
   type        = string
   default     = ""
-  description = "ID of something that must finish before this node's config is applied (adds nothing to the endpoint value)"
+  description = "ID of something that must finish before this node's config is applied"
 }
