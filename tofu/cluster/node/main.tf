@@ -8,7 +8,7 @@ locals {
 data "talos_machine_configuration" "this" {
   cluster_name       = var.cluster.name
   cluster_endpoint   = "https://${var.cluster.endpoint}:6443"
-  talos_version      = var.cluster.talos_version
+  talos_version      = var.cluster.config_contract
   kubernetes_version = var.cluster.kubernetes_version
   machine_type       = "controlplane"
   machine_secrets    = var.machine_secrets

@@ -43,7 +43,7 @@ for pair in "$@"; do
   cluster_healthy "${ips[@]}"
   wait_longhorn
   for i in 1 2 3; do talosctl -n "$ip" image pull --namespace system "$image" && break; [ "$i" -lt 3 ] || exit 1; sleep 10; done
-  talosctl -n "$ip" upgrade --image "$image" --wait --timeout 30m
+  talosctl -n "$ip" upgrade --image "$image" --wait --timeout 30m --drain-timeout 15m
   wait_ready "$name"
   now=$(talos_version "$ip")
   [ "$now" = "$want" ] || { echo "${name}: still on ${now} after the upgrade"; exit 1; }
