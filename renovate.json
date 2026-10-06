@@ -78,11 +78,10 @@
       "separateMultipleMinor": true
     },
     {
-      "description": "Cilium: the k8s Helm release, the tofu bootstrap version and the CLI that installs it",
+      "description": "Cilium: the k8s Helm release and the tofu bootstrap version",
       "matchPackageNames": [
         "cilium",
-        "cilium/cilium",
-        "quay.io/cilium/cilium-cli"
+        "cilium/cilium"
       ],
       "groupName": "cilium"
     },

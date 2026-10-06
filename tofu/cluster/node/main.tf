@@ -1,8 +1,8 @@
 locals {
   # renovate: datasource=github-releases depName=cilium/cilium
   cilium_version = "v1.18.6"
-  # renovate: datasource=docker depName=quay.io/cilium/cilium-cli
-  cilium_cli_version = "v0.20.1"
+  # renovate: datasource=docker depName=alpine/helm
+  helm_version = "4.3.0"
 }
 
 data "talos_machine_configuration" "this" {
@@ -19,7 +19,7 @@ data "talos_machine_configuration" "this" {
       cluster_name       = var.cluster.name
       install_image      = var.talos_installer_url
       cilium_values      = yamlencode(yamldecode(file("${path.module}/../../../k8s/system/cilium/values.yaml")).cilium)
-      cilium_install     = templatefile("${path.module}/manifests/cilium-install.yaml.tftpl", { cilium_version = local.cilium_version, cilium_cli_image = "quay.io/cilium/cilium-cli:${local.cilium_cli_version}" })
+      cilium_install     = templatefile("${path.module}/manifests/cilium-install.yaml.tftpl", { cilium_version = trimprefix(local.cilium_version, "v"), helm_image = "docker.io/alpine/helm:${local.helm_version}" })
       ssd_disk_id        = var.node.ssd_disk_id
       install_disk_id    = var.node.install_disk_id
       kubernetes_version = var.cluster.kubernetes_version
