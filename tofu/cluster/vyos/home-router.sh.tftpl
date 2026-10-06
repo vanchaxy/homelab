@@ -5,7 +5,7 @@
 
 set container name adguard allow-host-networks
 set container name adguard description 'AdGuard Home DNS'
-set container name adguard image 'docker.io/adguard/adguardhome:v0.107.79'
+set container name adguard image 'docker.io/adguard/adguardhome:beta'
 set container name adguard restart 'always'
 set container name adguard volume conf destination '/opt/adguardhome/conf'
 set container name adguard volume conf source '/config/containers/adguard/conf'
