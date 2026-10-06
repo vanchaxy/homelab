@@ -1,4 +1,4 @@
-# Shared helpers for upgrade-talos.sh and reboot-staged.sh; source, don't run.
+# Shared helpers for upgrade-talos.sh and reboot-node.sh; source, don't run.
 longhorn_timeout="${LONGHORN_WAIT_TIMEOUT:-5400}"
 
 talos_version() { talosctl -n "$1" version 2>/dev/null | awk '/Server:/{s=1} s && /Tag:/{print $2; exit}'; }

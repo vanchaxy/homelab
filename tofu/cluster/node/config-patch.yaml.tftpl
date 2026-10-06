@@ -1,26 +1,8 @@
 machine:
-  network:
-    nameservers:
-      - 10.10.60.1
-  sysctls:
-    net.core.default_qdisc: fq
-    net.ipv4.tcp_congestion_control: bbr
-  nodeLabels:
-    topology.kubernetes.io/region: ${cluster_name}
-    topology.kubernetes.io/zone: ${node_name}
-    node.longhorn.io/create-default-disk: 'config'
-    node.kubernetes.io/exclude-from-external-load-balancers:
-      $patch: delete
-  nodeAnnotations:
-    node.longhorn.io/default-disks-config: '${
-      jsonencode(
-        [{name="nmve", path="/var/mnt/storage", allowScheduling=true, tags=["ssd"]}])
-    }'
-  install:
-    disk: /dev/disk/by-id/${install_disk_id}
-    image: ${install_image}
-    wipe: true
   kubelet:
+    image: ghcr.io/siderolabs/kubelet:${kubernetes_version}
+    defaultRuntimeSeccompProfileEnabled: true
+    disableManifestsDirectory: true
     extraMounts:
       - destination: /var/mnt/storage
         type: bind
@@ -33,46 +15,109 @@ machine:
     - device: /dev/disk/by-id/${ssd_disk_id}
       partitions:
         - mountpoint: /var/mnt/storage
-cluster:
-  allowSchedulingOnControlPlanes: true
-  controllerManager:
-    extraArgs:
-      bind-address: 0.0.0.0
-  scheduler:
-    extraArgs:
-      bind-address: 0.0.0.0
-  apiServer:
-    extraArgs:
-      service-account-issuer: https://192.168.50.201:6443
-      api-audiences: https://192.168.50.201:6443
-    admissionControl:
-      - name: PodSecurity
-        configuration:
-          exemptions:
-            namespaces:
-              - longhorn-system
-  network:
-    cni:
-      name: none
-  proxy:
-    disabled: true
-  inlineManifests:
-  - name: cilium-values
-    contents: |
-      ---
-      apiVersion: v1
-      kind: ConfigMap
-      metadata:
-        name: cilium-values
-        namespace: kube-system
-      data:
-        values.yaml: |-
-          ${indent(10, cilium_values)}
-  - name: cilium-bootstrap
-    contents: |
-      ${indent(6, cilium_install)}
+---
+apiVersion: v1alpha1
+kind: KubeletConfig
+$patch: delete
+---
+apiVersion: v1alpha1
+kind: UnattendedInstallConfig
+installer:
+  image: ${install_image}
+provisioning:
+  diskSelector:
+    match: '"/dev/disk/by-id/${install_disk_id}" in disk.symlinks'
+  wipe: true
 ---
 apiVersion: v1alpha1
 kind: HostnameConfig
 auto: "off"
 hostname: ${hostname}
+---
+apiVersion: v1alpha1
+kind: ResolverConfig
+nameservers:
+  - address: 10.10.60.1
+---
+apiVersion: v1alpha1
+kind: SysctlConfig
+params:
+  net.core.default_qdisc: fq
+  net.ipv4.tcp_congestion_control: bbr
+---
+apiVersion: v1alpha1
+kind: SecurityProfileConfig
+$patch: delete
+---
+apiVersion: v1alpha1
+kind: VolumeConfig
+name: EPHEMERAL
+$patch: delete
+---
+apiVersion: v1alpha1
+kind: KubeNodeConfig
+labels:
+  topology.kubernetes.io/region: ${cluster_name}
+  topology.kubernetes.io/zone: ${node_name}
+  node.longhorn.io/create-default-disk: 'config'
+  node.kubernetes.io/exclude-from-external-load-balancers:
+    $patch: delete
+annotations:
+  node.longhorn.io/default-disks-config: '${
+    jsonencode(
+      [{name="nmve", path="/var/mnt/storage", allowScheduling=true, tags=["ssd"]}])
+  }'
+taints:
+  node-role.kubernetes.io/control-plane:
+    $patch: delete
+---
+apiVersion: v1alpha1
+kind: KubeServiceAccountConfig
+issuer:
+  issuerURL: https://192.168.50.201:6443
+---
+apiVersion: v1alpha1
+kind: KubeAdmissionControlConfig
+name: PodSecurity
+configuration:
+  exemptions:
+    namespaces:
+      - longhorn-system
+---
+apiVersion: v1alpha1
+kind: KubeControllerManagerConfig
+extraArgs:
+  bind-address: 0.0.0.0
+---
+apiVersion: v1alpha1
+kind: KubeSchedulerConfig
+extraArgs:
+  bind-address: 0.0.0.0
+---
+apiVersion: v1alpha1
+kind: KubeFlannelCNIConfig
+$patch: delete
+---
+apiVersion: v1alpha1
+kind: KubeProxyConfig
+enabled: false
+---
+apiVersion: v1alpha1
+kind: KubeInlineManifestConfig
+name: cilium-values
+manifest: |
+  ---
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: cilium-values
+    namespace: kube-system
+  data:
+    values.yaml: |-
+      ${indent(6, cilium_values)}
+---
+apiVersion: v1alpha1
+kind: KubeInlineManifestConfig
+name: cilium-bootstrap
+manifest: |
+  ${indent(2, cilium_install)}
