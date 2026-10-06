@@ -27,6 +27,21 @@ data "talos_machine_configuration" "this" {
   ]
 }
 
+locals {
+  config_docs = [
+    for d in split("\n---\n", data.talos_machine_configuration.this.machine_configuration) : yamldecode(d)
+    if trimspace(d) != ""
+  ]
+  v1alpha1 = one([for d in local.config_docs : d if try(d.version, "") == "v1alpha1"])
+  boot_config = {
+    etcd       = try(local.v1alpha1.cluster.etcd, null)
+    env        = try(local.v1alpha1.machine.env, null)
+    kernel     = try(local.v1alpha1.machine.kernel, null)
+    docs       = [for d in local.config_docs : d if contains(["EnvironmentConfig", "KernelModuleConfig", "SecurityProfileConfig"], try(d.kind, ""))]
+    encryption = [for d in local.config_docs : { kind = d.kind, name = try(d.name, ""), encryption = d.encryption } if try(d.encryption, null) != null]
+  }
+}
+
 resource "talos_machine_configuration_apply" "this" {
   node                        = var.node.name
   endpoint                    = "${var.node.ip}${substr(var.after, 0, 0)}"
