@@ -1,0 +1,39 @@
+---
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: snapshot-daily
+spec:
+  task: snapshot
+  cron: "0 3 * * *"
+  groups:
+    - default
+  retain: 3
+  concurrency: 2
+  labels: {}
+---
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: snapshot-delete
+spec:
+  task: snapshot-delete
+  cron: "0 2 * * *"
+  groups:
+    - default
+  retain: 10
+  concurrency: 1
+  labels: {}
+---
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: filesystem-trim
+spec:
+  task: filesystem-trim
+  cron: "0 10 * * *"
+  groups:
+    - default
+  retain: 0
+  concurrency: 1
+  labels: {}
