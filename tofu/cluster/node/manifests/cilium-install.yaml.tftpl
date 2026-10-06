@@ -60,7 +60,7 @@ spec:
       hostNetwork: true
       containers:
       - name: cilium-install
-        image: ${cilium_cli_image}
+        image: ${helm_image}
         env:
         - name: KUBERNETES_SERVICE_HOST
           valueFrom:
@@ -74,13 +74,12 @@ spec:
             mountPath: /root/app/values.yaml
             subPath: values.yaml
         command:
-          - cilium
-          - install
-          - --version=${cilium_version}
-          - --set
-          - kubeProxyReplacement=true
-          - --values
-          - /root/app/values.yaml
+          - sh
+          - -c
+          - >-
+            helm status cilium -n kube-system >/dev/null 2>&1 ||
+            helm install cilium cilium --repo https://helm.cilium.io --version ${cilium_version}
+            -n kube-system --values /root/app/values.yaml --set kubeProxyReplacement=true
       volumes:
         - name: values
           configMap:
