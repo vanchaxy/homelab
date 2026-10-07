@@ -55,3 +55,24 @@ helpers:
         runAsGroup: 1000
         runAsNonRoot: true
         runAsUser: 1000
+
+pocket-id-operator:
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+  instance:
+    enabled: true
+    name: pocket-id
+    spec:
+      external:
+        url: http://pocket-id.pocket-id.svc:1411
+        apiKeySecretRef:
+          name: pocket-id
+          key: STATIC_API_KEY
+
+userGroups:
+  - admins
+  - family
+  - friends
+  - nobody

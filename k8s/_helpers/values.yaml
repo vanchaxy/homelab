@@ -28,6 +28,8 @@ infisicalSecrets: []
 
 backups: []
 
+oidcClients: []
+
 oidcPolicy:
   routes: []
   issuer: "https://id.ivanchenko.io"

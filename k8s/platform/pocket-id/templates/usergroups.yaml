@@ -1,0 +1,9 @@
+{{- range .Values.userGroups }}
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUserGroup
+metadata:
+  name: {{ . }}
+spec:
+  friendlyName: {{ . }}
+---
+{{- end }}
