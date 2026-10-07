@@ -183,10 +183,12 @@ egressExceptions:
   abiotic-factor:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   actualbudget:
+    toNamespaces: [envoy-gateway]
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   amdgpu:
     toEntities: [kube-apiserver]
   argocd:
+    toNamespaces: [envoy-gateway]
     toEntities: [kube-apiserver]
     toFQDNs: ['*.github.io', github.com, '*.githubusercontent.com', ghcr.io, '*.docker.io', production.cloudfront.docker.com, charts.bitnami.com, repo.broadcom.com, charts.jetstack.io, charts.longhorn.io, cloudnative-pg.io, dl.cloudsmith.io, helm.cilium.io, piraeus.io, robusta-charts.storage.googleapis.com]
   backrest:
@@ -201,6 +203,7 @@ egressExceptions:
   core-keeper:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   donetick:
+    toNamespaces: [envoy-gateway]
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   envoy-gateway:
     toNamespaces: [actualbudget, argocd, backrest, donetick, grafana, hermes-karyna, home-infra, immich, kaneo, librespeed, longhorn-system, media, paperless-ngx, pocket-id, toloka-torznab, versitygw, yamtrack]
@@ -214,7 +217,7 @@ egressExceptions:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
     toCIDRs: [45.79.173.216/32, 172.104.241.28/32, 45.79.202.131/32, 139.162.87.206/32]
   grafana:
-    toNamespaces: [telemetry]
+    toNamespaces: [telemetry, envoy-gateway]
     toEntities: [kube-apiserver]
     toFQDNs: [s3.eu-central-003.backblazeb2.com, grafana.com]
   hermes-karyna:
@@ -223,12 +226,14 @@ egressExceptions:
   icarus:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   immich:
+    toNamespaces: [envoy-gateway]
     toEntities: [kube-apiserver]
     toFQDNs: [s3.eu-central-003.backblazeb2.com, version.immich.cloud]
   infisical:
     toEntities: [kube-apiserver]
     toFQDNs: [app.infisical.com]
   kaneo:
+    toNamespaces: [envoy-gateway]
     toEntities: [kube-apiserver]
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   kube-system:
@@ -244,6 +249,7 @@ egressExceptions:
   palworld:
     toFQDNs: [s3.eu-central-003.backblazeb2.com, telemetry.palworldgame.com]
   paperless-ngx:
+    toNamespaces: [envoy-gateway]
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   pocket-id:
     toEntities: [kube-apiserver]
@@ -269,6 +275,7 @@ egressExceptions:
   volsync:
     toEntities: [kube-apiserver]
   yamtrack:
+    toNamespaces: [envoy-gateway]
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
 
 sameNamespaceEgress:
