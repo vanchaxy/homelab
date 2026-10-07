@@ -215,7 +215,6 @@ egressExceptions:
     toCIDRs: [10.10.60.1/32]
   factorio:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
-    toCIDRs: [45.79.173.216/32, 172.104.241.28/32, 45.79.202.131/32, 139.162.87.206/32]
   grafana:
     toNamespaces: [telemetry, envoy-gateway]
     toEntities: [kube-apiserver]
