@@ -6,9 +6,10 @@
   "customManagers": [
     {
       "customType": "regex",
-      "description": "Track versions pinned in raw manifests via a `# renovate:` comment (e.g. Grafana CR .spec.version)",
+      "description": "Track versions pinned in raw manifests and workflows via a `# renovate:` comment (e.g. Grafana CR .spec.version, CI tool versions)",
       "managerFilePatterns": [
-        "/^k8s/.+\\.ya?ml$/"
+        "/^k8s/.+\\.ya?ml$/",
+        "/^\\.github/workflows/.+\\.ya?ml$/"
       ],
       "matchStrings": [
         "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)(?: versioning=(?<versioning>\\S+))?\\s+\\S+:\\s*[\"']?(?<currentValue>[^\"'@\\s]+)(?:@(?<currentDigest>sha256:[a-f0-9]+))?[\"']?"
@@ -86,7 +87,8 @@
     {
       "description": "Talos and Kubernetes must be upgraded one minor version at a time: a PR per minor, not grouped (a group collapses them into a single jump)",
       "matchFileNames": [
-        "tofu/**"
+        "tofu/**",
+        ".github/workflows/k8s.yaml"
       ],
       "matchPackageNames": [
         "siderolabs/talos",
@@ -165,6 +167,89 @@
         "docker.io/apache/tika"
       ],
       "groupName": "paperless-ngx"
+    },
+    {
+      "description": "Patch, digest and pin updates merge themselves once the release has soaked and CI (render + schema check) is green",
+      "matchUpdateTypes": [
+        "patch",
+        "digest",
+        "pin",
+        "pinDigest"
+      ],
+      "minimumReleaseAge": "3 days",
+      "automerge": true
+    },
+    {
+      "description": "Minor updates of apps, games and platform services merge themselves after a longer soak",
+      "matchFileNames": [
+        "k8s/apps/**",
+        "k8s/games/**",
+        "k8s/platform/**"
+      ],
+      "matchUpdateTypes": [
+        "minor"
+      ],
+      "minimumReleaseAge": "7 days",
+      "automerge": true
+    },
+    {
+      "description": "Cluster-wide system charts: patches soak a week before merging",
+      "matchFileNames": [
+        "k8s/system/**"
+      ],
+      "matchUpdateTypes": [
+        "patch"
+      ],
+      "minimumReleaseAge": "7 days"
+    },
+    {
+      "description": "CI actions and tools are exercised by the PR's own checks",
+      "matchFileNames": [
+        ".github/**"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "digest"
+      ],
+      "automerge": true
+    },
+    {
+      "description": "Lock file maintenance has no version change",
+      "matchUpdateTypes": [
+        "lockFileMaintenance"
+      ],
+      "automerge": true
+    },
+    {
+      "description": "Never automerge: tofu applies on push (Talos, Kubernetes, VyOS, providers), and storage, CNI, VPN, database and photo/document data are too costly to break unattended",
+      "matchPackageNames": [
+        "cilium",
+        "cilium/cilium",
+        "longhorn",
+        "cloudnative-pg",
+        "ghcr.io/qdm12/gluetun",
+        "immich",
+        "ghcr.io/immich-app/**",
+        "ghcr.io/paperless-ngx/paperless-ngx",
+        "redis",
+        "siderolabs/talos",
+        "kubernetes/kubernetes"
+      ],
+      "automerge": false
+    },
+    {
+      "matchFileNames": [
+        "tofu/**"
+      ],
+      "automerge": false
+    },
+    {
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "automerge": false
     }
-  ]
+  ],
+  "platformAutomerge": false
 }
