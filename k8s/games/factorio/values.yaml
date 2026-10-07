@@ -1,6 +1,19 @@
 factorio:
   controllers:
     main:
+      initContainers:
+        settings:
+          image:
+            repository: factoriotools/factorio
+            tag: 2.1.21@sha256:0be9e1d305725a2071476a4acdc80642bb9ae305c6e2805e9633697f2de84c60
+          command:
+            - sh
+            - -c
+            - |
+              f=/factorio/config/server-settings.json
+              [ -f "$f" ] || exit 0
+              jq '.visibility.public = false | .visibility.lan = false' "$f" > "$f.tmp"
+              mv "$f.tmp" "$f"
       containers:
         main:
           image:
@@ -48,6 +61,8 @@ factorio:
       advancedMounts:
         main:
           main:
+            - path: /factorio
+          settings:
             - path: /factorio
 
 helpers:
