@@ -32,9 +32,10 @@
         "/^tofu/cluster/vyos/.+\\.sh\\.tftpl$/"
       ],
       "matchStrings": [
-        "set container name \\S+ image '(?<depName>[^':@]+):(?<currentValue>[^'@]+)(?:@(?<currentDigest>sha256:[a-f0-9]+))?'"
+        "image '(?<depName>[^':@]+):(?<currentValue>[^'@]+)(?:@(?<currentDigest>sha256:[a-f0-9]+))?'"
       ],
-      "datasourceTemplate": "docker"
+      "datasourceTemplate": "docker",
+      "autoReplaceStringTemplate": "image '{{{depName}}}:{{{newValue}}}{{#if newDigest}}@{{{newDigest}}}{{/if}}'"
     }
   ],
   "customDatasources": {
