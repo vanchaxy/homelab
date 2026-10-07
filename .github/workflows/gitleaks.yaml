@@ -19,9 +19,10 @@ jobs:
 
       - name: Install gitleaks
         env:
-          VERSION: 8.28.0
+          # renovate: datasource=github-releases depName=gitleaks/gitleaks
+          VERSION: v8.28.0
         run: |
-          curl -fsSL "https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}/gitleaks_${VERSION}_linux_x64.tar.gz" | tar xz -C "$RUNNER_TEMP" gitleaks
+          curl -fsSL "https://github.com/gitleaks/gitleaks/releases/download/${VERSION}/gitleaks_${VERSION#v}_linux_x64.tar.gz" | tar xz -C "$RUNNER_TEMP" gitleaks
           echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
 
       - name: Scan new commits

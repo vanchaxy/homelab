@@ -17,7 +17,7 @@ media:
         main:
           image:
             repository: linuxserver/qbittorrent
-            tag: libtorrentv1@sha256:d6890b0d79dfdb67d09e8c393409254c41ca7848188e2117f1147abcedf14254
+            tag: 5.2.4-libtorrentv1@sha256:d6890b0d79dfdb67d09e8c393409254c41ca7848188e2117f1147abcedf14254
           env:
             PUID: 568
             PGID: 568
@@ -249,7 +249,7 @@ media:
         main:
           image:
             repository: ghcr.io/audionut/upload-assistant
-            tag: latest@sha256:9361d3c59a4fd92cf1197d0d08af635f3f7578c0c2f2b32aaea385e37115cc92
+            tag: v7.1.7@sha256:9361d3c59a4fd92cf1197d0d08af635f3f7578c0c2f2b32aaea385e37115cc92
           env:
             PUID: 568
             PGID: 568

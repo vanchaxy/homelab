@@ -1,0 +1,67 @@
+name: k8s
+
+on:
+  pull_request:
+    paths:
+      - k8s/**
+      - .github/workflows/k8s.yaml
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # renovate: datasource=github-releases depName=helm/helm
+      HELM_VERSION: v3.19.0
+      # renovate: datasource=github-releases depName=yannh/kubeconform
+      KUBECONFORM_VERSION: v0.7.0
+      # renovate: datasource=github-releases depName=kubernetes/kubernetes
+      KUBERNETES_VERSION: v1.37.1
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - name: Install helm and kubeconform
+        run: |
+          curl -fsSL "https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz" | tar xz -C "$RUNNER_TEMP" --strip-components=1 linux-amd64/helm
+          curl -fsSL "https://github.com/yannh/kubeconform/releases/download/${KUBECONFORM_VERSION}/kubeconform-linux-amd64.tar.gz" | tar xz -C "$RUNNER_TEMP" kubeconform
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+
+      - name: Add chart repositories
+        run: |
+          yq -N '.dependencies[].repository' k8s/*/*/Chart.yaml | grep '^https://' | sort -u | while read -r url; do
+            helm repo add "$(sha1sum <<<"$url" | cut -c1-12)" "$url"
+          done
+
+      - name: Render and validate changed charts
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          changed=$(git diff --name-only "$BASE" HEAD -- k8s .github/workflows/k8s.yaml)
+          if grep -qE '^(k8s/_helpers/|\.github/)' <<<"$changed"; then
+            charts=$(dirname k8s/*/*/Chart.yaml)
+          else
+            charts=$(cut -d/ -f1-3 <<<"$changed" | sort -u | while read -r d; do [ -f "$d/Chart.yaml" ] && echo "$d"; done)
+          fi
+
+          kube="${KUBERNETES_VERSION#v}"
+          failed=0
+          for chart in $charts; do
+            name=$(basename "$chart")
+            echo "::group::$chart"
+            if helm dependency build "$chart" \
+              && helm template "$name" "$chart" --namespace "$name" --kube-version "$kube" > "$RUNNER_TEMP/$name.yaml" \
+              && yq 'del(.. | select(tag == "!!null"))' "$RUNNER_TEMP/$name.yaml" \
+                | kubeconform -summary -ignore-missing-schemas -kubernetes-version "${kube%.*}.0" -; then
+              echo "::endgroup::"
+            else
+              echo "::endgroup::"
+              echo "::error title=$chart::render or schema validation failed"
+              failed=1
+            fi
+          done
+          exit $failed

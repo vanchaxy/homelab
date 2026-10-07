@@ -6,9 +6,10 @@
   "customManagers": [
     {
       "customType": "regex",
-      "description": "Track versions pinned in raw manifests via a `# renovate:` comment (e.g. Grafana CR .spec.version)",
+      "description": "Track versions pinned in raw manifests and workflows via a `# renovate:` comment (e.g. Grafana CR .spec.version, CI tool versions)",
       "managerFilePatterns": [
-        "/^k8s/.+\\.ya?ml$/"
+        "/^k8s/.+\\.ya?ml$/",
+        "/^\\.github/workflows/.+\\.ya?ml$/"
       ],
       "matchStrings": [
         "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)(?: versioning=(?<versioning>\\S+))?\\s+\\S+:\\s*[\"']?(?<currentValue>[^\"'@\\s]+)(?:@(?<currentDigest>sha256:[a-f0-9]+))?[\"']?"
@@ -23,6 +24,17 @@
       "matchStrings": [
         "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)(?: versioning=(?<versioning>\\S+))?\\s+\\S+\\s*=\\s*\"(?<currentValue>[^\"]+)\""
       ]
+    },
+    {
+      "customType": "regex",
+      "description": "Container images run on the VyOS routers",
+      "managerFilePatterns": [
+        "/^tofu/cluster/vyos/.+\\.sh\\.tftpl$/"
+      ],
+      "matchStrings": [
+        "set container name \\S+ image '(?<depName>[^':@]+):(?<currentValue>[^'@]+)(?:@(?<currentDigest>sha256:[a-f0-9]+))?'"
+      ],
+      "datasourceTemplate": "docker"
     }
   ],
   "customDatasources": {
@@ -66,6 +78,33 @@
       "groupName": "image digests"
     },
     {
+      "description": "VyOS router containers: one PR for all of them (prepare.py only pulls images that are missing, so a floating tag never refreshes without a digest)",
+      "matchFileNames": [
+        "tofu/cluster/vyos/**"
+      ],
+      "groupName": "vyos containers"
+    },
+    {
+      "description": "vymanager's Postgres keeps its data directory across restarts: a major needs a dump and restore",
+      "matchFileNames": [
+        "tofu/cluster/vyos/**"
+      ],
+      "matchPackageNames": [
+        "postgres"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "Necesse server tags are dashed versions (1-3-3)",
+      "matchPackageNames": [
+        "brammys/necesse-server"
+      ],
+      "versioning": "regex:^(?<major>\\d+)-(?<minor>\\d+)-(?<patch>\\d+)$"
+    },
+    {
       "description": "GitHub Actions only run CI, and the PR's own checks exercise them: one PR for all of them",
       "matchManagers": [
         "github-actions"
@@ -86,7 +125,8 @@
     {
       "description": "Talos and Kubernetes must be upgraded one minor version at a time: a PR per minor, not grouped (a group collapses them into a single jump)",
       "matchFileNames": [
-        "tofu/**"
+        "tofu/**",
+        ".github/workflows/k8s.yaml"
       ],
       "matchPackageNames": [
         "siderolabs/talos",
@@ -119,10 +159,9 @@
       "groupName": "external-dns"
     },
     {
-      "description": "VictoriaMetrics stack together with the Prometheus Operator CRDs it consumes",
+      "description": "VictoriaMetrics stack",
       "matchPackageNames": [
-        "victoria-metrics-k8s-stack",
-        "prometheus-operator-crds"
+        "victoria-metrics-k8s-stack"
       ],
       "groupName": "telemetry"
     },
@@ -165,6 +204,92 @@
         "docker.io/apache/tika"
       ],
       "groupName": "paperless-ngx"
+    },
+    {
+      "description": "Patch, digest and pin updates merge themselves once the release has soaked and CI (render + schema check) is green",
+      "matchUpdateTypes": [
+        "patch",
+        "digest",
+        "pin",
+        "pinDigest"
+      ],
+      "minimumReleaseAge": "3 days",
+      "automerge": true
+    },
+    {
+      "description": "Minor updates of apps, games and platform services merge themselves after a longer soak",
+      "matchFileNames": [
+        "k8s/apps/**",
+        "k8s/games/**",
+        "k8s/platform/**"
+      ],
+      "matchUpdateTypes": [
+        "minor"
+      ],
+      "minimumReleaseAge": "7 days",
+      "automerge": true
+    },
+    {
+      "description": "Cluster-wide system charts: patches soak a week before merging",
+      "matchFileNames": [
+        "k8s/system/**"
+      ],
+      "matchUpdateTypes": [
+        "patch"
+      ],
+      "minimumReleaseAge": "7 days"
+    },
+    {
+      "description": "CI actions and tools are exercised by the PR's own checks",
+      "matchFileNames": [
+        ".github/**"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "digest"
+      ],
+      "automerge": true
+    },
+    {
+      "description": "Lock file maintenance has no version change",
+      "matchUpdateTypes": [
+        "lockFileMaintenance"
+      ],
+      "automerge": true
+    },
+    {
+      "description": "Never automerge: storage, CNI, the database operator, and Talos/Kubernetes (tofu applies on push)",
+      "matchPackageNames": [
+        "cilium",
+        "cilium/cilium",
+        "longhorn",
+        "cloudnative-pg",
+        "siderolabs/talos",
+        "kubernetes/kubernetes"
+      ],
+      "automerge": false
+    },
+    {
+      "matchFileNames": [
+        "tofu/**"
+      ],
+      "automerge": false
+    },
+    {
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "automerge": false
+    },
+    {
+      "description": "prometheus-operator-crds bumps its major on nearly every release and only ships CRDs: always automerge in its own PR",
+      "matchPackageNames": [
+        "prometheus-operator-crds"
+      ],
+      "minimumReleaseAge": "3 days",
+      "automerge": true
     }
-  ]
+  ],
+  "platformAutomerge": false
 }
