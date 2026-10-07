@@ -115,6 +115,7 @@ helpers:
           - "app.immich:///oauth-callback"
           - "https://immich.ivanchenko.io/auth/login"
           - "https://immich.ivanchenko.io/user-settings"
+        pkceEnabled: true
         allowedUserGroups:
           - name: admins
             namespace: pocket-id
