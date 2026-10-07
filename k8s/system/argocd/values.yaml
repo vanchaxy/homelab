@@ -20,7 +20,7 @@ argo-cd:
         name: Pocket ID
         issuer: https://id.ivanchenko.io
         clientID: 8785dd82-3058-4411-a3ef-d675f9c3e610
-        clientSecret: $oidc.clientSecret
+        clientSecret: $argocd-oidc:client_secret
         logoutURL: https://id.ivanchenko.io/api/oidc/end-session
       resource.customizations.actions.argoproj.io_ApplicationSet: |
         discovery.lua: |
@@ -145,6 +145,22 @@ appsSync:
     - satisfactory
 
 helpers:
+  oidcClients:
+    - name: argocd
+      spec:
+        clientID: "8785dd82-3058-4411-a3ef-d675f9c3e610"
+        name: ArgoCD
+        callbackUrls:
+          - "https://argocd.ivanchenko.io/auth/callback"
+        allowedUserGroups:
+          - name: admins
+            namespace: pocket-id
+        logo:
+          autoGenerate: false
+        secret:
+          name: argocd-oidc
+          additionalLabels:
+            app.kubernetes.io/part-of: argocd
   infisicalSecrets:
     - name: argocd-secret
       labels:

@@ -11,6 +11,20 @@ yamtrack:
             SOCIAL_PROVIDERS: allauth.socialaccount.providers.openid_connect
             SOCIALACCOUNT_ONLY: True
             REDIRECT_LOGIN_TO_SSO: True
+            OIDC_CLIENT_ID:
+              valueFrom:
+                secretKeyRef:
+                  name: yamtrack-oidc
+                  key: client_id
+            OIDC_CLIENT_SECRET:
+              valueFrom:
+                secretKeyRef:
+                  name: yamtrack-oidc
+                  key: client_secret
+            SOCIALACCOUNT_PROVIDERS: >-
+              {"openid_connect": {"OAUTH_PKCE_ENABLED": true, "APPS": [{"provider_id": "pocketid", "name": "Pocket ID",
+              "client_id": "$(OIDC_CLIENT_ID)", "secret": "$(OIDC_CLIENT_SECRET)",
+              "settings": {"server_url": "https://id.ivanchenko.io/.well-known/openid-configuration"}}]}}
           envFrom:
             - secretRef:
                 name: yamtrack-secret
@@ -61,6 +75,19 @@ redis:
         cpu: null
 
 helpers:
+  oidcClients:
+    - name: yamtrack
+      spec:
+        clientID: "92e48243-a792-4c9d-afb1-982143bf2b0e"
+        callbackUrls:
+          - "https://yamtrack.ivanchenko.io/accounts/oidc/pocketid/login/callback/"
+        launchUrl: "https://yamtrack.ivanchenko.io/"
+        pkceEnabled: true
+        allowedUserGroups:
+          - name: family
+            namespace: pocket-id
+        secret:
+          name: yamtrack-oidc
   infisicalSecrets:
     - name: yamtrack-secret
       namespace: yamtrack
