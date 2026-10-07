@@ -23,6 +23,21 @@ actualbudget:
             # ACTUAL_OPENID_ENFORCE: true
             ACTUAL_LOGIN_METHOD: password
             ACTUAL_OPENID_AUTH_METHOD: openid
+            ACTUAL_OPENID_DISCOVERY_URL:
+              valueFrom:
+                secretKeyRef:
+                  name: actualbudget-oidc
+                  key: discovery_url
+            ACTUAL_OPENID_CLIENT_ID:
+              valueFrom:
+                secretKeyRef:
+                  name: actualbudget-oidc
+                  key: client_id
+            ACTUAL_OPENID_CLIENT_SECRET:
+              valueFrom:
+                secretKeyRef:
+                  name: actualbudget-oidc
+                  key: client_secret
           envFrom:
             - secretRef:
                 name: actualbudget-secret
@@ -94,6 +109,19 @@ actualbudget:
             - path: /data
 
 helpers:
+  oidcClients:
+    - name: actualbudget
+      spec:
+        clientID: "17dc6d8b-ca46-43ad-b2e2-618f07e0e77a"
+        callbackUrls:
+          - "https://budget.ivanchenko.io/openid/callback"
+        allowedUserGroups:
+          - name: family
+            namespace: pocket-id
+        logo:
+          autoGenerate: false
+        secret:
+          name: actualbudget-oidc
   ghcrSecret:
     enabled: true
   infisicalSecrets:

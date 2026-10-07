@@ -3,10 +3,20 @@ grafana-operator:
     immutable: false
 
 helpers:
+  oidcClients:
+    - name: grafana
+      spec:
+        clientID: "30704bb7-54cd-4f06-86ca-0cd49fcb441d"
+        callbackUrls:
+          - "https://grafana.ivanchenko.io/login/generic_oauth"
+        allowedUserGroups:
+          - name: admins
+            namespace: pocket-id
+        logo:
+          autoGenerate: false
+        secret:
+          name: grafana-oidc
   infisicalSecrets:
-    - name: grafana-oauth
-      infisical:
-        path: "/monitoring/grafana"
     # Infisical path with keys: TELEGRAM_BOTTOKEN, TELEGRAM_CHATID, HEALTHCHECKS_URL.
     - name: grafana-alerting
       infisical:

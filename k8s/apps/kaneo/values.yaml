@@ -28,8 +28,8 @@ kaneo:
             CUSTOM_OAUTH_CLIENT_SECRET:
               valueFrom:
                 secretKeyRef:
-                  name: kaneo-secret
-                  key: CUSTOM_OAUTH_CLIENT_SECRET
+                  name: kaneo-oidc
+                  key: client_secret
             CUSTOM_OAUTH_DISCOVERY_URL: https://id.ivanchenko.io/.well-known/openid-configuration
             CUSTOM_OAUTH_SCOPES: "openid,profile,email"
             S3_ENDPOINT: https://s3.ivanchenko.io
@@ -84,6 +84,18 @@ kaneo:
               port: 1337
 
 helpers:
+  oidcClients:
+    - name: kaneo
+      spec:
+        clientID: "kaneo"
+        callbackUrls:
+          - "https://kaneo.ivanchenko.io/api/auth/oauth2/callback/custom"
+        launchUrl: "https://kaneo.ivanchenko.io/"
+        allowedUserGroups:
+          - name: family
+            namespace: pocket-id
+        secret:
+          name: kaneo-oidc
   infisicalSecrets:
     - name: kaneo-secret
       type: kubernetes.io/basic-auth

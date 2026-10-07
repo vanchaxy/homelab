@@ -37,16 +37,30 @@ longhorn:
         sectionName: https
 
 helpers:
+  oidcClients:
+    - name: longhorn
+      spec:
+        clientID: "ad53b7b9-99cd-4399-8967-cee24a505944"
+        name: Longhorn
+        callbackUrls:
+          - "https://longhorn.ivanchenko.io/oauth2/callback"
+        logoutCallbackUrls:
+          - "https://longhorn.ivanchenko.io/logout"
+        launchUrl: "https://longhorn.ivanchenko.io/"
+        allowedUserGroups:
+          - name: admins
+            namespace: pocket-id
+        secret:
+          name: longhorn-oidc
+          keys:
+            clientSecret: client-secret
   infisicalSecrets:
     - name: b2-secret
       infisical:
         path: "/longhorn/b2"
-    - name: oidc-client-secret
-      infisical:
-        path: "/longhorn/oidc-client-secret"
   oidcPolicy:
     routes:
       - longhorn-httproute
     clientID: "ad53b7b9-99cd-4399-8967-cee24a505944"
-    clientSecretName: "oidc-client-secret"
+    clientSecretName: "longhorn-oidc"
     cookieDomain: "longhorn.ivanchenko.io"

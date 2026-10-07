@@ -107,6 +107,23 @@ immichframe:
           readOnly: true
 
 helpers:
+  oidcClients:
+    - name: immich
+      spec:
+        clientID: "d8967a4f-887f-49d0-a8ff-32e47812f7fe"
+        callbackUrls:
+          - "app.immich:///oauth-callback"
+          - "https://immich.ivanchenko.io/auth/login"
+          - "https://immich.ivanchenko.io/user-settings"
+        allowedUserGroups:
+          - name: admins
+            namespace: pocket-id
+          - name: family
+            namespace: pocket-id
+        logo:
+          autoGenerate: false
+        secret:
+          name: immich-oidc
   infisicalSecrets:
     - name: immich-postgres-user
       infisical:

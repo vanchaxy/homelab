@@ -16,6 +16,20 @@ paperless-ngx:
             PAPERLESS_DISABLE_REGULAR_LOGIN: True
             PAPERLESS_REDIRECT_LOGIN_TO_SSO: True
             PAPERLESS_SOCIAL_AUTO_SIGNUP: True
+            OIDC_CLIENT_ID:
+              valueFrom:
+                secretKeyRef:
+                  name: paperless-oidc
+                  key: client_id
+            OIDC_CLIENT_SECRET:
+              valueFrom:
+                secretKeyRef:
+                  name: paperless-oidc
+                  key: client_secret
+            PAPERLESS_SOCIALACCOUNT_PROVIDERS: >-
+              {"openid_connect": {"APPS": [{"provider_id": "pocket-id", "name": "Pocket ID",
+              "client_id": "$(OIDC_CLIENT_ID)", "secret": "$(OIDC_CLIENT_SECRET)",
+              "settings": {"server_url": "https://id.ivanchenko.io/.well-known/openid-configuration"}}]}}
           envFrom:
             - secretRef:
                 name: paperless-secret
@@ -102,6 +116,21 @@ redis:
         cpu: null
 
 helpers:
+  oidcClients:
+    - name: paperless
+      spec:
+        clientID: "cf6cf46b-b022-481c-87b2-61e7ed6d6655"
+        callbackUrls:
+          - "https://paper.ivanchenko.io/accounts/oidc/pocket-id/login/callback/"
+        allowedUserGroups:
+          - name: admins
+            namespace: pocket-id
+          - name: family
+            namespace: pocket-id
+        logo:
+          autoGenerate: false
+        secret:
+          name: paperless-oidc
   infisicalSecrets:
     - name: paperless-secret
       infisical:
