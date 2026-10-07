@@ -205,6 +205,7 @@ egressExceptions:
   envoy-gateway:
     toNamespaces: [actualbudget, argocd, backrest, donetick, grafana, hermes-karyna, home-infra, immich, kaneo, librespeed, longhorn-system, media, paperless-ngx, pocket-id, toloka-torznab, versitygw, yamtrack]
     toEntities: [kube-apiserver]
+    toCIDRs: [10.10.60.1/32]
   external-dns:
     toEntities: [kube-apiserver]
     toFQDNs: [api.cloudflare.com]
