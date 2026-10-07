@@ -469,51 +469,86 @@ media:
         qbittorrent:
           gluetun:
             - path: /gluetun/wireguard
-    config-rwo:
+    qbittorrent-config:
       storageClass: longhorn-ssd
-      size: 50Gi
+      size: 512Mi
       accessMode: ReadWriteOnce
       advancedMounts:
         qbittorrent:
           main:
             - path: /config
-              subPath: qbittorrent-config
+    qui-config:
+      storageClass: longhorn-ssd
+      size: 256Mi
+      accessMode: ReadWriteOnce
+      advancedMounts:
         qui:
           main:
             - path: /config
-              subPath: qui-config
+    cross-seed-config:
+      storageClass: longhorn-ssd
+      size: 512Mi
+      accessMode: ReadWriteOnce
+      advancedMounts:
         cross-seed:
           main:
             - path: /config
-              subPath: cross-seed-config
+    prowlarr-config:
+      storageClass: longhorn-ssd
+      size: 512Mi
+      accessMode: ReadWriteOnce
+      advancedMounts:
         prowlarr:
           main:
             - path: /config
-              subPath: prowlarr-config
+    radarr-config:
+      storageClass: longhorn-ssd
+      size: 2Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
         radarr:
           main:
             - path: /config
-              subPath: radarr-config
+    sonarr-config:
+      storageClass: longhorn-ssd
+      size: 1Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
         sonarr:
           main:
             - path: /config
-              subPath: sonarr-config
+    profilarr-config:
+      storageClass: longhorn-ssd
+      size: 2Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
         profilarr:
           main:
             - path: /config
-              subPath: profilarr-config
+    jellyfin-config:
+      storageClass: longhorn-ssd
+      size: 10Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
         jellyfin:
           main:
             - path: /config
-              subPath: jellyfin-config
+    upbrr-config:
+      storageClass: longhorn-ssd
+      size: 256Mi
+      accessMode: ReadWriteOnce
+      advancedMounts:
         upbrr:
           main:
             - path: /config
-              subPath: upbrr-config
+    seerr-config:
+      storageClass: longhorn-ssd
+      size: 256Mi
+      accessMode: ReadWriteOnce
+      advancedMounts:
         seerr:
           main:
             - path: /app/config
-              subPath: seerr-config
 
     data:
       storageClass: nfs-csi
@@ -562,9 +597,71 @@ helpers:
       infisical:
         path: "/media/cross-seed"
   backups:
-    - pvcName: media-config-rwo
-      resticRepoSuffix: media/config
-      unlock: "2026-07-17"
+    - pvcName: media-qbittorrent-config
+      resticRepoSuffix: media/qbittorrent
+      moverSecurityContext:
+        fsGroup: 568
+        runAsGroup: 568
+        runAsNonRoot: true
+        runAsUser: 568
+    - pvcName: media-qui-config
+      resticRepoSuffix: media/qui
+      moverSecurityContext:
+        fsGroup: 568
+        runAsGroup: 568
+        runAsNonRoot: true
+        runAsUser: 568
+    - pvcName: media-cross-seed-config
+      resticRepoSuffix: media/cross-seed
+      moverSecurityContext:
+        fsGroup: 568
+        runAsGroup: 568
+        runAsNonRoot: true
+        runAsUser: 568
+    - pvcName: media-prowlarr-config
+      resticRepoSuffix: media/prowlarr
+      moverSecurityContext:
+        fsGroup: 568
+        runAsGroup: 568
+        runAsNonRoot: true
+        runAsUser: 568
+    - pvcName: media-radarr-config
+      resticRepoSuffix: media/radarr
+      moverSecurityContext:
+        fsGroup: 568
+        runAsGroup: 568
+        runAsNonRoot: true
+        runAsUser: 568
+    - pvcName: media-sonarr-config
+      resticRepoSuffix: media/sonarr
+      moverSecurityContext:
+        fsGroup: 568
+        runAsGroup: 568
+        runAsNonRoot: true
+        runAsUser: 568
+    - pvcName: media-profilarr-config
+      resticRepoSuffix: media/profilarr
+      moverSecurityContext:
+        fsGroup: 568
+        runAsGroup: 568
+        runAsNonRoot: true
+        runAsUser: 568
+    - pvcName: media-jellyfin-config
+      resticRepoSuffix: media/jellyfin
+      moverSecurityContext:
+        fsGroup: 568
+        runAsGroup: 568
+        runAsNonRoot: true
+        runAsUser: 568
+    - pvcName: media-upbrr-config
+      resticRepoSuffix: media/upbrr
+      moverSecurityContext:
+        fsGroup: 568
+        runAsGroup: 568
+        runAsNonRoot: true
+        runAsUser: 568
+    - pvcName: media-seerr-config
+      resticRepoSuffix: media/seerr
       moverSecurityContext:
         fsGroup: 568
         runAsGroup: 568
