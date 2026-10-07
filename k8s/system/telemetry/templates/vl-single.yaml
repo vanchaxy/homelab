@@ -9,7 +9,7 @@ spec:
   storage:
     resources:
       requests:
-        storage: 20Gi
+        storage: 50Gi
   useDefaultResources: false
   resources:
     requests:

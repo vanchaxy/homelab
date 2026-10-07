@@ -1,8 +1,10 @@
-apiVersion: "cilium.io/v2"
+apiVersion: cilium.io/v2
 kind: CiliumClusterwideNetworkPolicy
 metadata:
-  name: "global-dns-visibility"
+  name: global-egress-baseline
 spec:
+  log:
+    value: baseline
   endpointSelector:
     matchLabels: {}
   egress:
@@ -14,4 +16,6 @@ spec:
             dns:
               - matchPattern: "*"
     - toEntities:
-        - all
+        - cluster
+    - toFQDNs:
+        - matchPattern: "*"

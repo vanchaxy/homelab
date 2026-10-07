@@ -17,13 +17,13 @@ spec:
           annotations:
             summary: {{ `'Cilium policy dropped {{ $labels.direction }} {{ $labels.source }} -> {{ $labels.destination }}'` }}
             description: 'An enforced network policy denied traffic in the last 15m. Either the policy is missing a legitimate flow or the workload attempted a connection it should not. Flows are in VictoriaLogs: kubernetes.container_name:cilium-agent flow.verdict:DROPPED'
-        - alert: CiliumPolicyAudit
+        - alert: CiliumUnresolvedEgress
           expr: |
-            sum by (direction, source_namespace, source, destination_namespace, destination) (
-              increase(hubble_policy_verdicts_total{action="audit"}[1h])
+            sum by (source_namespace, source, protocol) (
+              increase(hubble_flows_to_world_total{verdict="FORWARDED"}[1h])
             ) > 0
           labels:
             severity: warning
           annotations:
-            summary: {{ `'Cilium policy would drop {{ $labels.direction }} {{ $labels.source }} -> {{ $labels.destination }}'` }}
-            description: 'Traffic in the last 1h would be denied once policy audit mode is disabled. Extend the policy or confirm the flow is unwanted before enforcing. Flows are in VictoriaLogs: kubernetes.container_name:cilium-agent flow.verdict:AUDIT'
+            summary: {{ `'{{ $labels.source_namespace }}/{{ $labels.source }} connected to an IP not resolved via DNS'` }}
+            description: 'Egress to a world IP that never appeared in a DNS answer, allowed only by the global-egress-audit policy. It will be denied once that policy is removed. Flows are in VictoriaLogs: kubernetes.container_name:cilium-agent flow.event_type.type:5 flow.destination.identity:2'

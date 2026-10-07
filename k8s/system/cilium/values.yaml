@@ -84,27 +84,91 @@ cilium:
   bgpControlPlane:
     enabled: true
 
-  policyAuditMode: true
-
   hubble:
     enabled: true
     tls:
       auto:
         method: cronJob
     metrics:
-      enabled:
-        - dns:sourceContext=workload-name|reserved-identity;labelsContext=source_namespace
-        - drop:sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity;labelsContext=source_namespace,destination_namespace
-        - flow:sourceContext=namespace|reserved-identity;destinationContext=namespace|reserved-identity
-        - policy:sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity;labelsContext=source_namespace,destination_namespace
       serviceMonitor:
         enabled: true
+      dynamic:
+        enabled: true
+        config:
+          content:
+            - name: dns
+              contextOptions:
+                - name: sourceContext
+                  values: [workload-name, reserved-identity]
+                - name: labelsContext
+                  values: [source_namespace]
+            - name: drop
+              contextOptions:
+                - name: sourceContext
+                  values: [workload-name, reserved-identity]
+                - name: destinationContext
+                  values: [workload-name, reserved-identity]
+                - name: labelsContext
+                  values: [source_namespace, destination_namespace]
+            - name: flow
+              contextOptions:
+                - name: sourceContext
+                  values: [namespace, reserved-identity]
+                - name: destinationContext
+                  values: [namespace, reserved-identity]
+            - name: policy
+              contextOptions:
+                - name: sourceContext
+                  values: [workload-name, reserved-identity]
+                - name: destinationContext
+                  values: [workload-name, reserved-identity]
+                - name: labelsContext
+                  values: [source_namespace, destination_namespace]
+            - name: flows-to-world
+              contextOptions:
+                - name: sourceContext
+                  values: [workload-name, reserved-identity]
+                - name: labelsContext
+                  values: [source_namespace]
+                - name: syn-only
+              includeFilters:
+                - destination_identity: [2]
     export:
       static:
         enabled: true
         filePath: stdout
         allowList:
-          - '{"verdict":["DROPPED","AUDIT"]}'
+          - '{"event_type":[{"type":5}]}'
+          - '{"event_type":[{"type":129}],"reply":[true]}'
+          - '{"event_type":[{"type":4,"sub_type":0,"match_sub_type":true}],"tcp_flags":[{"SYN":true}],"reply":[false]}'
+          - '{"verdict":["DROPPED"]}'
+        fieldMask:
+          - time
+          - node_name
+          - verdict
+          - drop_reason_desc
+          - Type
+          - event_type
+          - traffic_direction
+          - is_reply
+          - IP
+          - l4
+          - l7
+          - source.identity
+          - source.namespace
+          - source.pod_name
+          - source.workloads
+          - destination.identity
+          - destination.namespace
+          - destination.pod_name
+          - destination.workloads
+          - destination_names
+          - policy_match_type
+          - policy_log
+          - egress_allowed_by
+          - ingress_allowed_by
+          - egress_denied_by
+          - ingress_denied_by
     relay:
       enabled: true
       rollOutPods: true
