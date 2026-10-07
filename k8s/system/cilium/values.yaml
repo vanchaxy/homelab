@@ -107,7 +107,7 @@ cilium:
                 - name: sourceContext
                   values: [workload-name, reserved-identity]
                 - name: destinationContext
-                  values: [workload-name, reserved-identity]
+                  values: [app, reserved-identity]
                 - name: labelsContext
                   values: [source_namespace, destination_namespace]
             - name: flow
@@ -121,7 +121,7 @@ cilium:
                 - name: sourceContext
                   values: [workload-name, reserved-identity]
                 - name: destinationContext
-                  values: [dns, workload-name, reserved-identity]
+                  values: [dns, app, reserved-identity]
                 - name: labelsContext
                   values: [source_namespace, destination_namespace]
               includeFilters:
