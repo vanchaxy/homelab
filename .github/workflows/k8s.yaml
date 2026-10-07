@@ -17,7 +17,7 @@ jobs:
       # renovate: datasource=github-releases depName=helm/helm
       HELM_VERSION: v3.22.0
       # renovate: datasource=github-releases depName=yannh/kubeconform
-      KUBECONFORM_VERSION: v0.7.0
+      KUBECONFORM_VERSION: v0.8.0
       # renovate: datasource=github-releases depName=kubernetes/kubernetes
       KUBERNETES_VERSION: v1.37.1
     steps:
