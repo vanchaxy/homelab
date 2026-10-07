@@ -178,3 +178,47 @@ cilium:
 
 ciliumBGP:
   routerAddress: "10.10.60.1"
+
+sameNamespaceEgress:
+  - abiotic-factor
+  - actualbudget
+  - amdgpu
+  - argocd
+  - backrest
+  - cert-manager
+  - cilium
+  - cloudnative-pg
+  - core-keeper
+  - csi-driver-nfs
+  - donetick
+  - envoy-gateway
+  - external-dns
+  - factorio
+  - frp-operator
+  - generic-device-plugin
+  - grafana
+  - hermes-karyna
+  - home-infra
+  - icarus
+  - immich
+  - infisical
+  - iperf3
+  - kaneo
+  - kube-system
+  - librespeed
+  - longhorn-system
+  - media
+  - necesse
+  - palworld
+  - paperless-ngx
+  - pasport
+  - pocket-id
+  - robusta
+  - satisfactory
+  - spegel
+  - tailscale
+  - telemetry
+  - toloka-torznab
+  - versitygw
+  - volsync
+  - yamtrack

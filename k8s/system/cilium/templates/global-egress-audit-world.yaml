@@ -1,0 +1,12 @@
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: global-egress-audit-world
+spec:
+  log:
+    value: audit-world
+  endpointSelector:
+    matchLabels: {}
+  egress:
+    - toEntities:
+        - world

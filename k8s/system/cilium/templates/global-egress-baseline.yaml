@@ -16,6 +16,8 @@ spec:
             dns:
               - matchPattern: "*"
     - toEntities:
-        - cluster
+        - host
+        - remote-node
+        - kube-apiserver
     - toFQDNs:
         - matchPattern: "*"

@@ -26,4 +26,17 @@ spec:
             severity: warning
           annotations:
             summary: {{ `'{{ $labels.source_namespace }}/{{ $labels.source }} connected to an IP not resolved via DNS'` }}
-            description: 'Egress to a world IP that never appeared in a DNS answer, allowed only by the global-egress-audit policy. It will be denied once that policy is removed. Flows are in VictoriaLogs: kubernetes.container_name:cilium-agent flow.event_type.type:5 flow.destination.identity:2'
+            description: 'Egress to a world IP that never appeared in a DNS answer, allowed only by the global-egress-audit-world policy. It will be denied once that policy is removed. Flows are in VictoriaLogs: kubernetes.container_name:cilium-agent flow.event_type.type:5 flow.destination.identity:2'
+        - alert: CiliumCrossNamespaceEgress
+          expr: |
+            WITH (
+              egress = sum by (source_namespace, source, destination_namespace, destination) (
+                increase(hubble_policy_verdicts_total{direction="egress", action!="dropped", destination_namespace!="", destination!="coredns"}[1h])
+              )
+            )
+            (egress unless labels_equal(egress, "source_namespace", "destination_namespace")) > 0
+          labels:
+            severity: warning
+          annotations:
+            summary: {{ `'{{ $labels.source_namespace }}/{{ $labels.source }} connected to {{ $labels.destination_namespace }}/{{ $labels.destination }}'` }}
+            description: 'Cross-namespace egress allowed only by the global-egress-audit-cluster policy. It will be denied once that policy is removed. Flows are in VictoriaLogs: kubernetes.container_name:cilium-agent flow.event_type.type:5 flow.policy_log:audit-cluster'
