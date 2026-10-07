@@ -192,6 +192,7 @@ egressExceptions:
     toEntities: [kube-apiserver]
     toFQDNs: [acme-v02.api.letsencrypt.org, api.cloudflare.com, '*.ns.cloudflare.com']
   cloudnative-pg:
+    toNamespaces: [immich, kaneo, toloka-torznab]
     toEntities: [kube-apiserver]
   core-keeper:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
@@ -232,7 +233,7 @@ egressExceptions:
     toFQDNs: [s3.eu-central-003.backblazeb2.com, longhorn-upgrade-responder.rancher.io]
   media:
     toNamespaces: [envoy-gateway]
-    toFQDNs: [s3.eu-central-003.backblazeb2.com, api.autobrr.com, api.radarr.video, api.themoviedb.org, image.tmdb.org, indexers.prowlarr.com, raw.githubusercontent.com]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, api.autobrr.com, api.radarr.video, api.themoviedb.org, image.tmdb.org, indexers.prowlarr.com, raw.githubusercontent.com, github.com]
   necesse:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   palworld:
