@@ -206,17 +206,19 @@ egressExceptions:
     toCIDRs: [10.10.60.1/32]
   factorio:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
+    toCIDRs: [45.79.173.216/32, 172.104.241.28/32, 45.79.202.131/32, 139.162.87.206/32]
   grafana:
     toNamespaces: [telemetry]
     toEntities: [kube-apiserver]
-    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, grafana.com]
   hermes-karyna:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
+    toCIDRs: [149.154.166.110/32]
   icarus:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   immich:
     toEntities: [kube-apiserver]
-    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, version.immich.cloud]
   infisical:
     toEntities: [kube-apiserver]
     toFQDNs: [app.infisical.com]
@@ -227,14 +229,14 @@ egressExceptions:
     toEntities: [kube-apiserver, host, remote-node]
   longhorn-system:
     toEntities: [kube-apiserver]
-    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, longhorn-upgrade-responder.rancher.io]
   media:
     toNamespaces: [envoy-gateway]
-    toFQDNs: [s3.eu-central-003.backblazeb2.com, api.autobrr.com, api.radarr.video, api.themoviedb.org, image.tmdb.org, indexers.prowlarr.com]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, api.autobrr.com, api.radarr.video, api.themoviedb.org, image.tmdb.org, indexers.prowlarr.com, raw.githubusercontent.com]
   necesse:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   palworld:
-    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, telemetry.palworldgame.com]
   paperless-ngx:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   pocket-id:
@@ -243,7 +245,7 @@ egressExceptions:
   robusta:
     toNamespaces: [telemetry]
     toEntities: [kube-apiserver]
-    toFQDNs: [api.eu.robusta.dev, sp.eu.robusta.dev]
+    toFQDNs: [api.eu.robusta.dev, sp.eu.robusta.dev, o4510692373299200.ingest.de.sentry.io]
   satisfactory:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   spegel:
@@ -255,7 +257,7 @@ egressExceptions:
   toloka-torznab:
     toNamespaces: [media]
     toEntities: [kube-apiserver]
-    toFQDNs: [s3.eu-central-003.backblazeb2.com, radarrapi.servarr.com, toloka.to, utp.to]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, radarrapi.servarr.com, toloka.to, utp.to, skyhook.sonarr.tv]
   versitygw:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   volsync:
