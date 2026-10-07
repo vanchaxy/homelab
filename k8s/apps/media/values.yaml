@@ -598,70 +598,70 @@ helpers:
         path: "/media/cross-seed"
   backups:
     - pvcName: media-qbittorrent-config
-      resticRepoSuffix: media/qbittorrent
+      resticRepoSuffix: media/qbittorrent-config
       moverSecurityContext:
         fsGroup: 568
         runAsGroup: 568
         runAsNonRoot: true
         runAsUser: 568
     - pvcName: media-qui-config
-      resticRepoSuffix: media/qui
+      resticRepoSuffix: media/qui-config
       moverSecurityContext:
         fsGroup: 568
         runAsGroup: 568
         runAsNonRoot: true
         runAsUser: 568
     - pvcName: media-cross-seed-config
-      resticRepoSuffix: media/cross-seed
+      resticRepoSuffix: media/cross-seed-config
       moverSecurityContext:
         fsGroup: 568
         runAsGroup: 568
         runAsNonRoot: true
         runAsUser: 568
     - pvcName: media-prowlarr-config
-      resticRepoSuffix: media/prowlarr
+      resticRepoSuffix: media/prowlarr-config
       moverSecurityContext:
         fsGroup: 568
         runAsGroup: 568
         runAsNonRoot: true
         runAsUser: 568
     - pvcName: media-radarr-config
-      resticRepoSuffix: media/radarr
+      resticRepoSuffix: media/radarr-config
       moverSecurityContext:
         fsGroup: 568
         runAsGroup: 568
         runAsNonRoot: true
         runAsUser: 568
     - pvcName: media-sonarr-config
-      resticRepoSuffix: media/sonarr
+      resticRepoSuffix: media/sonarr-config
       moverSecurityContext:
         fsGroup: 568
         runAsGroup: 568
         runAsNonRoot: true
         runAsUser: 568
     - pvcName: media-profilarr-config
-      resticRepoSuffix: media/profilarr
+      resticRepoSuffix: media/profilarr-config
       moverSecurityContext:
         fsGroup: 568
         runAsGroup: 568
         runAsNonRoot: true
         runAsUser: 568
     - pvcName: media-jellyfin-config
-      resticRepoSuffix: media/jellyfin
+      resticRepoSuffix: media/jellyfin-config
       moverSecurityContext:
         fsGroup: 568
         runAsGroup: 568
         runAsNonRoot: true
         runAsUser: 568
     - pvcName: media-upbrr-config
-      resticRepoSuffix: media/upbrr
+      resticRepoSuffix: media/upbrr-config
       moverSecurityContext:
         fsGroup: 568
         runAsGroup: 568
         runAsNonRoot: true
         runAsUser: 568
     - pvcName: media-seerr-config
-      resticRepoSuffix: media/seerr
+      resticRepoSuffix: media/seerr-config
       moverSecurityContext:
         fsGroup: 568
         runAsGroup: 568
