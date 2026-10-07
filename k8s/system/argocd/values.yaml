@@ -152,9 +152,6 @@ helpers:
         name: ArgoCD
         callbackUrls:
           - "https://argocd.ivanchenko.io/auth/callback"
-        allowedUserGroups:
-          - name: admins
-            namespace: pocket-id
         logo:
           autoGenerate: false
         secret:

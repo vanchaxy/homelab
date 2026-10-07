@@ -141,9 +141,6 @@ helpers:
           - "https://donetick.ivanchenko.io/auth/oauth2"
           - "donetick://auth/oauth2"
         launchUrl: "https://donetick.ivanchenko.io/"
-        allowedUserGroups:
-          - name: family
-            namespace: pocket-id
         secret:
           name: donetick-oidc
   infisicalSecrets:

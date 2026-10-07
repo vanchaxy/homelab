@@ -616,9 +616,6 @@ helpers:
         clientID: "3799cc54-4405-4682-a9d1-0b57c5a4e9a9"
         callbackUrls:
           - "http://qui.ivanchenko.io/api/auth/oidc/callback"
-        allowedUserGroups:
-          - name: admins
-            namespace: pocket-id
         secret:
           name: qui-oidc
     - name: jellyfin
@@ -626,11 +623,6 @@ helpers:
         clientID: "6cda21df-a601-4ca6-86f2-d5a4e86e2a2c"
         callbackUrls:
           - "https://jellyfin.ivanchenko.io/sso/OID/redirect/pocketid"
-        allowedUserGroups:
-          - name: friends
-            namespace: pocket-id
-          - name: family
-            namespace: pocket-id
         secret:
           name: jellyfin-oidc
   ghcrSecret:

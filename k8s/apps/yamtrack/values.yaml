@@ -83,9 +83,6 @@ helpers:
           - "https://yamtrack.ivanchenko.io/accounts/oidc/pocketid/login/callback/"
         launchUrl: "https://yamtrack.ivanchenko.io/"
         pkceEnabled: true
-        allowedUserGroups:
-          - name: family
-            namespace: pocket-id
         secret:
           name: yamtrack-oidc
   infisicalSecrets:

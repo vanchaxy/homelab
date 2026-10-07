@@ -47,9 +47,6 @@ helpers:
         logoutCallbackUrls:
           - "https://longhorn.ivanchenko.io/logout"
         launchUrl: "https://longhorn.ivanchenko.io/"
-        allowedUserGroups:
-          - name: admins
-            namespace: pocket-id
         secret:
           name: longhorn-oidc
           keys:

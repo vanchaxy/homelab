@@ -115,9 +115,6 @@ helpers:
         clientID: "17dc6d8b-ca46-43ad-b2e2-618f07e0e77a"
         callbackUrls:
           - "https://budget.ivanchenko.io/openid/callback"
-        allowedUserGroups:
-          - name: family
-            namespace: pocket-id
         logo:
           autoGenerate: false
         secret:

@@ -91,9 +91,6 @@ helpers:
         callbackUrls:
           - "https://kaneo.ivanchenko.io/api/auth/oauth2/callback/custom"
         launchUrl: "https://kaneo.ivanchenko.io/"
-        allowedUserGroups:
-          - name: family
-            namespace: pocket-id
         secret:
           name: kaneo-oidc
   infisicalSecrets:

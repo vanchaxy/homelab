@@ -115,11 +115,6 @@ helpers:
           - "app.immich:///oauth-callback"
           - "https://immich.ivanchenko.io/auth/login"
           - "https://immich.ivanchenko.io/user-settings"
-        allowedUserGroups:
-          - name: admins
-            namespace: pocket-id
-          - name: family
-            namespace: pocket-id
         logo:
           autoGenerate: false
         secret:
