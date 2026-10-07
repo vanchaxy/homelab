@@ -8,3 +8,4 @@ output
 
 Chart.lock
 __pycache__/
+charts/
