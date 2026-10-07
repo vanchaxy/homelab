@@ -240,22 +240,20 @@ media:
                 timeoutSeconds: 10
                 failureThreshold: 3
 
-    mkvtools:
+    upbrr:
       pod:
         securityContext:
           fsGroup: 568
           fsGroupChangePolicy: "OnRootMismatch"
+          runAsUser: 568
+          runAsGroup: 568
       containers:
         main:
           image:
-            repository: ghcr.io/audionut/upload-assistant
-            tag: v7.1.7@sha256:9361d3c59a4fd92cf1197d0d08af635f3f7578c0c2f2b32aaea385e37115cc92
+            repository: ghcr.io/autobrr/upbrr
+            tag: 0.4.0@sha256:cfd21650a797acc6a303a34f7fc6c004a03c9cbd1c364016bc89e7105126c937
           env:
-            PUID: 568
-            PGID: 568
             TZ: Etc/UTC
-            UA_BROWSE_ROOTS: /data/downloads,/Upload-Assistant/tmp
-          args: ["--webui", "0.0.0.0:5000"]
           probes:
             liveness:
               enabled: true
@@ -337,12 +335,12 @@ media:
       ports:
         http:
           port: 5055
-    mkvtools:
-      controller: mkvtools
+    upbrr:
+      controller: upbrr
       type: ClusterIP
       ports:
         http:
-          port: 5000
+          port: 7480
 
   route:
     qbittorrent:
@@ -451,16 +449,16 @@ media:
                   - x-api-key
                 allowCredentials: true
                 maxAge: 600
-    mkvtools:
+    upbrr:
       hostnames:
-        - mkvtools.ivanchenko.io
+        - upbrr.ivanchenko.io
       parentRefs:
         - name: internal-gw
           namespace: envoy-gateway
           sectionName: https
       rules:
         - backendRefs:
-            - identifier: mkvtools
+            - identifier: upbrr
 
   persistence:
     wireguard:
@@ -508,10 +506,13 @@ media:
           main:
             - path: /config
               subPath: jellyfin-config
-        mkvtools:
+        upbrr:
           main:
-            - path: /Upload-Assistant/data
+            - path: /config
+              subPath: upbrr-config
+            - path: /ua-data
               subPath: mkvtools-new-config
+              readOnly: true
         seerr:
           main:
             - path: /app/config
@@ -542,7 +543,7 @@ media:
           main:
             - path: /data/media
               subPath: media
-        mkvtools:
+        upbrr:
           main:
             - path: /data
 

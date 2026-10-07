@@ -28,7 +28,7 @@ spec:
       name: media-jellyfin
     - group: gateway.networking.k8s.io
       kind: HTTPRoute
-      name: media-mkvtools
+      name: media-upbrr
   timeout:
     http:
       requestTimeout: 7200s
