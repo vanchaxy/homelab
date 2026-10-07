@@ -1,0 +1,1805 @@
+{
+  "title": "Network Policy — Egress Audit",
+  "uid": "cilium-egress-audit",
+  "tags": [
+    "cilium",
+    "hubble",
+    "network-policy",
+    "security"
+  ],
+  "timezone": "browser",
+  "editable": true,
+  "graphTooltip": 1,
+  "refresh": "1m",
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "schemaVersion": 41,
+  "templating": {
+    "list": [
+      {
+        "name": "ds_vm",
+        "label": "Metrics",
+        "type": "datasource",
+        "query": "prometheus",
+        "regex": "VictoriaMetrics",
+        "current": {
+          "text": "VictoriaMetrics",
+          "value": "VictoriaMetrics"
+        },
+        "hide": 2
+      },
+      {
+        "name": "ds_vl",
+        "label": "Logs",
+        "type": "datasource",
+        "query": "victoriametrics-logs-datasource",
+        "regex": "",
+        "current": {},
+        "hide": 2
+      },
+      {
+        "name": "namespace",
+        "label": "Source namespace",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${ds_vm}"
+        },
+        "query": {
+          "query": "label_values(hubble_flows_processed_total{type=\"PolicyVerdict\"}, source)",
+          "refId": "ns"
+        },
+        "regex": "/^(?!reserved:).+$/",
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "refresh": 2,
+        "sort": 1
+      }
+    ]
+  },
+  "annotations": {
+    "list": [
+      {
+        "name": "Annotations & Alerts",
+        "builtIn": 1,
+        "type": "dashboard",
+        "enable": true,
+        "hide": true,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "iconColor": "rgba(0, 211, 255, 1)"
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "text",
+      "title": "",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 3
+      },
+      "transparent": true,
+      "options": {
+        "mode": "markdown",
+        "content": "### 🛡️ Egress default-deny — audit phase\nEverything except **same-namespace**, **CoreDNS** and `egressExceptions` is allowed only by the `global-egress-audit-*` catch-alls and shows up here as *would be denied*. Work the **review queue** down to empty, then delete the catch-alls to enforce. Exceptions live in `k8s/system/cilium/values.yaml`."
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Would be denied",
+      "description": "Egress connections in the selected range that only the global-egress-audit-* policies allowed.",
+      "gridPos": {
+        "x": 0,
+        "y": 3,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${ds_vm}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${ds_vm}"
+          },
+          "expr": "sum(increase(hubble_policy_verdicts_total{direction=\"egress\", action!=\"dropped\", source_namespace=~\"$namespace\"}[$__range])) or vector(0)",
+          "legendFormat": "__auto",
+          "range": false,
+          "instant": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "area",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Enforced denies",
+      "description": "Egress connections dropped by policy. Stays at 0 until the audit catch-alls are deleted.",
+      "gridPos": {
+        "x": 4,
+        "y": 3,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${ds_vm}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${ds_vm}"
+          },
+          "expr": "sum(increase(hubble_policy_verdicts_total{direction=\"egress\", action=\"dropped\", source_namespace=~\"$namespace\"}[$__range])) or vector(0)",
+          "legendFormat": "__auto",
+          "range": false,
+          "instant": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "area",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Workloads to review",
+      "description": "Distinct source workloads with at least one would-be-denied connection.",
+      "gridPos": {
+        "x": 8,
+        "y": 3,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${ds_vm}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${ds_vm}"
+          },
+          "expr": "count(count by (source_namespace, source) (increase(hubble_policy_verdicts_total{direction=\"egress\", action!=\"dropped\", source_namespace=~\"$namespace\"}[$__range]) > 0)) or vector(0)",
+          "legendFormat": "__auto",
+          "range": false,
+          "instant": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 5,
+      "type": "gauge",
+      "title": "Enforcement readiness",
+      "gridPos": {
+        "x": 12,
+        "y": 3,
+        "w": 4,
+        "h": 4
+      },
+      "description": "Share of namespaces sending egress without any would-be-denied connection in the range.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${ds_vm}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${ds_vm}"
+          },
+          "expr": "clamp_min(1 - (count(count by (source_namespace) (increase(hubble_policy_verdicts_total{direction=\"egress\", action!=\"dropped\"}[$__range]) > 0)) or vector(0)) / count(count by (source) (increase(hubble_flows_processed_total{type=\"PolicyVerdict\", source!~\"reserved:.*|\"}[$__range]) > 0)), 0)",
+          "legendFormat": "__auto",
+          "range": false,
+          "instant": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1,
+          "decimals": 0,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.6
+              },
+              {
+                "color": "yellow",
+                "value": 0.85
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdMarkers": true,
+        "showThresholdLabels": false,
+        "sizing": "auto"
+      }
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Audit alerts firing",
+      "description": "CiliumEgressAudit series currently firing (1h lookback).",
+      "gridPos": {
+        "x": 16,
+        "y": 3,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${ds_vm}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${ds_vm}"
+          },
+          "expr": "count(ALERTS{alertname=\"CiliumEgressAudit\", alertstate=\"firing\"}) or vector(0)",
+          "legendFormat": "__auto",
+          "range": false,
+          "instant": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "DNS answers that are NXDOMAIN",
+      "description": "Mostly search-domain expansion (ndots:5): every external name is first tried as name.<ns>.svc.cluster.local etc. A trailing dot in app config (api.example.com.) skips it.",
+      "gridPos": {
+        "x": 20,
+        "y": 3,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${ds_vm}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${ds_vm}"
+          },
+          "expr": "sum(increase(hubble_dns_responses_total{rcode=\"Non-Existent Domain\"}[$__range])) / sum(increase(hubble_dns_responses_total[$__range]))",
+          "legendFormat": "__auto",
+          "range": false,
+          "instant": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "Would-be-denied connections by namespace",
+      "gridPos": {
+        "x": 0,
+        "y": 7,
+        "w": 16,
+        "h": 9
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${ds_vm}"
+      },
+      "interval": "5m",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${ds_vm}"
+          },
+          "expr": "sum by (source_namespace) (increase(hubble_policy_verdicts_total{direction=\"egress\", action!=\"dropped\", source_namespace=~\"$namespace\"}[$__interval])) > 0",
+          "legendFormat": "{{source_namespace}}",
+          "range": true,
+          "instant": false,
+          "editorMode": "code"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${ds_vm}"
+          },
+          "expr": "sum(increase(hubble_policy_verdicts_total{direction=\"egress\", action=\"dropped\", source_namespace=~\"$namespace\"}[$__interval])) > 0",
+          "legendFormat": "⛔ enforced denies",
+          "range": true,
+          "instant": false,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 85,
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            },
+            "lineWidth": 0,
+            "barAlignment": 0,
+            "showPoints": "never"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "⛔ enforced denies"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              },
+              {
+                "id": "custom.stacking",
+                "value": {
+                  "mode": "none"
+                }
+              },
+              {
+                "id": "custom.drawStyle",
+                "value": "line"
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "sum"
+          ],
+          "sortBy": "Total",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 9,
+      "type": "piechart",
+      "title": "Where would-be-denied traffic goes",
+      "gridPos": {
+        "x": 16,
+        "y": 7,
+        "w": 8,
+        "h": 9
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${ds_vm}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${ds_vm}"
+          },
+          "expr": "sum(increase(hubble_policy_verdicts_total{direction=\"egress\", action!=\"dropped\", source_namespace=~\"$namespace\", destination_namespace!=\"\"}[$__range]))",
+          "legendFormat": "Other namespaces",
+          "range": false,
+          "instant": true,
+          "editorMode": "code"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${ds_vm}"
+          },
+          "expr": "sum(increase(hubble_policy_verdicts_total{direction=\"egress\", action!=\"dropped\", source_namespace=~\"$namespace\", destination_namespace=\"\", destination=~\"reserved:.*\"}[$__range]))",
+          "legendFormat": "Nodes / API / raw IPs",
+          "range": false,
+          "instant": true,
+          "editorMode": "code"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${ds_vm}"
+          },
+          "expr": "sum(increase(hubble_policy_verdicts_total{direction=\"egress\", action!=\"dropped\", source_namespace=~\"$namespace\", destination_namespace=\"\", destination!~\"reserved:.*\"}[$__range]))",
+          "legendFormat": "Internet hosts (DNS)",
+          "range": false,
+          "instant": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Other namespaces"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Internet hosts (DNS)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "purple"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Nodes / API / raw IPs"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "pieType": "donut",
+        "displayLabels": [
+          "percent"
+        ],
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      }
+    },
+    {
+      "id": 10,
+      "type": "table",
+      "title": "📋 Review queue — add an exception or decide to block",
+      "description": "Each row is a distinct would-be-denied flow (source app → destination/port) in the selected range. Once an egressExceptions entry covers it, Last seen stops moving.",
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 24,
+        "h": 11
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.container_name:cilium-agent flow.event_type.type:5 flow.traffic_direction:EGRESS flow.policy_log:in(\"[\\\"audit-cluster\\\"]\",\"[\\\"audit-world\\\"]\") flow.source.namespace:~\"^${namespace}$\" | format \"<flow.source.pod_name>\" as source_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at source_app | format \"<flow.destination.pod_name>\" as dst_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at dst_app | format \"<flow.destination.namespace>/<dst_app>\" as destination | format if (flow.destination.namespace:\"\") \"<flow.destination_names>\" as destination | replace_regexp (\"[\\\\[\\\\]\\\"]\", \"\") at destination | format if (flow.destination.namespace:\"\" and flow.destination_names:\"\") \"<flow.IP.destination> (no DNS)\" as destination | format if (flow.destination.identity:in(\"1\",\"6\")) \"node <flow.IP.destination>\" as destination | format if (flow.destination.identity:\"7\" or (flow.destination.identity:in(\"1\",\"6\") and flow.l4.TCP.destination_port:\"6443\")) \"kube-apiserver\" as destination | format \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as port | format if (flow.l4.UDP.destination_port:*) \"udp\" as proto | format if (flow.l4.TCP.destination_port:*) \"tcp\" as proto | format if (flow.policy_log:~\"audit-world\") \"internet\" as scope | format if (flow.policy_log:~\"audit-cluster\") \"cluster\" as scope | rename flow.source.namespace as namespace | stats by (scope, namespace, source_app, destination, proto, port) count() connections, min(_time) first_seen, max(_time) last_seen | sort by (last_seen desc)",
+          "queryType": "instant",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "transformations": [
+        {
+          "id": "extractFields",
+          "options": {
+            "source": "labels",
+            "format": "json",
+            "replace": false,
+            "keepTime": false
+          }
+        },
+        {
+          "id": "convertFieldType",
+          "options": {
+            "conversions": [
+              {
+                "targetField": "connections",
+                "destinationType": "number"
+              },
+              {
+                "targetField": "first_seen",
+                "destinationType": "time"
+              },
+              {
+                "targetField": "last_seen",
+                "destinationType": "time"
+              }
+            ],
+            "fields": {}
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Line": true,
+              "id": true,
+              "labels": true,
+              "streams": true,
+              "streamId": true,
+              "tsNs": true,
+              "level": true,
+              "detected_level": true
+            },
+            "indexByName": {
+              "scope": 0,
+              "namespace": 1,
+              "source_app": 2,
+              "destination": 3,
+              "proto": 4,
+              "port": 5,
+              "connections": 6,
+              "first_seen": 7,
+              "last_seen": 8
+            },
+            "renameByName": {
+              "scope": "Scope",
+              "namespace": "Namespace",
+              "source_app": "Source app",
+              "destination": "Destination",
+              "proto": "Proto",
+              "port": "Port",
+              "connections": "Connections",
+              "first_seen": "First seen",
+              "last_seen": "Last seen"
+            },
+            "includeByName": {}
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "filterable": true,
+            "cellOptions": {
+              "type": "auto"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Scope"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "cluster": {
+                        "text": "◆ cluster",
+                        "color": "blue",
+                        "index": 0
+                      },
+                      "internet": {
+                        "text": "◉ internet",
+                        "color": "purple",
+                        "index": 1
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Connections"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "lcd",
+                  "valueDisplayMode": "text"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "continuous-BlYlRd"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 200
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Destination"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "regex",
+                    "options": {
+                      "pattern": ".*\\(no DNS\\)$",
+                      "result": {
+                        "color": "red",
+                        "index": 0
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "text"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Last seen"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dateTimeFromNow"
+              },
+              {
+                "id": "custom.width",
+                "value": 130
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "First seen"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dateTimeAsLocal"
+              },
+              {
+                "id": "custom.width",
+                "value": 170
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Proto"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Port"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": true,
+          "reducer": [
+            "sum"
+          ],
+          "fields": [
+            "Connections"
+          ],
+          "countRows": false
+        },
+        "sortBy": [
+          {
+            "displayName": "Last seen",
+            "desc": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "type": "table",
+      "title": "🕸️ Who talks to whom — all connections by namespace",
+      "description": "New connections per source → destination namespace (policy verdicts, allowed or not) in the selected range. Diagonal = same-namespace traffic.",
+      "gridPos": {
+        "x": 0,
+        "y": 27,
+        "w": 24,
+        "h": 12
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${ds_vm}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${ds_vm}"
+          },
+          "expr": "sum by (source, destination) (increase(hubble_flows_processed_total{type=\"PolicyVerdict\", source=~\"$namespace\", destination!=\"\"}[$__range])) > 0",
+          "legendFormat": "__auto",
+          "range": false,
+          "instant": true,
+          "editorMode": "code",
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "groupingToMatrix",
+          "options": {
+            "columnField": "destination",
+            "rowField": "source",
+            "valueField": "Value",
+            "emptyValue": "null"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "source\\\\destination",
+            "renamePattern": "from ↓  to →"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "noValue": "",
+          "color": {
+            "mode": "continuous-BlYlRd"
+          },
+          "mappings": [
+            {
+              "type": "special",
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": " ",
+                  "color": "transparent",
+                  "index": 0
+                }
+              }
+            }
+          ],
+          "custom": {
+            "align": "center",
+            "cellOptions": {
+              "type": "color-background",
+              "mode": "gradient"
+            },
+            "minWidth": 60
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "from ↓  to →"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "auto"
+                }
+              },
+              {
+                "id": "custom.align",
+                "value": "left"
+              },
+              {
+                "id": "custom.width",
+                "value": 170
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      }
+    },
+    {
+      "id": 12,
+      "type": "bargauge",
+      "title": "Top would-be-denied destinations",
+      "gridPos": {
+        "x": 0,
+        "y": 39,
+        "w": 12,
+        "h": 9
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${ds_vm}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${ds_vm}"
+          },
+          "expr": "topk(12, sum by (destination_namespace, destination) (increase(hubble_policy_verdicts_total{direction=\"egress\", action!=\"dropped\", source_namespace=~\"$namespace\"}[$__range])) > 0)",
+          "legendFormat": "{{destination_namespace}} {{destination}}",
+          "range": false,
+          "instant": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "min": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "namePlacement": "left",
+        "sizing": "manual",
+        "minVizHeight": 16,
+        "maxVizHeight": 22,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "legend": {
+          "showLegend": false
+        }
+      }
+    },
+    {
+      "id": 13,
+      "type": "bargauge",
+      "title": "Noisiest sources",
+      "gridPos": {
+        "x": 12,
+        "y": 39,
+        "w": 12,
+        "h": 9
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${ds_vm}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${ds_vm}"
+          },
+          "expr": "topk(12, sum by (source_namespace, source) (increase(hubble_policy_verdicts_total{direction=\"egress\", action!=\"dropped\", source_namespace=~\"$namespace\"}[$__range])) > 0)",
+          "legendFormat": "{{source_namespace}}/{{source}}",
+          "range": false,
+          "instant": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "continuous-YlRd"
+          },
+          "min": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "namePlacement": "left",
+        "sizing": "manual",
+        "minVizHeight": 16,
+        "maxVizHeight": 22,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "legend": {
+          "showLegend": false
+        }
+      }
+    },
+    {
+      "id": 14,
+      "type": "timeseries",
+      "title": "Packet drops by reason (all, incl. internet scanners)",
+      "description": "SERVICE_BACKEND_NOT_FOUND is mostly port scans against the public IP. POLICY_DENIED appears once enforcing.",
+      "gridPos": {
+        "x": 0,
+        "y": 48,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${ds_vm}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${ds_vm}"
+          },
+          "expr": "sum by (reason) (rate(hubble_drop_total[$__rate_interval]))",
+          "legendFormat": "{{reason}}",
+          "range": true,
+          "instant": false,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "pps",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "lineWidth": 1,
+            "showPoints": "never",
+            "gradientMode": "opacity",
+            "stacking": {
+              "mode": "normal"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "POLICY_DEN.*"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 15,
+      "type": "timeseries",
+      "title": "DNS answers by result",
+      "gridPos": {
+        "x": 12,
+        "y": 48,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${ds_vm}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${ds_vm}"
+          },
+          "expr": "sum by (rcode) (rate(hubble_dns_responses_total{source_namespace=~\"$namespace\"}[$__rate_interval]))",
+          "legendFormat": "{{rcode}}",
+          "range": true,
+          "instant": false,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "lineWidth": 1,
+            "showPoints": "never",
+            "gradientMode": "opacity",
+            "stacking": {
+              "mode": "normal"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "No Error"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Non-Existent Domain"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 16,
+      "type": "table",
+      "title": "🔎 Would-be-denied connections — latest 500",
+      "gridPos": {
+        "x": 0,
+        "y": 56,
+        "w": 24,
+        "h": 11
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.container_name:cilium-agent flow.event_type.type:5 flow.traffic_direction:EGRESS flow.policy_log:in(\"[\\\"audit-cluster\\\"]\",\"[\\\"audit-world\\\"]\") flow.source.namespace:~\"^${namespace}$\" | format \"<flow.source.pod_name>\" as source_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at source_app | format \"<flow.destination.pod_name>\" as dst_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at dst_app | format \"<flow.destination.namespace>/<dst_app>\" as destination | format if (flow.destination.namespace:\"\") \"<flow.destination_names>\" as destination | replace_regexp (\"[\\\\[\\\\]\\\"]\", \"\") at destination | format if (flow.destination.namespace:\"\" and flow.destination_names:\"\") \"<flow.IP.destination> (no DNS)\" as destination | format if (flow.destination.identity:in(\"1\",\"6\")) \"node <flow.IP.destination>\" as destination | format if (flow.destination.identity:\"7\" or (flow.destination.identity:in(\"1\",\"6\") and flow.l4.TCP.destination_port:\"6443\")) \"kube-apiserver\" as destination | format \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as port | format if (flow.l4.UDP.destination_port:*) \"udp\" as proto | format if (flow.l4.TCP.destination_port:*) \"tcp\" as proto | format if (flow.policy_log:~\"audit-world\") \"internet\" as scope | format if (flow.policy_log:~\"audit-cluster\") \"cluster\" as scope | rename flow.source.namespace as namespace | fields _time, scope, namespace, flow.source.pod_name, destination, proto, port, flow.IP.destination, node_name | sort by (_time desc) | limit 500",
+          "queryType": "instant",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "transformations": [
+        {
+          "id": "extractFields",
+          "options": {
+            "source": "labels",
+            "format": "json",
+            "replace": false,
+            "keepTime": false
+          }
+        },
+        {
+          "id": "convertFieldType",
+          "options": {
+            "conversions": [
+              {
+                "targetField": "_time",
+                "destinationType": "time"
+              }
+            ],
+            "fields": {}
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Line": true,
+              "id": true,
+              "labels": true,
+              "streams": true,
+              "streamId": true,
+              "tsNs": true,
+              "level": true,
+              "detected_level": true
+            },
+            "indexByName": {
+              "_time": 0,
+              "scope": 1,
+              "namespace": 2,
+              "flow.source.pod_name": 3,
+              "destination": 4,
+              "proto": 5,
+              "port": 6,
+              "flow.IP.destination": 7,
+              "node_name": 8
+            },
+            "renameByName": {
+              "_time": "Time",
+              "scope": "Scope",
+              "namespace": "Namespace",
+              "flow.source.pod_name": "Pod",
+              "destination": "Destination",
+              "proto": "Proto",
+              "port": "Port",
+              "flow.IP.destination": "IP",
+              "node_name": "Node"
+            },
+            "includeByName": {}
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "filterable": true,
+            "cellOptions": {
+              "type": "auto"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Scope"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "cluster": {
+                        "text": "◆ cluster",
+                        "color": "blue",
+                        "index": 0
+                      },
+                      "internet": {
+                        "text": "◉ internet",
+                        "color": "purple",
+                        "index": 1
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dateTimeAsLocal"
+              },
+              {
+                "id": "custom.width",
+                "value": 170
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Proto"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Port"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Node"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": [
+          {
+            "displayName": "Time",
+            "desc": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 17,
+      "type": "row",
+      "title": "⛔ Enforced denies & raw flows",
+      "collapsed": true,
+      "gridPos": {
+        "x": 0,
+        "y": 67,
+        "w": 24,
+        "h": 1
+      },
+      "panels": [
+        {
+          "id": 18,
+          "type": "table",
+          "title": "Policy-denied connections — latest 500",
+          "gridPos": {
+            "x": 0,
+            "y": 68,
+            "w": 24,
+            "h": 10
+          },
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "victoriametrics-logs-datasource",
+                "uid": "${ds_vl}"
+              },
+              "expr": "kubernetes.container_name:cilium-agent flow.verdict:DROPPED flow.drop_reason_desc:in(POLICY_DENIED, POLICY_DENY) flow.source.namespace:~\"^${namespace}$\" | format \"<flow.source.pod_name>\" as source_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at source_app | format \"<flow.destination.pod_name>\" as dst_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at dst_app | format \"<flow.destination.namespace>/<dst_app>\" as destination | format if (flow.destination.namespace:\"\") \"<flow.destination_names>\" as destination | replace_regexp (\"[\\\\[\\\\]\\\"]\", \"\") at destination | format if (flow.destination.namespace:\"\" and flow.destination_names:\"\") \"<flow.IP.destination> (no DNS)\" as destination | format if (flow.destination.identity:in(\"1\",\"6\")) \"node <flow.IP.destination>\" as destination | format if (flow.destination.identity:\"7\" or (flow.destination.identity:in(\"1\",\"6\") and flow.l4.TCP.destination_port:\"6443\")) \"kube-apiserver\" as destination | format \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as port | format if (flow.l4.UDP.destination_port:*) \"udp\" as proto | format if (flow.l4.TCP.destination_port:*) \"tcp\" as proto | format if (flow.policy_log:~\"audit-world\") \"internet\" as scope | format if (flow.policy_log:~\"audit-cluster\") \"cluster\" as scope | rename flow.source.namespace as namespace | fields _time, namespace, flow.source.pod_name, destination, proto, port, flow.drop_reason_desc, node_name | sort by (_time desc) | limit 500",
+              "queryType": "instant",
+              "editorMode": "code",
+              "maxLines": 1000
+            }
+          ],
+          "transformations": [
+            {
+              "id": "extractFields",
+              "options": {
+                "source": "labels",
+                "format": "json",
+                "replace": false,
+                "keepTime": false
+              }
+            },
+            {
+              "id": "convertFieldType",
+              "options": {
+                "conversions": [
+                  {
+                    "targetField": "_time",
+                    "destinationType": "time"
+                  }
+                ],
+                "fields": {}
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "Line": true,
+                  "id": true,
+                  "labels": true,
+                  "streams": true,
+                  "streamId": true,
+                  "tsNs": true,
+                  "level": true,
+                  "detected_level": true
+                },
+                "indexByName": {
+                  "_time": 0,
+                  "namespace": 1,
+                  "flow.source.pod_name": 2,
+                  "destination": 3,
+                  "proto": 4,
+                  "port": 5,
+                  "flow.drop_reason_desc": 6,
+                  "node_name": 7
+                },
+                "renameByName": {
+                  "_time": "Time",
+                  "namespace": "Namespace",
+                  "flow.source.pod_name": "Pod",
+                  "destination": "Destination",
+                  "proto": "Proto",
+                  "port": "Port",
+                  "flow.drop_reason_desc": "Reason",
+                  "node_name": "Node"
+                },
+                "includeByName": {}
+              }
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "filterable": true
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Time"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "dateTimeAsLocal"
+                  }
+                ]
+              }
+            ]
+          },
+          "options": {
+            "showHeader": true,
+            "cellHeight": "sm"
+          }
+        },
+        {
+          "id": 19,
+          "type": "logs",
+          "title": "Raw audit flows (full Hubble JSON)",
+          "gridPos": {
+            "x": 0,
+            "y": 78,
+            "w": 24,
+            "h": 12
+          },
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "victoriametrics-logs-datasource",
+                "uid": "${ds_vl}"
+              },
+              "expr": "kubernetes.container_name:cilium-agent flow.event_type.type:5 flow.traffic_direction:EGRESS flow.policy_log:in(\"[\\\"audit-cluster\\\"]\",\"[\\\"audit-world\\\"]\") flow.source.namespace:~\"^${namespace}$\" | sort by (_time desc) | limit 200",
+              "queryType": "instant",
+              "editorMode": "code",
+              "maxLines": 1000,
+              "packJson": true
+            }
+          ],
+          "options": {
+            "showTime": true,
+            "wrapLogMessage": true,
+            "prettifyLogMessage": true,
+            "enableLogDetails": true,
+            "sortOrder": "Descending",
+            "dedupStrategy": "none"
+          }
+        }
+      ]
+    }
+  ]
+}

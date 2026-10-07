@@ -1,0 +1,13 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: cilium-egress-audit
+spec:
+  allowCrossNamespaceImport: true
+  folder: Network
+  resyncPeriod: 10m
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  json: |
+{{ .Files.Get "dashboards/egress-audit.json" | indent 4 }}
