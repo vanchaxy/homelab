@@ -133,6 +133,7 @@ appsSync:
     - generic-device-plugin
     - longhorn-system
     - media
+    - spegel
     - telemetry
   unmanagedReplicas:
     - abiotic-factor
