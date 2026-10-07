@@ -121,10 +121,9 @@
       "groupName": "external-dns"
     },
     {
-      "description": "VictoriaMetrics stack together with the Prometheus Operator CRDs it consumes",
+      "description": "VictoriaMetrics stack",
       "matchPackageNames": [
-        "victoria-metrics-k8s-stack",
-        "prometheus-operator-crds"
+        "victoria-metrics-k8s-stack"
       ],
       "groupName": "telemetry"
     },
@@ -222,19 +221,28 @@
       "automerge": true
     },
     {
-      "description": "Never automerge: tofu applies on push (Talos, Kubernetes, VyOS, providers), and storage, CNI, VPN, database and photo/document data are too costly to break unattended",
+      "description": "Never automerge: storage, CNI, the database operator, and Talos/Kubernetes (tofu applies on push)",
       "matchPackageNames": [
         "cilium",
         "cilium/cilium",
         "longhorn",
         "cloudnative-pg",
+        "siderolabs/talos",
+        "kubernetes/kubernetes"
+      ],
+      "automerge": false
+    },
+    {
+      "description": "VPN and photo/document data: patches automerge, minors wait for review",
+      "matchPackageNames": [
         "ghcr.io/qdm12/gluetun",
         "immich",
         "ghcr.io/immich-app/**",
         "ghcr.io/paperless-ngx/paperless-ngx",
-        "redis",
-        "siderolabs/talos",
-        "kubernetes/kubernetes"
+        "redis"
+      ],
+      "matchUpdateTypes": [
+        "minor"
       ],
       "automerge": false
     },
@@ -249,6 +257,14 @@
         "major"
       ],
       "automerge": false
+    },
+    {
+      "description": "prometheus-operator-crds bumps its major on nearly every release and only ships CRDs: always automerge in its own PR",
+      "matchPackageNames": [
+        "prometheus-operator-crds"
+      ],
+      "minimumReleaseAge": "3 days",
+      "automerge": true
     }
   ],
   "platformAutomerge": false
