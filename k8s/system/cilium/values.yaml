@@ -121,18 +121,14 @@ cilium:
                 - name: sourceContext
                   values: [workload-name, reserved-identity]
                 - name: destinationContext
-                  values: [workload-name, reserved-identity]
+                  values: [dns, workload-name, reserved-identity]
                 - name: labelsContext
                   values: [source_namespace, destination_namespace]
-            - name: flows-to-world
-              contextOptions:
-                - name: sourceContext
-                  values: [workload-name, reserved-identity]
-                - name: labelsContext
-                  values: [source_namespace]
-                - name: syn-only
               includeFilters:
-                - destination_identity: [2]
+                - verdict: [DROPPED]
+                - experimental:
+                    cel_expression:
+                      - size(_flow.policy_log) > 0 && _flow.policy_log.all(l, l.startsWith("audit-"))
     export:
       static:
         enabled: true
@@ -178,6 +174,8 @@ cilium:
 
 ciliumBGP:
   routerAddress: "10.10.60.1"
+
+egressExceptions: {}
 
 sameNamespaceEgress:
   - abiotic-factor

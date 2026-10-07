@@ -4,20 +4,18 @@ metadata:
   name: global-egress-baseline
 spec:
   log:
-    value: baseline
+    value: allow
   endpointSelector:
     matchLabels: {}
   egress:
-    - toPorts:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
         - ports:
             - port: "53"
               protocol: ANY
           rules:
             dns:
               - matchPattern: "*"
-    - toEntities:
-        - host
-        - remote-node
-        - kube-apiserver
-    - toFQDNs:
-        - matchPattern: "*"

@@ -6,7 +6,7 @@ metadata:
   name: same-namespace-egress-{{ . }}
 spec:
   log:
-    value: baseline
+    value: allow
   endpointSelector:
     matchLabels:
       k8s:io.kubernetes.pod.namespace: {{ . }}
