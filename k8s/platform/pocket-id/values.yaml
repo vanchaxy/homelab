@@ -65,43 +65,12 @@ pocket-id-operator:
     - name: admins
       spec:
         friendlyName: admins
-        allowedOIDCClients:
-          - name: argocd
-            namespace: argocd
-          - name: grafana
-            namespace: grafana
-          - name: longhorn
-            namespace: longhorn-system
-          - name: qui
-            namespace: media
-          - name: immich
-            namespace: immich
-          - name: paperless
-            namespace: paperless-ngx
     - name: family
       spec:
         friendlyName: family
-        allowedOIDCClients:
-          - name: immich
-            namespace: immich
-          - name: paperless
-            namespace: paperless-ngx
-          - name: actualbudget
-            namespace: actualbudget
-          - name: jellyfin
-            namespace: media
-          - name: yamtrack
-            namespace: yamtrack
-          - name: kaneo
-            namespace: kaneo
-          - name: donetick
-            namespace: donetick
     - name: friends
       spec:
         friendlyName: friends
-        allowedOIDCClients:
-          - name: jellyfin
-            namespace: media
     - name: nobody
       spec:
         friendlyName: nobody
