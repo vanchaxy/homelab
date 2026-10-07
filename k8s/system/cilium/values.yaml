@@ -175,7 +175,93 @@ cilium:
 ciliumBGP:
   routerAddress: "10.10.60.1"
 
-egressExceptions: {}
+egressExceptions:
+  abiotic-factor:
+    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+  actualbudget:
+    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+  amdgpu:
+    toEntities: [kube-apiserver]
+  argocd:
+    toEntities: [kube-apiserver]
+    toFQDNs: ['*.github.io', github.com, '*.githubusercontent.com', ghcr.io, '*.docker.io', production.cloudfront.docker.com, charts.bitnami.com, repo.broadcom.com, charts.jetstack.io, charts.longhorn.io, cloudnative-pg.io, dl.cloudsmith.io, helm.cilium.io, piraeus.io, robusta-charts.storage.googleapis.com]
+  backrest:
+    toEntities: [kube-apiserver]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+  cert-manager:
+    toEntities: [kube-apiserver]
+    toFQDNs: [acme-v02.api.letsencrypt.org, api.cloudflare.com, '*.ns.cloudflare.com']
+  cloudnative-pg:
+    toEntities: [kube-apiserver]
+  core-keeper:
+    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+  donetick:
+    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+  envoy-gateway:
+    toNamespaces: [actualbudget, argocd, backrest, donetick, grafana, hermes-karyna, home-infra, immich, kaneo, librespeed, longhorn-system, media, paperless-ngx, pocket-id, toloka-torznab, versitygw, yamtrack]
+    toEntities: [kube-apiserver]
+  external-dns:
+    toEntities: [kube-apiserver]
+    toFQDNs: [api.cloudflare.com]
+    toCIDRs: [10.10.60.1/32]
+  factorio:
+    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+  grafana:
+    toNamespaces: [telemetry]
+    toEntities: [kube-apiserver]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+  hermes-karyna:
+    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+  icarus:
+    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+  immich:
+    toEntities: [kube-apiserver]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+  infisical:
+    toEntities: [kube-apiserver]
+    toFQDNs: [app.infisical.com]
+  kaneo:
+    toEntities: [kube-apiserver]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+  kube-system:
+    toEntities: [kube-apiserver, host, remote-node]
+  longhorn-system:
+    toEntities: [kube-apiserver]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+  media:
+    toNamespaces: [envoy-gateway]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, api.autobrr.com, api.radarr.video, api.themoviedb.org, image.tmdb.org, indexers.prowlarr.com]
+  necesse:
+    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+  palworld:
+    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+  paperless-ngx:
+    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+  pocket-id:
+    toEntities: [kube-apiserver]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+  robusta:
+    toNamespaces: [telemetry]
+    toEntities: [kube-apiserver]
+    toFQDNs: [api.eu.robusta.dev, sp.eu.robusta.dev]
+  satisfactory:
+    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+  spegel:
+    toEntities: [kube-apiserver]
+  telemetry:
+    toNamespaces: [argocd, cert-manager, immich, kaneo, kube-system, longhorn-system, pocket-id, robusta, spegel, toloka-torznab, volsync]
+    toEntities: [kube-apiserver, host, remote-node]
+    toFQDNs: [api.telegram.org, hc-ping.com, raw.githubusercontent.com]
+  toloka-torznab:
+    toNamespaces: [media]
+    toEntities: [kube-apiserver]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, radarrapi.servarr.com, toloka.to, utp.to]
+  versitygw:
+    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+  volsync:
+    toEntities: [kube-apiserver]
+  yamtrack:
+    toFQDNs: [s3.eu-central-003.backblazeb2.com]
 
 sameNamespaceEgress:
   - abiotic-factor
