@@ -510,9 +510,6 @@ media:
           main:
             - path: /config
               subPath: upbrr-config
-            - path: /ua-data
-              subPath: mkvtools-new-config
-              readOnly: true
         seerr:
           main:
             - path: /app/config
