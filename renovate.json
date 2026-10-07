@@ -233,20 +233,6 @@
       "automerge": false
     },
     {
-      "description": "VPN and photo/document data: patches automerge, minors wait for review",
-      "matchPackageNames": [
-        "ghcr.io/qdm12/gluetun",
-        "immich",
-        "ghcr.io/immich-app/**",
-        "ghcr.io/paperless-ngx/paperless-ngx",
-        "redis"
-      ],
-      "matchUpdateTypes": [
-        "minor"
-      ],
-      "automerge": false
-    },
-    {
       "matchFileNames": [
         "tofu/**"
       ],
