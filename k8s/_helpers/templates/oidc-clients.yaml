@@ -1,0 +1,9 @@
+{{- range $client := .Values.oidcClients }}
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: {{ $client.name }}
+spec:
+  {{- toYaml $client.spec | nindent 2 }}
+---
+{{- end }}

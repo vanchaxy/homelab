@@ -6,6 +6,9 @@ dependencies:
     version: 5.2.1
     repository: https://bjw-s-labs.github.io/helm-charts
     alias: pocket-id
+  - name: pocket-id-operator
+    version: 0.15.0
+    repository: oci://ghcr.io/aclerici38/charts
   - name: helpers
     version: 0.1.0
     repository: file://../../../k8s/_helpers
