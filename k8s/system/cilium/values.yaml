@@ -84,6 +84,10 @@ cilium:
   bgpControlPlane:
     enabled: true
 
+  dnsProxy:
+    minTtl: 3600
+    proxyResponseMaxDelay: 1s
+
   hubble:
     enabled: true
     tls:
