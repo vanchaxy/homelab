@@ -581,5 +581,6 @@ helpers:
       - media-radarr
       - media-sonarr
       - media-profilarr
+      - media-upbrr
     clientID: "d404497a-f9a7-4ee4-8856-9a2c7bb0894d"
     clientSecretName: "oidc-client-secret"
