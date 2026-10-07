@@ -84,11 +84,27 @@ cilium:
   bgpControlPlane:
     enabled: true
 
+  policyAuditMode: true
+
   hubble:
     enabled: true
     tls:
       auto:
         method: cronJob
+    metrics:
+      enabled:
+        - dns:sourceContext=workload-name|reserved-identity;labelsContext=source_namespace
+        - drop:sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity;labelsContext=source_namespace,destination_namespace
+        - flow:sourceContext=namespace|reserved-identity;destinationContext=namespace|reserved-identity
+        - policy:sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity;labelsContext=source_namespace,destination_namespace
+      serviceMonitor:
+        enabled: true
+    export:
+      static:
+        enabled: true
+        filePath: stdout
+        allowList:
+          - '{"verdict":["DROPPED","AUDIT"]}'
     relay:
       enabled: true
       rollOutPods: true
