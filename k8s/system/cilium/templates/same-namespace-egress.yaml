@@ -1,0 +1,17 @@
+{{- range .Values.sameNamespaceEgress }}
+---
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: same-namespace-egress-{{ . }}
+spec:
+  log:
+    value: allow
+  endpointSelector:
+    matchLabels:
+      k8s:io.kubernetes.pod.namespace: {{ . }}
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: {{ . }}
+{{- end }}

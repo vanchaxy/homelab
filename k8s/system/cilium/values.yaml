@@ -89,6 +89,82 @@ cilium:
     tls:
       auto:
         method: cronJob
+    metrics:
+      serviceMonitor:
+        enabled: true
+      dynamic:
+        enabled: true
+        config:
+          content:
+            - name: dns
+              contextOptions:
+                - name: sourceContext
+                  values: [workload-name, reserved-identity]
+                - name: labelsContext
+                  values: [source_namespace]
+            - name: drop
+              contextOptions:
+                - name: sourceContext
+                  values: [workload-name, reserved-identity]
+                - name: destinationContext
+                  values: [workload-name, reserved-identity]
+                - name: labelsContext
+                  values: [source_namespace, destination_namespace]
+            - name: flow
+              contextOptions:
+                - name: sourceContext
+                  values: [namespace, reserved-identity]
+                - name: destinationContext
+                  values: [namespace, reserved-identity]
+            - name: policy
+              contextOptions:
+                - name: sourceContext
+                  values: [workload-name, reserved-identity]
+                - name: destinationContext
+                  values: [dns, workload-name, reserved-identity]
+                - name: labelsContext
+                  values: [source_namespace, destination_namespace]
+              includeFilters:
+                - verdict: [DROPPED]
+                - experimental:
+                    cel_expression:
+                      - size(_flow.policy_log) > 0 && _flow.policy_log.all(l, l.startsWith("audit-"))
+    export:
+      static:
+        enabled: true
+        filePath: stdout
+        allowList:
+          - '{"event_type":[{"type":5}]}'
+          - '{"event_type":[{"type":129}],"reply":[true]}'
+          - '{"event_type":[{"type":4,"sub_type":0,"match_sub_type":true}],"tcp_flags":[{"SYN":true}],"reply":[false]}'
+          - '{"verdict":["DROPPED"]}'
+        fieldMask:
+          - time
+          - node_name
+          - verdict
+          - drop_reason_desc
+          - Type
+          - event_type
+          - traffic_direction
+          - is_reply
+          - IP
+          - l4
+          - l7
+          - source.identity
+          - source.namespace
+          - source.pod_name
+          - source.workloads
+          - destination.identity
+          - destination.namespace
+          - destination.pod_name
+          - destination.workloads
+          - destination_names
+          - policy_match_type
+          - policy_log
+          - egress_allowed_by
+          - ingress_allowed_by
+          - egress_denied_by
+          - ingress_denied_by
     relay:
       enabled: true
       rollOutPods: true
@@ -98,3 +174,49 @@ cilium:
 
 ciliumBGP:
   routerAddress: "10.10.60.1"
+
+egressExceptions: {}
+
+sameNamespaceEgress:
+  - abiotic-factor
+  - actualbudget
+  - amdgpu
+  - argocd
+  - backrest
+  - cert-manager
+  - cilium
+  - cloudnative-pg
+  - core-keeper
+  - csi-driver-nfs
+  - donetick
+  - envoy-gateway
+  - external-dns
+  - factorio
+  - frp-operator
+  - generic-device-plugin
+  - grafana
+  - hermes-karyna
+  - home-infra
+  - icarus
+  - immich
+  - infisical
+  - iperf3
+  - kaneo
+  - kube-system
+  - librespeed
+  - longhorn-system
+  - media
+  - necesse
+  - palworld
+  - paperless-ngx
+  - pasport
+  - pocket-id
+  - robusta
+  - satisfactory
+  - spegel
+  - tailscale
+  - telemetry
+  - toloka-torznab
+  - versitygw
+  - volsync
+  - yamtrack

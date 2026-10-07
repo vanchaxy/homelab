@@ -1,0 +1,33 @@
+{{- range $namespace, $exceptions := .Values.egressExceptions }}
+---
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: egress-exceptions-{{ $namespace }}
+spec:
+  log:
+    value: allow
+  endpointSelector:
+    matchLabels:
+      k8s:io.kubernetes.pod.namespace: {{ $namespace }}
+  egress:
+    {{- range $exceptions.toNamespaces }}
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: {{ . }}
+    {{- end }}
+    {{- with $exceptions.toEntities }}
+    - toEntities:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with $exceptions.toFQDNs }}
+    - toFQDNs:
+        {{- range . }}
+        - matchPattern: {{ . | quote }}
+        {{- end }}
+    {{- end }}
+    {{- with $exceptions.toCIDRs }}
+    - toCIDR:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+{{- end }}

@@ -1,0 +1,29 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: cilium-policy-verdicts
+  namespace: telemetry
+spec:
+  groups:
+    - name: cilium-policy-verdicts
+      rules:
+        - alert: CiliumPolicyDrop
+          expr: |
+            sum by (direction, source_namespace, source, destination_namespace, destination) (
+              increase(hubble_policy_verdicts_total{action="dropped"}[15m])
+            ) > 0
+          labels:
+            severity: warning
+          annotations:
+            summary: {{ `'Cilium policy dropped {{ $labels.direction }} {{ $labels.source }} -> {{ $labels.destination }}'` }}
+            description: 'An enforced network policy denied traffic in the last 15m. Either the policy is missing a legitimate flow or the workload attempted a connection it should not. Flows are in VictoriaLogs: kubernetes.container_name:cilium-agent flow.verdict:DROPPED'
+        - alert: CiliumEgressAudit
+          expr: |
+            sum by (source_namespace, source, destination_namespace, destination) (
+              increase(hubble_policy_verdicts_total{direction="egress", action!="dropped"}[1h])
+            ) > 0
+          labels:
+            severity: warning
+          annotations:
+            summary: {{ `'{{ $labels.source_namespace }}/{{ $labels.source }} -> {{ with $labels.destination_namespace }}{{ . }}/{{ end }}{{ $labels.destination }} would be denied'` }}
+            description: 'Egress allowed only by a global-egress-audit-* policy. It will be denied once those policies are removed unless an egressExceptions entry covers it. Flows are in VictoriaLogs: kubernetes.container_name:cilium-agent flow.policy_log:audit*'
