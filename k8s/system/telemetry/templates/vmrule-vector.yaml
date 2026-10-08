@@ -24,3 +24,12 @@ spec:
           annotations:
             summary: {{ `'Vector {{ $labels.pod }} component {{ $labels.component_id }} is erroring'` }}
             description: 'More than 10 errors in 15m. GeoIP enrichment or shipping to VictoriaLogs may be failing.'
+        - alert: EdgeLogsMissing
+          expr: |
+            sum(increase(vector_component_received_events_total{component_id="vps_syslog"}[20m])) == 0
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: 'No syslog from the VPS router for 30m'
+            description: 'The VPS sends a heartbeat every 5 minutes (local7, edge-heartbeat) plus its firewall drop logs to vector-syslog (10.10.61.243) over WireGuard. Silence means the tunnel, the home router rule 38, the VPS syslog target or the vector-syslog Service address has drifted.'

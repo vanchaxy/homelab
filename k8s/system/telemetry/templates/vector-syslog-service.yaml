@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: vector-syslog-lb
+  annotations:
+    lbipam.cilium.io/ips: "10.10.61.243"
+spec:
+  type: LoadBalancer
+  selector:
+    app.kubernetes.io/name: vector-syslog
+    app.kubernetes.io/instance: telemetry
+  ports:
+    - name: syslog-udp
+      protocol: UDP
+      port: 514
+      targetPort: 5514

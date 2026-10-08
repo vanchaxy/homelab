@@ -230,6 +230,9 @@ egressExceptions:
     toEntities: [kube-apiserver]
   core-keeper:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
+  crowdsec:
+    toNamespaces: [telemetry]
+    toFQDNs: ['*.crowdsec.net']
   donetick:
     toNamespaces: [envoy-gateway]
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
@@ -291,7 +294,7 @@ egressExceptions:
   spegel:
     toEntities: [kube-apiserver]
   telemetry:
-    toNamespaces: [argocd, cert-manager, immich, kaneo, kube-system, longhorn-system, pocket-id, robusta, spegel, toloka-torznab, volsync]
+    toNamespaces: [argocd, cert-manager, immich, kaneo, kube-system, longhorn-system, pocket-id, robusta, spegel, toloka-torznab, volsync, crowdsec]
     toEntities: [kube-apiserver, host, remote-node]
     toFQDNs: [api.telegram.org, hc-ping.com, raw.githubusercontent.com, download.db-ip.com]
   toloka-torznab:
@@ -316,6 +319,7 @@ sameNamespaceEgress:
   - cilium
   - cloudnative-pg
   - core-keeper
+  - crowdsec
   - csi-driver-nfs
   - donetick
   - envoy-gateway

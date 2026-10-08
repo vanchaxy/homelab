@@ -1,0 +1,1164 @@
+{
+  "title": "Edge blocks — VPS firewall",
+  "uid": "vps-edge-blocks",
+  "tags": [
+    "crowdsec",
+    "vyos",
+    "firewall",
+    "security"
+  ],
+  "timezone": "browser",
+  "editable": true,
+  "graphTooltip": 1,
+  "refresh": "1m",
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "schemaVersion": 41,
+  "templating": {
+    "list": [
+      {
+        "name": "ds_vl",
+        "label": "Logs",
+        "type": "datasource",
+        "query": "victoriametrics-logs-datasource",
+        "current": {},
+        "hide": 2
+      },
+      {
+        "name": "reason",
+        "label": "Reason",
+        "type": "custom",
+        "query": "GeoIP,CrowdSec",
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        }
+      }
+    ]
+  },
+  "annotations": {
+    "list": []
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Blocked connections",
+      "description": "Packets dropped by the VPS GeoIP and CrowdSec rules in the selected range (each logged drop is one packet, usually a SYN or a single UDP datagram).",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "hostname:vps-router app_name:kernel \"[ipv4-\" | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | filter reason:~\"^(${reason})$\" | stats count() blocked",
+          "queryType": "stats",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "GeoIP blocks",
+      "description": "Dropped by the Russia/China GeoIP rules (forward 4, input 24).",
+      "gridPos": {
+        "x": 6,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "hostname:vps-router app_name:kernel \"[ipv4-\" | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | filter reason:~\"^(${reason})$\" | filter reason:GeoIP | stats count() blocked",
+          "queryType": "stats",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "orange"
+          },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "CrowdSec blocks",
+      "description": "Dropped because the source is on the CrowdSec ban list (forward 5, input 25).",
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "hostname:vps-router app_name:kernel \"[ipv4-\" | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | filter reason:~\"^(${reason})$\" | filter reason:CrowdSec | stats count() blocked",
+          "queryType": "stats",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "red"
+          },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Distinct sources",
+      "description": "Unique source IPs blocked in the selected range.",
+      "gridPos": {
+        "x": 18,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "hostname:vps-router app_name:kernel \"[ipv4-\" | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | filter reason:~\"^(${reason})$\" | stats count_uniq(src) sources",
+          "queryType": "stats",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Blocks over time",
+      "gridPos": {
+        "x": 0,
+        "y": 4,
+        "w": 16,
+        "h": 8
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "hostname:vps-router app_name:kernel \"[ipv4-\" | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | filter reason:~\"^(${reason})$\" | stats by (reason) count() blocked",
+          "queryType": "statsRange",
+          "editorMode": "code",
+          "maxLines": 1000,
+          "legendFormat": "{{reason}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 85,
+            "lineWidth": 0,
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            },
+            "showPoints": "never"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "GeoIP"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "CrowdSec"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "type": "piechart",
+      "title": "What they were after",
+      "description": "Target of blocked packets: the public IP (games, public-gw) or the VPS's own SSH port.",
+      "gridPos": {
+        "x": 16,
+        "y": 4,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "hostname:vps-router app_name:kernel \"[ipv4-\" | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | filter reason:~\"^(${reason})$\" | stats by (target) count() blocked",
+          "queryType": "stats",
+          "editorMode": "code",
+          "maxLines": 1000,
+          "legendFormat": "{{target}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "pieType": "donut",
+        "displayLabels": [
+          "percent"
+        ],
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "values": [
+            "value",
+            "percent"
+          ]
+        }
+      }
+    },
+    {
+      "type": "geomap",
+      "title": "Where blocked traffic comes from",
+      "description": "Sources of packets the VPS dropped, by location. IP geolocation by [DB-IP.com](https://db-ip.com) (CC BY 4.0)",
+      "gridPos": {
+        "x": 0,
+        "y": 12,
+        "w": 16,
+        "h": 13
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "hostname:vps-router app_name:kernel \"[ipv4-\" | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | filter reason:~\"^(${reason})$\" | filter reason:GeoIP geo.src.lat:* | stats by (geo.src.lat, geo.src.lon, geo.src.city, geo.src.country_name) count() n, count_uniq(src) ips | rename geo.src.lat as lat, geo.src.lon as lon, geo.src.city as city, geo.src.country_name as country",
+          "queryType": "instant",
+          "editorMode": "code",
+          "maxLines": 1000
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "hostname:vps-router app_name:kernel \"[ipv4-\" | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | filter reason:~\"^(${reason})$\" | filter reason:CrowdSec geo.src.lat:* | stats by (geo.src.lat, geo.src.lon, geo.src.city, geo.src.country_name) count() n, count_uniq(src) ips | rename geo.src.lat as lat, geo.src.lon as lon, geo.src.city as city, geo.src.country_name as country",
+          "queryType": "instant",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "transformations": [
+        {
+          "id": "extractFields",
+          "options": {
+            "source": "labels",
+            "format": "json",
+            "replace": false,
+            "keepTime": false
+          }
+        },
+        {
+          "id": "convertFieldType",
+          "options": {
+            "conversions": [
+              {
+                "targetField": "lat",
+                "destinationType": "number"
+              },
+              {
+                "targetField": "lon",
+                "destinationType": "number"
+              },
+              {
+                "targetField": "n",
+                "destinationType": "number"
+              }
+            ],
+            "fields": {}
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Line": true,
+              "id": true,
+              "labels": true,
+              "streams": true,
+              "streamId": true,
+              "tsNs": true,
+              "level": true,
+              "detected_level": true
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "view": {
+          "id": "coords",
+          "lat": 25,
+          "lon": 10,
+          "zoom": 1.25,
+          "allLayers": false
+        },
+        "controls": {
+          "showZoom": true,
+          "mouseWheelZoom": true,
+          "showAttribution": true
+        },
+        "basemap": {
+          "type": "carto",
+          "name": "Basemap",
+          "config": {
+            "theme": "auto",
+            "showLabels": true
+          }
+        },
+        "layers": [
+          {
+            "type": "markers",
+            "name": "GeoIP",
+            "tooltip": true,
+            "filterData": {
+              "id": "byRefId",
+              "options": "A"
+            },
+            "location": {
+              "mode": "coords",
+              "latitude": "lat",
+              "longitude": "lon"
+            },
+            "config": {
+              "showLegend": true,
+              "style": {
+                "color": {
+                  "fixed": "orange"
+                },
+                "opacity": 0.55,
+                "size": {
+                  "field": "n",
+                  "fixed": 5,
+                  "min": 4,
+                  "max": 28
+                },
+                "symbol": {
+                  "mode": "fixed",
+                  "fixed": "img/icons/marker/circle.svg"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "fixed": ""
+                }
+              }
+            }
+          },
+          {
+            "type": "markers",
+            "name": "CrowdSec",
+            "tooltip": true,
+            "filterData": {
+              "id": "byRefId",
+              "options": "B"
+            },
+            "location": {
+              "mode": "coords",
+              "latitude": "lat",
+              "longitude": "lon"
+            },
+            "config": {
+              "showLegend": true,
+              "style": {
+                "color": {
+                  "fixed": "red"
+                },
+                "opacity": 0.55,
+                "size": {
+                  "field": "n",
+                  "fixed": 5,
+                  "min": 4,
+                  "max": 28
+                },
+                "symbol": {
+                  "mode": "fixed",
+                  "fixed": "img/icons/marker/circle.svg"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "fixed": ""
+                }
+              }
+            }
+          }
+        ],
+        "tooltip": {
+          "mode": "details"
+        }
+      },
+      "id": 7
+    },
+    {
+      "type": "bargauge",
+      "title": "Top blocked countries",
+      "description": "",
+      "gridPos": {
+        "x": 16,
+        "y": 12,
+        "w": 8,
+        "h": 6
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "hostname:vps-router app_name:kernel \"[ipv4-\" | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | filter reason:~\"^(${reason})$\" | stats by (geo.src.country_name) count() n | sort by (n desc) | limit 8",
+          "queryType": "stats",
+          "editorMode": "code",
+          "maxLines": 1000,
+          "legendFormat": "{{geo.src.country_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "continuous-YlRd"
+          },
+          "min": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "namePlacement": "left",
+        "sizing": "manual",
+        "minVizHeight": 14,
+        "maxVizHeight": 20,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "legend": {
+          "showLegend": false
+        }
+      },
+      "id": 8
+    },
+    {
+      "type": "bargauge",
+      "title": "Top blocked networks",
+      "description": "",
+      "gridPos": {
+        "x": 16,
+        "y": 18,
+        "w": 8,
+        "h": 7
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "hostname:vps-router app_name:kernel \"[ipv4-\" | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | filter reason:~\"^(${reason})$\" | stats by (geo.src.asn_org) count() n | sort by (n desc) | limit 8",
+          "queryType": "stats",
+          "editorMode": "code",
+          "maxLines": 1000,
+          "legendFormat": "{{geo.src.asn_org}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "continuous-YlRd"
+          },
+          "min": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "namePlacement": "left",
+        "sizing": "manual",
+        "minVizHeight": 14,
+        "maxVizHeight": 20,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "legend": {
+          "showLegend": false
+        }
+      },
+      "id": 9
+    },
+    {
+      "id": 10,
+      "type": "table",
+      "title": "Top blocked sources",
+      "gridPos": {
+        "x": 0,
+        "y": 25,
+        "w": 12,
+        "h": 10
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "hostname:vps-router app_name:kernel \"[ipv4-\" | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | filter reason:~\"^(${reason})$\" | stats by (src, geo.src.country, geo.src.asn_org, reason) count() packets, count_uniq(dpt) ports, max(_time) last_seen | sort by (packets desc) | limit 50",
+          "queryType": "instant",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "transformations": [
+        {
+          "id": "extractFields",
+          "options": {
+            "source": "labels",
+            "format": "json",
+            "replace": false,
+            "keepTime": false
+          }
+        },
+        {
+          "id": "convertFieldType",
+          "options": {
+            "conversions": [
+              {
+                "targetField": "packets",
+                "destinationType": "number"
+              },
+              {
+                "targetField": "ports",
+                "destinationType": "number"
+              },
+              {
+                "targetField": "last_seen",
+                "destinationType": "time"
+              }
+            ],
+            "fields": {}
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Line": true,
+              "id": true,
+              "labels": true,
+              "streams": true,
+              "streamId": true,
+              "tsNs": true,
+              "level": true,
+              "detected_level": true
+            },
+            "indexByName": {
+              "src": 0,
+              "geo.src.country": 1,
+              "geo.src.asn_org": 2,
+              "reason": 3,
+              "packets": 4,
+              "ports": 5,
+              "last_seen": 6
+            },
+            "renameByName": {
+              "src": "Source IP",
+              "geo.src.country": "CC",
+              "geo.src.asn_org": "Network",
+              "reason": "Reason",
+              "packets": "Packets",
+              "ports": "Distinct ports",
+              "last_seen": "Last seen"
+            },
+            "includeByName": {}
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "filterable": true,
+            "cellOptions": {
+              "type": "auto"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Reason"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "GeoIP": {
+                        "text": "🌍 GeoIP",
+                        "color": "orange",
+                        "index": 0
+                      },
+                      "CrowdSec": {
+                        "text": "🛡️ CrowdSec",
+                        "color": "red",
+                        "index": 1
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "custom.width",
+                "value": 130
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Packets"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "lcd",
+                  "valueDisplayMode": "text"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "continuous-YlRd"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Last seen"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dateTimeFromNow"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": [
+          {
+            "displayName": "Packets",
+            "desc": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "type": "bargauge",
+      "title": "Most targeted ports",
+      "gridPos": {
+        "x": 12,
+        "y": 25,
+        "w": 12,
+        "h": 10
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "hostname:vps-router app_name:kernel \"[ipv4-\" | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | filter reason:~\"^(${reason})$\" | filter dpt:* | stats by (proto, dpt) count() blocked | sort by (blocked desc) | limit 15",
+          "queryType": "stats",
+          "editorMode": "code",
+          "maxLines": 1000,
+          "legendFormat": "{{proto}}/{{dpt}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "min": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "namePlacement": "left",
+        "sizing": "manual",
+        "minVizHeight": 16,
+        "maxVizHeight": 22,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "legend": {
+          "showLegend": false
+        }
+      }
+    },
+    {
+      "id": 12,
+      "type": "table",
+      "title": "Latest blocked packets",
+      "gridPos": {
+        "x": 0,
+        "y": 35,
+        "w": 24,
+        "h": 11
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "hostname:vps-router app_name:kernel \"[ipv4-\" | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | filter reason:~\"^(${reason})$\" | fields _time, reason, target, src, geo.src.country, geo.src.city, geo.src.asn_org, proto, dpt, dst | sort by (_time desc) | limit 500",
+          "queryType": "instant",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "transformations": [
+        {
+          "id": "extractFields",
+          "options": {
+            "source": "labels",
+            "format": "json",
+            "replace": false,
+            "keepTime": false
+          }
+        },
+        {
+          "id": "convertFieldType",
+          "options": {
+            "conversions": [
+              {
+                "targetField": "_time",
+                "destinationType": "time"
+              }
+            ],
+            "fields": {}
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Line": true,
+              "id": true,
+              "labels": true,
+              "streams": true,
+              "streamId": true,
+              "tsNs": true,
+              "level": true,
+              "detected_level": true
+            },
+            "indexByName": {
+              "_time": 0,
+              "reason": 1,
+              "target": 2,
+              "src": 3,
+              "geo.src.country": 4,
+              "geo.src.city": 5,
+              "geo.src.asn_org": 6,
+              "proto": 7,
+              "dpt": 8,
+              "dst": 9
+            },
+            "renameByName": {
+              "_time": "Time",
+              "reason": "Reason",
+              "target": "Target",
+              "src": "Source IP",
+              "geo.src.country": "CC",
+              "geo.src.city": "City",
+              "geo.src.asn_org": "Network",
+              "proto": "Proto",
+              "dpt": "Port",
+              "dst": "Destination"
+            },
+            "includeByName": {}
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "filterable": true,
+            "cellOptions": {
+              "type": "auto"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Reason"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "GeoIP": {
+                        "text": "🌍 GeoIP",
+                        "color": "orange",
+                        "index": 0
+                      },
+                      "CrowdSec": {
+                        "text": "🛡️ CrowdSec",
+                        "color": "red",
+                        "index": 1
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "custom.width",
+                "value": 130
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dateTimeAsLocal"
+              },
+              {
+                "id": "custom.width",
+                "value": 170
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": [
+          {
+            "displayName": "Time",
+            "desc": true
+          }
+        ]
+      }
+    }
+  ]
+}
