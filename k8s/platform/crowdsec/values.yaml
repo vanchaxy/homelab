@@ -50,12 +50,9 @@ crowdsec:
       s02-enrich:
         homelab-whitelist.yaml: |
           name: homelab/whitelist
-          description: "Never ban the home uplink, the routed public IP or the tailnet"
+          description: "Never ban the tailnet"
           whitelist:
             reason: "homelab own addresses"
-            ip:
-              - 194.212.226.167
-              - 46.38.230.69
             cidr:
               - 100.64.0.0/10
 
@@ -106,6 +103,11 @@ crowdsec:
           secretKeyRef:
             name: crowdsec-secret
             key: BLOCKLIST_MIRROR_KEY
+      - name: BOUNCER_KEY_envoy
+        valueFrom:
+          secretKeyRef:
+            name: crowdsec-secret
+            key: ENVOY_BOUNCER_KEY
       - name: ENROLL_KEY
         valueFrom:
           secretKeyRef:
@@ -180,6 +182,72 @@ crowdsec:
         memory: 128Mi
       limits:
         memory: 512Mi
+
+  appsec:
+    enabled: true
+    acquisitions:
+      - source: appsec
+        listen_addr: 0.0.0.0:7422
+        path: /
+        appsec_configs:
+          - crowdsecurity/appsec-default
+          - homelab/crs-detect
+        labels:
+          type: appsec
+    configs:
+      homelab-crs-detect.yaml: |
+        name: homelab/crs-detect
+        default_remediation: ban
+        outofband_rules:
+          - crowdsecurity/crs
+    env:
+      - name: COLLECTIONS
+        value: crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-generic-rules crowdsecurity/appsec-crs
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        memory: 512Mi
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+
+envoy-bouncer:
+  config:
+    exemptIPs:
+      - 100.64.0.0/10
+      - 10.0.0.0/8
+      - 172.16.0.0/12
+      - 192.168.0.0/16
+    bouncer:
+      lapiURL: http://crowdsec-service:8080
+      apiKeySecretRef:
+        name: crowdsec-secret
+        key: ENVOY_BOUNCER_KEY
+    waf:
+      enabled: true
+      appSecURL: http://crowdsec-appsec-service:7422
+      apiKeySecretRef:
+        name: crowdsec-secret
+        key: ENVOY_BOUNCER_KEY
+      httpTimeout: 1s
+      failOpen: false
+    prometheus:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+  referenceGrant:
+    create: true
+    fromNamespaces:
+      - envoy-gateway
+  resources:
+    requests:
+      cpu: 20m
+      memory: 32Mi
+    limits:
+      memory: 128Mi
 
 blocklist-mirror:
   global:
