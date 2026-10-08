@@ -271,6 +271,7 @@ egressExceptions:
   media:
     toNamespaces: [envoy-gateway]
     toFQDNs: [s3.eu-central-003.backblazeb2.com, api.autobrr.com, api.radarr.video, api.themoviedb.org, image.tmdb.org, indexers.prowlarr.com, raw.githubusercontent.com, github.com, api.trakt.tv, prowlarr.servarr.com, radarr.servarr.com, services.sonarr.tv, skyhook.sonarr.tv, api4.thetvdb.com, artworks.thetvdb.com, thexem.info]
+    toCIDRs: [89.222.96.30/32]
   necesse:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   palworld:
