@@ -1,5 +1,5 @@
 {
-  "title": "Edge blocks — VPS firewall",
+  "title": "Edge blocks",
   "uid": "vps-edge-blocks",
   "tags": [
     "crowdsec",
@@ -42,6 +42,23 @@
             "$__all"
           ]
         }
+      },
+      {
+        "name": "dst",
+        "label": "Destination",
+        "type": "custom",
+        "query": "VPS : 202.61.245.36, Public IP (tunnel) : 46.38.230.69",
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        }
       }
     ]
   },
@@ -53,7 +70,7 @@
       "id": 1,
       "type": "stat",
       "title": "Blocked connections",
-      "description": "Packets dropped by the VPS: GeoIP and CrowdSec rules, plus probes of the VPS's own closed ports (each logged drop is one packet, usually a SYN or a single UDP datagram).",
+      "description": "Packets dropped at the edge: VPS GeoIP and CrowdSec rules, and probes of closed ports on the VPS and on the public IP (dropped by Cilium) (each logged drop is one packet, usually a SYN or a single UDP datagram).",
       "gridPos": {
         "x": 0,
         "y": 0,
@@ -71,7 +88,7 @@
             "type": "victoriametrics-logs-datasource",
             "uid": "${ds_vl}"
           },
-          "expr": "hostname:=\"vps-router\" app_name:kernel \"[ipv4-\" | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | filter reason:~\"^(${reason})$\" | stats count() blocked",
+          "expr": "((hostname:=\"vps-router\" app_name:kernel \"[ipv4-\") or (kubernetes.container_name:cilium-agent flow.verdict:DROPPED flow.source.identity:2)) | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | format if (flow.verdict:DROPPED) \"<flow.IP.source>\" as src | format if (flow.verdict:DROPPED) \"<flow.IP.destination>\" as dst | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as dpt | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port>\" as tport | format if (flow.verdict:DROPPED) \"UDP\" as proto | format if (flow.verdict:DROPPED tport:~\".\") \"TCP\" as proto | format if (flow.verdict:DROPPED) \"Closed port\" as reason | format if (flow.verdict:DROPPED) \"public IP\" as target | filter reason:~\"^(${reason})$\" | filter dst:~\"^(${dst:pipe})$\" | stats count() blocked",
           "queryType": "stats",
           "editorMode": "code",
           "maxLines": 1000
@@ -127,7 +144,7 @@
             "type": "victoriametrics-logs-datasource",
             "uid": "${ds_vl}"
           },
-          "expr": "hostname:=\"vps-router\" app_name:kernel \"[ipv4-\" | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | filter reason:~\"^(${reason})$\" | filter reason:GeoIP | stats count() blocked",
+          "expr": "((hostname:=\"vps-router\" app_name:kernel \"[ipv4-\") or (kubernetes.container_name:cilium-agent flow.verdict:DROPPED flow.source.identity:2)) | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | format if (flow.verdict:DROPPED) \"<flow.IP.source>\" as src | format if (flow.verdict:DROPPED) \"<flow.IP.destination>\" as dst | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as dpt | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port>\" as tport | format if (flow.verdict:DROPPED) \"UDP\" as proto | format if (flow.verdict:DROPPED tport:~\".\") \"TCP\" as proto | format if (flow.verdict:DROPPED) \"Closed port\" as reason | format if (flow.verdict:DROPPED) \"public IP\" as target | filter reason:~\"^(${reason})$\" | filter dst:~\"^(${dst:pipe})$\" | filter reason:GeoIP | stats count() blocked",
           "queryType": "stats",
           "editorMode": "code",
           "maxLines": 1000
@@ -183,7 +200,7 @@
             "type": "victoriametrics-logs-datasource",
             "uid": "${ds_vl}"
           },
-          "expr": "hostname:=\"vps-router\" app_name:kernel \"[ipv4-\" | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | filter reason:~\"^(${reason})$\" | filter reason:CrowdSec | stats count() blocked",
+          "expr": "((hostname:=\"vps-router\" app_name:kernel \"[ipv4-\") or (kubernetes.container_name:cilium-agent flow.verdict:DROPPED flow.source.identity:2)) | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | format if (flow.verdict:DROPPED) \"<flow.IP.source>\" as src | format if (flow.verdict:DROPPED) \"<flow.IP.destination>\" as dst | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as dpt | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port>\" as tport | format if (flow.verdict:DROPPED) \"UDP\" as proto | format if (flow.verdict:DROPPED tport:~\".\") \"TCP\" as proto | format if (flow.verdict:DROPPED) \"Closed port\" as reason | format if (flow.verdict:DROPPED) \"public IP\" as target | filter reason:~\"^(${reason})$\" | filter dst:~\"^(${dst:pipe})$\" | filter reason:CrowdSec | stats count() blocked",
           "queryType": "stats",
           "editorMode": "code",
           "maxLines": 1000
@@ -239,7 +256,7 @@
             "type": "victoriametrics-logs-datasource",
             "uid": "${ds_vl}"
           },
-          "expr": "hostname:=\"vps-router\" app_name:kernel \"[ipv4-\" | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | filter reason:~\"^(${reason})$\" | stats count_uniq(src) sources",
+          "expr": "((hostname:=\"vps-router\" app_name:kernel \"[ipv4-\") or (kubernetes.container_name:cilium-agent flow.verdict:DROPPED flow.source.identity:2)) | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | format if (flow.verdict:DROPPED) \"<flow.IP.source>\" as src | format if (flow.verdict:DROPPED) \"<flow.IP.destination>\" as dst | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as dpt | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port>\" as tport | format if (flow.verdict:DROPPED) \"UDP\" as proto | format if (flow.verdict:DROPPED tport:~\".\") \"TCP\" as proto | format if (flow.verdict:DROPPED) \"Closed port\" as reason | format if (flow.verdict:DROPPED) \"public IP\" as target | filter reason:~\"^(${reason})$\" | filter dst:~\"^(${dst:pipe})$\" | stats count_uniq(src) sources",
           "queryType": "stats",
           "editorMode": "code",
           "maxLines": 1000
@@ -294,7 +311,7 @@
             "type": "victoriametrics-logs-datasource",
             "uid": "${ds_vl}"
           },
-          "expr": "hostname:=\"vps-router\" app_name:kernel \"[ipv4-\" | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | filter reason:~\"^(${reason})$\" | stats by (reason) count() blocked",
+          "expr": "((hostname:=\"vps-router\" app_name:kernel \"[ipv4-\") or (kubernetes.container_name:cilium-agent flow.verdict:DROPPED flow.source.identity:2)) | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | format if (flow.verdict:DROPPED) \"<flow.IP.source>\" as src | format if (flow.verdict:DROPPED) \"<flow.IP.destination>\" as dst | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as dpt | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port>\" as tport | format if (flow.verdict:DROPPED) \"UDP\" as proto | format if (flow.verdict:DROPPED tport:~\".\") \"TCP\" as proto | format if (flow.verdict:DROPPED) \"Closed port\" as reason | format if (flow.verdict:DROPPED) \"public IP\" as target | filter reason:~\"^(${reason})$\" | filter dst:~\"^(${dst:pipe})$\" | stats by (reason) count() blocked",
           "queryType": "statsRange",
           "editorMode": "code",
           "maxLines": 1000,
@@ -384,7 +401,7 @@
             "type": "victoriametrics-logs-datasource",
             "uid": "${ds_vl}"
           },
-          "expr": "hostname:=\"vps-router\" app_name:kernel \"[ipv4-\" | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | filter reason:~\"^(${reason})$\" | stats by (target) count() blocked",
+          "expr": "((hostname:=\"vps-router\" app_name:kernel \"[ipv4-\") or (kubernetes.container_name:cilium-agent flow.verdict:DROPPED flow.source.identity:2)) | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | format if (flow.verdict:DROPPED) \"<flow.IP.source>\" as src | format if (flow.verdict:DROPPED) \"<flow.IP.destination>\" as dst | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as dpt | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port>\" as tport | format if (flow.verdict:DROPPED) \"UDP\" as proto | format if (flow.verdict:DROPPED tport:~\".\") \"TCP\" as proto | format if (flow.verdict:DROPPED) \"Closed port\" as reason | format if (flow.verdict:DROPPED) \"public IP\" as target | filter reason:~\"^(${reason})$\" | filter dst:~\"^(${dst:pipe})$\" | stats by (target) count() blocked",
           "queryType": "stats",
           "editorMode": "code",
           "maxLines": 1000,
@@ -443,7 +460,7 @@
             "type": "victoriametrics-logs-datasource",
             "uid": "${ds_vl}"
           },
-          "expr": "hostname:=\"vps-router\" app_name:kernel \"[ipv4-\" | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | filter reason:~\"^(${reason})$\" | filter reason:GeoIP geo.src.lat:* | stats by (geo.src.lat, geo.src.lon, geo.src.city, geo.src.country_name) count() n, count_uniq(src) ips | rename geo.src.lat as lat, geo.src.lon as lon, geo.src.city as city, geo.src.country_name as country",
+          "expr": "((hostname:=\"vps-router\" app_name:kernel \"[ipv4-\") or (kubernetes.container_name:cilium-agent flow.verdict:DROPPED flow.source.identity:2)) | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | format if (flow.verdict:DROPPED) \"<flow.IP.source>\" as src | format if (flow.verdict:DROPPED) \"<flow.IP.destination>\" as dst | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as dpt | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port>\" as tport | format if (flow.verdict:DROPPED) \"UDP\" as proto | format if (flow.verdict:DROPPED tport:~\".\") \"TCP\" as proto | format if (flow.verdict:DROPPED) \"Closed port\" as reason | format if (flow.verdict:DROPPED) \"public IP\" as target | filter reason:~\"^(${reason})$\" | filter dst:~\"^(${dst:pipe})$\" | filter reason:GeoIP geo.src.lat:* | stats by (geo.src.lat, geo.src.lon, geo.src.city, geo.src.country_name) count() n, count_uniq(src) ips | rename geo.src.lat as lat, geo.src.lon as lon, geo.src.city as city, geo.src.country_name as country",
           "queryType": "instant",
           "editorMode": "code",
           "maxLines": 1000
@@ -454,7 +471,7 @@
             "type": "victoriametrics-logs-datasource",
             "uid": "${ds_vl}"
           },
-          "expr": "hostname:=\"vps-router\" app_name:kernel \"[ipv4-\" | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | filter reason:~\"^(${reason})$\" | filter reason:CrowdSec geo.src.lat:* | stats by (geo.src.lat, geo.src.lon, geo.src.city, geo.src.country_name) count() n, count_uniq(src) ips | rename geo.src.lat as lat, geo.src.lon as lon, geo.src.city as city, geo.src.country_name as country",
+          "expr": "((hostname:=\"vps-router\" app_name:kernel \"[ipv4-\") or (kubernetes.container_name:cilium-agent flow.verdict:DROPPED flow.source.identity:2)) | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | format if (flow.verdict:DROPPED) \"<flow.IP.source>\" as src | format if (flow.verdict:DROPPED) \"<flow.IP.destination>\" as dst | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as dpt | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port>\" as tport | format if (flow.verdict:DROPPED) \"UDP\" as proto | format if (flow.verdict:DROPPED tport:~\".\") \"TCP\" as proto | format if (flow.verdict:DROPPED) \"Closed port\" as reason | format if (flow.verdict:DROPPED) \"public IP\" as target | filter reason:~\"^(${reason})$\" | filter dst:~\"^(${dst:pipe})$\" | filter reason:CrowdSec geo.src.lat:* | stats by (geo.src.lat, geo.src.lon, geo.src.city, geo.src.country_name) count() n, count_uniq(src) ips | rename geo.src.lat as lat, geo.src.lon as lon, geo.src.city as city, geo.src.country_name as country",
           "queryType": "instant",
           "editorMode": "code",
           "maxLines": 1000
@@ -465,7 +482,7 @@
             "type": "victoriametrics-logs-datasource",
             "uid": "${ds_vl}"
           },
-          "expr": "hostname:=\"vps-router\" app_name:kernel \"[ipv4-\" | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | filter reason:~\"^(${reason})$\" | filter reason:\"Closed port\" geo.src.lat:* | stats by (geo.src.lat, geo.src.lon, geo.src.city, geo.src.country_name) count() n, count_uniq(src) ips | rename geo.src.lat as lat, geo.src.lon as lon, geo.src.city as city, geo.src.country_name as country",
+          "expr": "((hostname:=\"vps-router\" app_name:kernel \"[ipv4-\") or (kubernetes.container_name:cilium-agent flow.verdict:DROPPED flow.source.identity:2)) | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | format if (flow.verdict:DROPPED) \"<flow.IP.source>\" as src | format if (flow.verdict:DROPPED) \"<flow.IP.destination>\" as dst | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as dpt | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port>\" as tport | format if (flow.verdict:DROPPED) \"UDP\" as proto | format if (flow.verdict:DROPPED tport:~\".\") \"TCP\" as proto | format if (flow.verdict:DROPPED) \"Closed port\" as reason | format if (flow.verdict:DROPPED) \"public IP\" as target | filter reason:~\"^(${reason})$\" | filter dst:~\"^(${dst:pipe})$\" | filter reason:\"Closed port\" geo.src.lat:* | stats by (geo.src.lat, geo.src.lon, geo.src.city, geo.src.country_name) count() n, count_uniq(src) ips | rename geo.src.lat as lat, geo.src.lon as lon, geo.src.city as city, geo.src.country_name as country",
           "queryType": "instant",
           "editorMode": "code",
           "maxLines": 1000
@@ -694,7 +711,7 @@
             "type": "victoriametrics-logs-datasource",
             "uid": "${ds_vl}"
           },
-          "expr": "hostname:=\"vps-router\" app_name:kernel \"[ipv4-\" | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | filter reason:~\"^(${reason})$\" | stats by (geo.src.country_name) count() n | sort by (n desc) | limit 8",
+          "expr": "((hostname:=\"vps-router\" app_name:kernel \"[ipv4-\") or (kubernetes.container_name:cilium-agent flow.verdict:DROPPED flow.source.identity:2)) | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | format if (flow.verdict:DROPPED) \"<flow.IP.source>\" as src | format if (flow.verdict:DROPPED) \"<flow.IP.destination>\" as dst | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as dpt | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port>\" as tport | format if (flow.verdict:DROPPED) \"UDP\" as proto | format if (flow.verdict:DROPPED tport:~\".\") \"TCP\" as proto | format if (flow.verdict:DROPPED) \"Closed port\" as reason | format if (flow.verdict:DROPPED) \"public IP\" as target | filter reason:~\"^(${reason})$\" | filter dst:~\"^(${dst:pipe})$\" | stats by (geo.src.country_name) count() n | sort by (n desc) | limit 8",
           "queryType": "stats",
           "editorMode": "code",
           "maxLines": 1000,
@@ -754,7 +771,7 @@
             "type": "victoriametrics-logs-datasource",
             "uid": "${ds_vl}"
           },
-          "expr": "hostname:=\"vps-router\" app_name:kernel \"[ipv4-\" | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | filter reason:~\"^(${reason})$\" | stats by (geo.src.asn_org) count() n | sort by (n desc) | limit 8",
+          "expr": "((hostname:=\"vps-router\" app_name:kernel \"[ipv4-\") or (kubernetes.container_name:cilium-agent flow.verdict:DROPPED flow.source.identity:2)) | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | format if (flow.verdict:DROPPED) \"<flow.IP.source>\" as src | format if (flow.verdict:DROPPED) \"<flow.IP.destination>\" as dst | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as dpt | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port>\" as tport | format if (flow.verdict:DROPPED) \"UDP\" as proto | format if (flow.verdict:DROPPED tport:~\".\") \"TCP\" as proto | format if (flow.verdict:DROPPED) \"Closed port\" as reason | format if (flow.verdict:DROPPED) \"public IP\" as target | filter reason:~\"^(${reason})$\" | filter dst:~\"^(${dst:pipe})$\" | stats by (geo.src.asn_org) count() n | sort by (n desc) | limit 8",
           "queryType": "stats",
           "editorMode": "code",
           "maxLines": 1000,
@@ -814,7 +831,7 @@
             "type": "victoriametrics-logs-datasource",
             "uid": "${ds_vl}"
           },
-          "expr": "hostname:=\"vps-router\" app_name:kernel \"[ipv4-\" | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | filter reason:~\"^(${reason})$\" | stats by (src, geo.src.country, geo.src.asn_org, reason) count() packets, count_uniq(dpt) ports, max(_time) last_seen | sort by (packets desc) | limit 50",
+          "expr": "((hostname:=\"vps-router\" app_name:kernel \"[ipv4-\") or (kubernetes.container_name:cilium-agent flow.verdict:DROPPED flow.source.identity:2)) | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | format if (flow.verdict:DROPPED) \"<flow.IP.source>\" as src | format if (flow.verdict:DROPPED) \"<flow.IP.destination>\" as dst | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as dpt | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port>\" as tport | format if (flow.verdict:DROPPED) \"UDP\" as proto | format if (flow.verdict:DROPPED tport:~\".\") \"TCP\" as proto | format if (flow.verdict:DROPPED) \"Closed port\" as reason | format if (flow.verdict:DROPPED) \"public IP\" as target | filter reason:~\"^(${reason})$\" | filter dst:~\"^(${dst:pipe})$\" | stats by (src, geo.src.country, geo.src.asn_org, reason) count() packets, count_uniq(dpt) ports, max(_time) last_seen | sort by (packets desc) | limit 50",
           "queryType": "instant",
           "editorMode": "code",
           "maxLines": 1000
@@ -1007,7 +1024,7 @@
             "type": "victoriametrics-logs-datasource",
             "uid": "${ds_vl}"
           },
-          "expr": "hostname:=\"vps-router\" app_name:kernel \"[ipv4-\" | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | filter reason:~\"^(${reason})$\" | filter dpt:* | stats by (proto, dpt) count() blocked | sort by (blocked desc) | limit 15",
+          "expr": "((hostname:=\"vps-router\" app_name:kernel \"[ipv4-\") or (kubernetes.container_name:cilium-agent flow.verdict:DROPPED flow.source.identity:2)) | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | format if (flow.verdict:DROPPED) \"<flow.IP.source>\" as src | format if (flow.verdict:DROPPED) \"<flow.IP.destination>\" as dst | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as dpt | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port>\" as tport | format if (flow.verdict:DROPPED) \"UDP\" as proto | format if (flow.verdict:DROPPED tport:~\".\") \"TCP\" as proto | format if (flow.verdict:DROPPED) \"Closed port\" as reason | format if (flow.verdict:DROPPED) \"public IP\" as target | filter reason:~\"^(${reason})$\" | filter dst:~\"^(${dst:pipe})$\" | filter dpt:* | stats by (proto, dpt) count() blocked | sort by (blocked desc) | limit 15",
           "queryType": "stats",
           "editorMode": "code",
           "maxLines": 1000,
@@ -1066,7 +1083,7 @@
             "type": "victoriametrics-logs-datasource",
             "uid": "${ds_vl}"
           },
-          "expr": "hostname:=\"vps-router\" app_name:kernel \"[ipv4-\" | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | filter reason:~\"^(${reason})$\" | fields _time, reason, target, src, geo.src.country, geo.src.city, geo.src.asn_org, proto, dpt, dst | sort by (_time desc) | limit 500",
+          "expr": "((hostname:=\"vps-router\" app_name:kernel \"[ipv4-\") or (kubernetes.container_name:cilium-agent flow.verdict:DROPPED flow.source.identity:2)) | extract \"[ipv4-<hook>-<chain>-<rule>-<act>]\" | extract \"SRC=<src> \" | extract \"DST=<dst> \" | extract \"PROTO=<proto> \" | extract \"DPT=<dpt> \" | format if (rule:in(4, 24)) \"GeoIP\" as reason | format if (rule:in(5, 25)) \"CrowdSec\" as reason | format if (rule:in(24, 25)) \"VPS SSH\" as target | format if (rule:in(4, 5)) \"public IP\" as target | format if (rule:default) \"Closed port\" as reason | format if (hook:INP rule:default) \"VPS\" as target | format if (flow.verdict:DROPPED) \"<flow.IP.source>\" as src | format if (flow.verdict:DROPPED) \"<flow.IP.destination>\" as dst | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as dpt | format if (flow.verdict:DROPPED) \"<flow.l4.TCP.destination_port>\" as tport | format if (flow.verdict:DROPPED) \"UDP\" as proto | format if (flow.verdict:DROPPED tport:~\".\") \"TCP\" as proto | format if (flow.verdict:DROPPED) \"Closed port\" as reason | format if (flow.verdict:DROPPED) \"public IP\" as target | filter reason:~\"^(${reason})$\" | filter dst:~\"^(${dst:pipe})$\" | fields _time, reason, target, src, geo.src.country, geo.src.city, geo.src.asn_org, proto, dpt, dst | sort by (_time desc) | limit 500",
           "queryType": "instant",
           "editorMode": "code",
           "maxLines": 1000
