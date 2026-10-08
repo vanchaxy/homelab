@@ -1,0 +1,26 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: vector-log-shipping
+  namespace: telemetry
+spec:
+  groups:
+    - name: vector-log-shipping
+      rules:
+        - alert: VectorNotShippingLogs
+          expr: |
+            sum by (pod) (rate(vector_component_sent_events_total{component_id="victorialogs"}[10m])) == 0
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: {{ `'Vector {{ $labels.pod }} has not shipped Hubble/Envoy logs for 15m'` }}
+            description: 'Cilium flow logs and Envoy access logs from this node are collected by Vector, not VLAgent. Check the Vector pod logs and its disk buffer.'
+        - alert: VectorComponentErrors
+          expr: |
+            sum by (pod, component_id) (increase(vector_component_errors_total[15m])) > 10
+          labels:
+            severity: warning
+          annotations:
+            summary: {{ `'Vector {{ $labels.pod }} component {{ $labels.component_id }} is erroring'` }}
+            description: 'More than 10 errors in 15m. GeoIP enrichment or shipping to VictoriaLogs may be failing.'

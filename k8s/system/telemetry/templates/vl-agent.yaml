@@ -5,6 +5,7 @@ metadata:
 spec:
   k8sCollector:
     enabled: true
+    excludeFilter: "(kubernetes.pod_namespace:kube-system kubernetes.container_name:cilium-agent) or (kubernetes.pod_namespace:envoy-gateway kubernetes.container_name:envoy)"
   remoteWrite:
     - url: "http://vlsingle-victoria-logs:9428/internal/insert"
   useDefaultResources: false

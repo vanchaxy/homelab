@@ -293,7 +293,7 @@ egressExceptions:
   telemetry:
     toNamespaces: [argocd, cert-manager, immich, kaneo, kube-system, longhorn-system, pocket-id, robusta, spegel, toloka-torznab, volsync]
     toEntities: [kube-apiserver, host, remote-node]
-    toFQDNs: [api.telegram.org, hc-ping.com, raw.githubusercontent.com]
+    toFQDNs: [api.telegram.org, hc-ping.com, raw.githubusercontent.com, download.db-ip.com]
   toloka-torznab:
     toNamespaces: [media]
     toEntities: [kube-apiserver]
