@@ -141,7 +141,10 @@ cilium:
           - '{"event_type":[{"type":5}]}'
           - '{"event_type":[{"type":129}],"reply":[true]}'
           - '{"event_type":[{"type":4,"sub_type":0,"match_sub_type":true}],"tcp_flags":[{"SYN":true}],"reply":[false]}'
+          - '{"event_type":[{"type":4,"sub_type":0,"match_sub_type":true}],"protocol":["udp","icmpv4"],"reply":[false]}'
           - '{"verdict":["DROPPED"]}'
+        denyList:
+          - '{"event_type":[{"type":4}],"destination_label":["k8s:k8s-app=kube-dns"]}'
         fieldMask:
           - time
           - node_name
