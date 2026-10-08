@@ -629,47 +629,11 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "exemplar": true,
-              "expr": "sum(increase(cs_filesource_hits_total{instance=\"$instance\"}[$__interval])) by (source)",
+              "expr": "sum(increase(cs_victorialogssource_hits_total{instance=\"$instance\"}[$__interval])) by (source)",
               "interval": "",
               "intervalFactor": 2,
               "legendFormat": "{{source}}",
               "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "exemplar": true,
-              "expr": "sum(increase(cs_journalctlsource_hits_total{instance=\"$instance\"}[$__interval])) by (source)",
-              "hide": false,
-              "interval": "",
-              "legendFormat": "{{source}}",
-              "refId": "B"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "exemplar": true,
-              "expr": "sum(increase(cs_cloudwatch_stream_hits_total{instance=\"$instance\"}[$__interval])) by (group, stream)",
-              "hide": false,
-              "interval": "",
-              "legendFormat": "{{group}} - {{stream}}",
-              "refId": "C"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "exemplar": true,
-              "expr": "sum(increase(cs_syslogsource_hits_total{instance=\"$instance\"}[$__interval])) by (source)",
-              "hide": false,
-              "interval": "",
-              "legendFormat": "",
-              "refId": "D"
             }
           ],
           "thresholds": [],
@@ -1150,7 +1114,7 @@
                 "type": "prometheus",
                 "uid": "${DS_PROMETHEUS}"
               },
-              "expr": "sum(increase(cs_bucket_created_total{instance=\"$instance\"}[$__interval])) by (name)",
+              "expr": "sum(increase(cs_bucket_instantiation_total{instance=\"$instance\"}[$__interval])) by (name)",
               "interval": "",
               "intervalFactor": 2,
               "legendFormat": "{{name}}",
@@ -1476,7 +1440,7 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values(cs_info, instance)",
+        "definition": "label_values(cs_info{container=\"crowdsec-agent\"}, instance)",
         "hide": 0,
         "includeAll": false,
         "label": "instance",
@@ -1484,7 +1448,7 @@
         "name": "instance",
         "options": [],
         "query": {
-          "query": "label_values(cs_info, instance)",
+          "query": "label_values(cs_info{container=\"crowdsec-agent\"}, instance)",
           "refId": "Prometheus-instance-Variable-Query"
         },
         "refresh": 1,
