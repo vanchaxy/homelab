@@ -6,6 +6,8 @@ kind: InfisicalSecret
 metadata:
   name: {{ $resticSecretName }}
 spec:
+  syncConfig:
+    resyncInterval: {{ $.Values.global.infisical.resyncInterval | quote }}
   authentication:
     universalAuth:
       secretsScope:
