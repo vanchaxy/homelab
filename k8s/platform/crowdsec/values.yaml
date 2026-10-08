@@ -1,0 +1,169 @@
+crowdsec:
+  container_runtime: containerd
+
+  secrets:
+    externalSecret:
+      name: crowdsec-secret
+      csLapiSecretKey: CS_LAPI_SECRET
+      registrationTokenKey: REGISTRATION_TOKEN
+
+  config:
+    parsers:
+      s00-raw:
+        hubble-raw.yaml: |
+          name: homelab/hubble-raw
+          description: "Claim Hubble drop lines read from VictoriaLogs"
+          filter: "evt.Line.Labels.type == 'hubble'"
+          onsuccess: next_stage
+          statics:
+            - parsed: program
+              value: hubble
+            - parsed: message
+              expression: evt.Line.Raw
+      s01-parse:
+        hubble-drops.yaml: |
+          name: homelab/hubble-drops
+          description: "Parse Hubble drops of internet traffic as iptables-style drops"
+          filter: "evt.Parsed.program == 'hubble'"
+          onsuccess: next_stage
+          statics:
+            - parsed: unused
+              expression: ParseKV(evt.Parsed.message, evt.Unmarshaled, "hubble")
+            - meta: service
+              expression: Lower(evt.Unmarshaled.hubble.PROTO)
+            - meta: log_type
+              value: iptables_drop
+            - meta: source_ip
+              expression: evt.Unmarshaled.hubble.SRC
+            - meta: drop_reason
+              expression: evt.Unmarshaled.hubble.REASON
+            - parsed: src_ip
+              expression: evt.Unmarshaled.hubble.SRC
+            - parsed: dst_ip
+              expression: evt.Unmarshaled.hubble.DST
+            - parsed: src_port
+              expression: evt.Unmarshaled.hubble.SPT
+            - parsed: dst_port
+              expression: evt.Unmarshaled.hubble.DPT
+            - parsed: proto
+              expression: evt.Unmarshaled.hubble.PROTO
+
+  lapi:
+    env:
+      - name: BOUNCER_KEY_blocklistmirror
+        valueFrom:
+          secretKeyRef:
+            name: crowdsec-secret
+            key: BLOCKLIST_MIRROR_KEY
+    persistentVolume:
+      data:
+        storageClassName: longhorn-ssd
+      config:
+        storageClassName: longhorn-ssd
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        memory: 512Mi
+
+  agent:
+    isDeployment: true
+    hostVarLog: false
+    acquisition: []
+    additionalAcquisition:
+      - source: victorialogs
+        mode: tail
+        url: http://vlsingle-victoria-logs.telemetry.svc.cluster.local:9428/
+        limit: 1000
+        query: >-
+          kubernetes.container_name:cilium-agent flow.verdict:DROPPED flow.source.identity:2
+          | format if (flow.l4.TCP.destination_port:*) "tcp" as proto
+          | format if (flow.l4.UDP.destination_port:*) "udp" as proto
+          | format "SRC=<flow.IP.source> DST=<flow.IP.destination> PROTO=<proto> SPT=<flow.l4.TCP.source_port><flow.l4.UDP.source_port> DPT=<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port> REASON=<flow.drop_reason_desc>" as _msg
+        labels:
+          type: hubble
+    env:
+      - name: COLLECTIONS
+        value: crowdsecurity/iptables
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        memory: 512Mi
+
+blocklist-mirror:
+  global:
+    fullnameOverride: blocklist-mirror
+
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: crowdsecurity/blocklist-mirror
+            tag: v0.0.6@sha256:41ded9bfba0fc914b1a7be061ef2217c14fe5c300d0cb663b332f6566144f0c2
+          env:
+            API_KEY:
+              valueFrom:
+                secretKeyRef:
+                  name: crowdsec-secret
+                  key: BLOCKLIST_MIRROR_KEY
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
+
+  configMaps:
+    config:
+      data:
+        crowdsec-blocklist-mirror.yaml: |
+          config_version: v1.0
+          crowdsec_config:
+            lapi_key: ${API_KEY}
+            lapi_url: http://crowdsec-service.crowdsec.svc.cluster.local:8080/
+            update_frequency: 10s
+            include_scenarios_containing: []
+            exclude_scenarios_containing: []
+            only_include_decisions_from: []
+            insecure_skip_verify: false
+            supported_decisions_types:
+              - ban
+          blocklists:
+            - format: plain_text
+              endpoint: /security/blocklist
+              authentication:
+                type: none
+          listen_uri: 0.0.0.0:41412
+          metrics:
+            enabled: true
+            endpoint: /metrics
+          log_media: stdout
+          log_level: info
+
+  persistence:
+    config:
+      type: configMap
+      identifier: config
+      globalMounts:
+        - path: /etc/crowdsec/bouncers/crowdsec-blocklist-mirror.yaml
+          subPath: crowdsec-blocklist-mirror.yaml
+          readOnly: true
+
+  service:
+    main:
+      controller: main
+      type: LoadBalancer
+      loadBalancerIP: 10.10.61.242
+      ports:
+        http:
+          port: 41412
+
+helpers:
+  infisicalSecrets:
+    - name: crowdsec-secret
+      infisical:
+        path: "/crowdsec"

@@ -230,6 +230,9 @@ egressExceptions:
     toEntities: [kube-apiserver]
   core-keeper:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
+  crowdsec:
+    toNamespaces: [telemetry]
+    toFQDNs: ['*.crowdsec.net']
   donetick:
     toNamespaces: [envoy-gateway]
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
@@ -316,6 +319,7 @@ sameNamespaceEgress:
   - cilium
   - cloudnative-pg
   - core-keeper
+  - crowdsec
   - csi-driver-nfs
   - donetick
   - envoy-gateway
