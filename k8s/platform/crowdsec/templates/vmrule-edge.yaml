@@ -1,0 +1,17 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: crowdsec-edge
+spec:
+  groups:
+    - name: crowdsec-edge
+      rules:
+        - alert: EdgeBlocklistNotFetched
+          expr: |
+            sum(increase(blocklist_requests_total[15m])) == 0
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: 'The VPS has not fetched the CrowdSec blocklist for 25m'
+            description: 'VyOS on the VPS fetches http://10.10.61.242:41412/security/blocklist every minute over WireGuard. Without fetches the edge keeps enforcing a stale ban list. Check the tunnel, home router rule 37, the VPS remote-group URL and the blocklist-mirror Service address.'

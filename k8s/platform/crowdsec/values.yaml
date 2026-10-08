@@ -201,10 +201,19 @@ blocklist-mirror:
     main:
       controller: main
       type: LoadBalancer
-      loadBalancerIP: 10.10.61.242
+      annotations:
+        lbipam.cilium.io/ips: "10.10.61.242"
       ports:
         http:
           port: 41412
+
+  serviceMonitor:
+    main:
+      serviceName: blocklist-mirror
+      endpoints:
+        - port: http
+          path: /metrics
+          interval: 1m
 
 helpers:
   infisicalSecrets:

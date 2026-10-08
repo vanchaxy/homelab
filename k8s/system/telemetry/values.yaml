@@ -177,6 +177,10 @@ vector:
         read_from: beginning
       internal_metrics:
         type: internal_metrics
+      vps_syslog:
+        type: syslog
+        mode: udp
+        address: 0.0.0.0:5514
     transforms:
       select:
         type: filter
@@ -189,6 +193,45 @@ vector:
         inputs:
         - select
         source: "\nk = object(.kubernetes) ?? {}\nout = {\n  \"kubernetes\": {\n    \"container_name\": k.container_name,\n    \"container_id\": k.container_id,\n    \"pod_name\": k.pod_name,\n    \"pod_namespace\": k.pod_namespace,\n    \"pod_node_name\": k.pod_node_name,\n    \"pod_ip\": k.pod_ip,\n    \"pod_labels\": k.pod_labels\n  },\n  \"_time\": .timestamp\n}\nmsg = to_string(.message) ?? \"\"\nparsed = null\nif starts_with(msg, \"{\") {\n  parsed = parse_json(msg) ?? null\n}\nif is_object(parsed) {\n  out = merge(out, object!(parsed), deep: false)\n  if exists(parsed.time) && k.container_name == \"cilium-agent\" {\n    out._time = parsed.time\n  }\n} else {\n  out._msg = msg\n}\n. = compact(out, nullish: true)\nprivate = [\"10.0.0.0/8\", \"172.16.0.0/12\", \"192.168.0.0/16\", \"100.64.0.0/10\", \"127.0.0.0/8\", \"169.254.0.0/16\", \"0.0.0.0/8\", \"224.0.0.0/4\", \"240.0.0.0/4\"]\n\nip = to_string(.flow.IP.source) ?? \"\"\nif ip != \"\" && is_ipv4(ip) && !(ip_cidr_contains(private, ip) ?? true) {\n  rec, err = get_enrichment_table_record(\"geoip_city\", {\"ip\": ip})\n  if err == null {\n    .geo.src.country = rec.country.iso_code\n    .geo.src.country_name = rec.country.names.en\n    .geo.src.region = rec.subdivisions[0].names.en\n    .geo.src.city = rec.city.names.en\n    .geo.src.lat = rec.location.latitude\n    .geo.src.lon = rec.location.longitude\n  }\n  as, err = get_enrichment_table_record(\"geoip_asn\", {\"ip\": ip})\n  if err == null {\n    .geo.src.asn = as.autonomous_system_number\n    .geo.src.asn_org = as.autonomous_system_organization\n  }\n}\n\nip = to_string(.flow.IP.destination) ?? \"\"\nif ip != \"\" && is_ipv4(ip) && !(ip_cidr_contains(private, ip) ?? true) {\n  rec, err = get_enrichment_table_record(\"geoip_city\", {\"ip\": ip})\n  if err == null {\n    .geo.dst.country = rec.country.iso_code\n    .geo.dst.country_name = rec.country.names.en\n    .geo.dst.region = rec.subdivisions[0].names.en\n    .geo.dst.city = rec.city.names.en\n    .geo.dst.lat = rec.location.latitude\n    .geo.dst.lon = rec.location.longitude\n  }\n  as, err = get_enrichment_table_record(\"geoip_asn\", {\"ip\": ip})\n  if err == null {\n    .geo.dst.asn = as.autonomous_system_number\n    .geo.dst.asn_org = as.autonomous_system_organization\n  }\n}\n\nif exists(.downstream_remote_address) {\n  remote = to_string(.downstream_remote_address) ?? \"\"\n  remote_ip = split(remote, \":\")[0]\n  \n  ip = string(remote_ip) ?? \"\"\n  if ip != \"\" && is_ipv4(ip) && !(ip_cidr_contains(private, ip) ?? true) {\n    rec, err = get_enrichment_table_record(\"geoip_city\", {\"ip\": ip})\n    if err == null {\n      .geo.src.country = rec.country.iso_code\n      .geo.src.country_name = rec.country.names.en\n      .geo.src.region = rec.subdivisions[0].names.en\n      .geo.src.city = rec.city.names.en\n      .geo.src.lat = rec.location.latitude\n      .geo.src.lon = rec.location.longitude\n    }\n    as, err = get_enrichment_table_record(\"geoip_asn\", {\"ip\": ip})\n    if err == null {\n      .geo.src.asn = as.autonomous_system_number\n      .geo.src.asn_org = as.autonomous_system_organization\n    }\n  }\n}\n"
+      syslog_enrich:
+        type: remap
+        inputs:
+        - vps_syslog
+        source: |2
+
+          out = {
+            "_time": .timestamp,
+            "_msg": .message,
+            "hostname": .hostname,
+            "app_name": .appname,
+            "proc_id": .procid,
+            "facility_keyword": .facility,
+            "level": .severity,
+            "format": "rfc3164"
+          }
+          . = compact(out, nullish: true)
+          private = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "100.64.0.0/10", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/8", "224.0.0.0/4", "240.0.0.0/4"]
+          msg = to_string(._msg) ?? ""
+          m = parse_regex(msg, r' SRC=(?P<ip>[0-9.]+) ') ?? {}
+          src_ip = string(m.ip) ?? ""
+
+          ip = src_ip
+          if ip != "" && is_ipv4(ip) && !(ip_cidr_contains(private, ip) ?? true) {
+            rec, err = get_enrichment_table_record("geoip_city", {"ip": ip})
+            if err == null {
+              .geo.src.country = rec.country.iso_code
+              .geo.src.country_name = rec.country.names.en
+              .geo.src.region = rec.subdivisions[0].names.en
+              .geo.src.city = rec.city.names.en
+              .geo.src.lat = rec.location.latitude
+              .geo.src.lon = rec.location.longitude
+            }
+            as, err = get_enrichment_table_record("geoip_asn", {"ip": ip})
+            if err == null {
+              .geo.src.asn = as.autonomous_system_number
+              .geo.src.asn_org = as.autonomous_system_organization
+            }
+          }
     sinks:
       victorialogs:
         type: http
@@ -210,6 +253,27 @@ vector:
         buffer:
           type: disk
           max_size: 536870912
+          when_full: block
+      victorialogs_syslog:
+        type: http
+        inputs:
+        - syslog_enrich
+        uri: http://vlsingle-victoria-logs.telemetry.svc.cluster.local:9428/insert/jsonline?_stream_fields=hostname,app_name&_msg_field=_msg&_time_field=_time
+        method: post
+        encoding:
+          codec: json
+        framing:
+          method: newline_delimited
+        compression: gzip
+        request:
+          headers:
+            Content-Type: application/stream+json
+        batch:
+          max_bytes: 1048576
+          timeout_secs: 2
+        buffer:
+          type: disk
+          max_size: 268435488
           when_full: block
       prometheus:
         type: prometheus_exporter
