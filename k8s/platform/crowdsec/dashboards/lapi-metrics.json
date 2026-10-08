@@ -174,7 +174,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "sum(rate(cs_lapi_request_duration_seconds_bucket{endpoint=\"/v1/watchers/login\"}[$__rate_interval])) by (le)",
+          "expr": "sum(rate(cs_lapi_request_duration_seconds_bucket{endpoint=\"/v1/heartbeat\"}[$__rate_interval])) by (le)",
           "format": "heatmap",
           "interval": "",
           "legendFormat": "{{le}}",
@@ -512,7 +512,7 @@
         "allValue": null,
         "current": {},
         "datasource": "${DS_PROMETHEUS}",
-        "definition": "label_values(cs_info, instance)",
+        "definition": "label_values(cs_info{container=\"crowdsec-lapi\"}, instance)",
         "description": null,
         "error": null,
         "hide": 0,
@@ -522,7 +522,7 @@
         "name": "lapi",
         "options": [],
         "query": {
-          "query": "label_values(cs_info, instance)",
+          "query": "label_values(cs_info{container=\"crowdsec-lapi\"}, instance)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 1,

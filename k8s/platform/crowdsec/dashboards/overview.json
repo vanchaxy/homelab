@@ -215,35 +215,11 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "sum(increase(cs_filesource_hits_total[$__interval])) by (instance)",
+          "expr": "sum(increase(cs_victorialogssource_hits_total[$__interval])) by (instance)",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{instance}}",
           "refId": "A"
-        },
-        {
-          "exemplar": true,
-          "expr": "sum(increase(cs_journalctlsource_hits_total[$__interval])) by (instance)",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "{{instance}}",
-          "refId": "B"
-        },
-        {
-          "exemplar": true,
-          "expr": "sum(increase(cs_cloudwatch_stream_hits_total[$__interval])) by (instance)",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "{{instance}}",
-          "refId": "C"
-        },
-        {
-          "exemplar": true,
-          "expr": "sum(increase(cs_syslogsource_hits_total[$__interval])) by (instance)",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "{{instance}}",
-          "refId": "D"
         }
       ],
       "thresholds": [],
@@ -1073,7 +1049,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum(increase(cs_bucket_created_total[$__interval])) by (name)",
+              "expr": "sum(increase(cs_bucket_instantiation_total[$__interval])) by (name)",
               "interval": "",
               "intervalFactor": 2,
               "legendFormat": "{{name}}",
