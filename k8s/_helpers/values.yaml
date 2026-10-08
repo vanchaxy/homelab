@@ -5,6 +5,7 @@ global:
     credentialsRef:
       secretName: universal-auth-credentials
       secretNamespace: infisical
+    resyncInterval: 1h
   restic:
     bucketSecretPath: "/common/restic"
     storageClassName: longhorn-ssd-backup
