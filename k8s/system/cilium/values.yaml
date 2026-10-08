@@ -182,6 +182,31 @@ cilium:
 ciliumBGP:
   routerAddress: "10.10.60.1"
 
+helpers:
+  oidcClients:
+    - name: hubble
+      spec:
+        clientID: "c319f3c1-6a79-479f-b1a8-ca0e60744fea"
+        name: Hubble
+        callbackUrls:
+          - "https://hubble.ivanchenko.io/oauth2/callback"
+        logoutCallbackUrls:
+          - "https://hubble.ivanchenko.io/logout"
+        launchUrl: "https://hubble.ivanchenko.io/"
+        allowedUserGroups:
+          - name: admins
+            namespace: pocket-id
+        secret:
+          name: hubble-oidc
+          keys:
+            clientSecret: client-secret
+  oidcPolicy:
+    routes:
+      - hubble-ui
+    clientID: "c319f3c1-6a79-479f-b1a8-ca0e60744fea"
+    clientSecretName: "hubble-oidc"
+    cookieDomain: "hubble.ivanchenko.io"
+
 egressExceptions:
   abiotic-factor:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
@@ -209,7 +234,7 @@ egressExceptions:
     toNamespaces: [envoy-gateway]
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   envoy-gateway:
-    toNamespaces: [actualbudget, argocd, backrest, donetick, grafana, hermes-karyna, home-infra, immich, kaneo, librespeed, longhorn-system, media, paperless-ngx, pocket-id, toloka-torznab, versitygw, yamtrack]
+    toNamespaces: [actualbudget, argocd, backrest, donetick, grafana, hermes-karyna, home-infra, immich, kaneo, kube-system, librespeed, longhorn-system, media, paperless-ngx, pocket-id, toloka-torznab, versitygw, yamtrack]
     toEntities: [kube-apiserver]
     toCIDRs: [10.10.60.1/32]
   external-dns:
