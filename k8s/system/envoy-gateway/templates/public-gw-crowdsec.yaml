@@ -8,7 +8,7 @@ spec:
       kind: Gateway
       name: public-gw
   extAuth:
-    failOpen: true
+    failOpen: false
     timeout: 2s
     grpc:
       backendRefs:

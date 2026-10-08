@@ -50,12 +50,9 @@ crowdsec:
       s02-enrich:
         homelab-whitelist.yaml: |
           name: homelab/whitelist
-          description: "Never ban the home uplink, the routed public IP or the tailnet"
+          description: "Never ban the tailnet"
           whitelist:
             reason: "homelab own addresses"
-            ip:
-              - 194.212.226.167
-              - 46.38.230.69
             cidr:
               - 100.64.0.0/10
 
@@ -220,8 +217,6 @@ crowdsec:
 envoy-bouncer:
   config:
     exemptIPs:
-      - 194.212.226.167
-      - 46.38.230.69
       - 100.64.0.0/10
       - 10.0.0.0/8
       - 172.16.0.0/12
@@ -238,7 +233,7 @@ envoy-bouncer:
         name: crowdsec-secret
         key: ENVOY_BOUNCER_KEY
       httpTimeout: 1s
-      failOpen: true
+      failOpen: false
     prometheus:
       enabled: true
       serviceMonitor:
