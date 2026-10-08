@@ -181,19 +181,107 @@ vector:
       select:
         type: filter
         inputs:
-        - cilium
-        - envoy
+          - cilium
+          - envoy
         condition: .kubernetes.container_name == "cilium-agent" || .kubernetes.container_name == "envoy"
       enrich:
         type: remap
         inputs:
-        - select
-        source: "\nk = object(.kubernetes) ?? {}\nout = {\n  \"kubernetes\": {\n    \"container_name\": k.container_name,\n    \"container_id\": k.container_id,\n    \"pod_name\": k.pod_name,\n    \"pod_namespace\": k.pod_namespace,\n    \"pod_node_name\": k.pod_node_name,\n    \"pod_ip\": k.pod_ip,\n    \"pod_labels\": k.pod_labels\n  },\n  \"_time\": .timestamp\n}\nmsg = to_string(.message) ?? \"\"\nparsed = null\nif starts_with(msg, \"{\") {\n  parsed = parse_json(msg) ?? null\n}\nif is_object(parsed) {\n  out = merge(out, object!(parsed), deep: false)\n  if exists(parsed.time) && k.container_name == \"cilium-agent\" {\n    out._time = parsed.time\n  }\n} else {\n  out._msg = msg\n}\n. = compact(out, nullish: true)\nprivate = [\"10.0.0.0/8\", \"172.16.0.0/12\", \"192.168.0.0/16\", \"100.64.0.0/10\", \"127.0.0.0/8\", \"169.254.0.0/16\", \"0.0.0.0/8\", \"224.0.0.0/4\", \"240.0.0.0/4\"]\n\nip = to_string(.flow.IP.source) ?? \"\"\nif ip != \"\" && is_ipv4(ip) && !(ip_cidr_contains(private, ip) ?? true) {\n  rec, err = get_enrichment_table_record(\"geoip_city\", {\"ip\": ip})\n  if err == null {\n    .geo.src.country = rec.country.iso_code\n    .geo.src.country_name = rec.country.names.en\n    .geo.src.region = rec.subdivisions[0].names.en\n    .geo.src.city = rec.city.names.en\n    .geo.src.lat = rec.location.latitude\n    .geo.src.lon = rec.location.longitude\n  }\n  as, err = get_enrichment_table_record(\"geoip_asn\", {\"ip\": ip})\n  if err == null {\n    .geo.src.asn = as.autonomous_system_number\n    .geo.src.asn_org = as.autonomous_system_organization\n  }\n}\n\nip = to_string(.flow.IP.destination) ?? \"\"\nif ip != \"\" && is_ipv4(ip) && !(ip_cidr_contains(private, ip) ?? true) {\n  rec, err = get_enrichment_table_record(\"geoip_city\", {\"ip\": ip})\n  if err == null {\n    .geo.dst.country = rec.country.iso_code\n    .geo.dst.country_name = rec.country.names.en\n    .geo.dst.region = rec.subdivisions[0].names.en\n    .geo.dst.city = rec.city.names.en\n    .geo.dst.lat = rec.location.latitude\n    .geo.dst.lon = rec.location.longitude\n  }\n  as, err = get_enrichment_table_record(\"geoip_asn\", {\"ip\": ip})\n  if err == null {\n    .geo.dst.asn = as.autonomous_system_number\n    .geo.dst.asn_org = as.autonomous_system_organization\n  }\n}\n\nif exists(.downstream_remote_address) {\n  remote = to_string(.downstream_remote_address) ?? \"\"\n  remote_ip = split(remote, \":\")[0]\n  \n  ip = string(remote_ip) ?? \"\"\n  if ip != \"\" && is_ipv4(ip) && !(ip_cidr_contains(private, ip) ?? true) {\n    rec, err = get_enrichment_table_record(\"geoip_city\", {\"ip\": ip})\n    if err == null {\n      .geo.src.country = rec.country.iso_code\n      .geo.src.country_name = rec.country.names.en\n      .geo.src.region = rec.subdivisions[0].names.en\n      .geo.src.city = rec.city.names.en\n      .geo.src.lat = rec.location.latitude\n      .geo.src.lon = rec.location.longitude\n    }\n    as, err = get_enrichment_table_record(\"geoip_asn\", {\"ip\": ip})\n    if err == null {\n      .geo.src.asn = as.autonomous_system_number\n      .geo.src.asn_org = as.autonomous_system_organization\n    }\n  }\n}\n"
+          - select
+        source: |2
+
+          k = object(.kubernetes) ?? {}
+          out = {
+            "kubernetes": {
+              "container_name": k.container_name,
+              "container_id": k.container_id,
+              "pod_name": k.pod_name,
+              "pod_namespace": k.pod_namespace,
+              "pod_node_name": k.pod_node_name,
+              "pod_ip": k.pod_ip,
+              "pod_labels": k.pod_labels
+            },
+            "_time": .timestamp
+          }
+          msg = to_string(.message) ?? ""
+          parsed = null
+          if starts_with(msg, "{") {
+            parsed = parse_json(msg) ?? null
+          }
+          if is_object(parsed) {
+            out = merge(out, object!(parsed), deep: false)
+            if exists(parsed.time) && k.container_name == "cilium-agent" {
+              out._time = parsed.time
+            }
+          } else {
+            out._msg = msg
+          }
+          . = compact(out, nullish: true)
+          private = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "100.64.0.0/10", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/8", "224.0.0.0/4", "240.0.0.0/4"]
+
+          ip = to_string(.flow.IP.source) ?? ""
+          if ip != "" && is_ipv4(ip) && !(ip_cidr_contains(private, ip) ?? true) {
+            rec, err = get_enrichment_table_record("geoip_city", {"ip": ip})
+            if err == null {
+              .geo.src.country = rec.country.iso_code
+              .geo.src.country_name = rec.country.names.en
+              .geo.src.region = rec.subdivisions[0].names.en
+              .geo.src.city = rec.city.names.en
+              .geo.src.lat = rec.location.latitude
+              .geo.src.lon = rec.location.longitude
+            }
+            as, err = get_enrichment_table_record("geoip_asn", {"ip": ip})
+            if err == null {
+              .geo.src.asn = as.autonomous_system_number
+              .geo.src.asn_org = as.autonomous_system_organization
+            }
+          }
+
+          ip = to_string(.flow.IP.destination) ?? ""
+          if ip != "" && is_ipv4(ip) && !(ip_cidr_contains(private, ip) ?? true) {
+            rec, err = get_enrichment_table_record("geoip_city", {"ip": ip})
+            if err == null {
+              .geo.dst.country = rec.country.iso_code
+              .geo.dst.country_name = rec.country.names.en
+              .geo.dst.region = rec.subdivisions[0].names.en
+              .geo.dst.city = rec.city.names.en
+              .geo.dst.lat = rec.location.latitude
+              .geo.dst.lon = rec.location.longitude
+            }
+            as, err = get_enrichment_table_record("geoip_asn", {"ip": ip})
+            if err == null {
+              .geo.dst.asn = as.autonomous_system_number
+              .geo.dst.asn_org = as.autonomous_system_organization
+            }
+          }
+
+          if exists(.downstream_remote_address) {
+            remote = to_string(.downstream_remote_address) ?? ""
+            remote_ip = split(remote, ":")[0]
+
+            ip = string(remote_ip) ?? ""
+            if ip != "" && is_ipv4(ip) && !(ip_cidr_contains(private, ip) ?? true) {
+              rec, err = get_enrichment_table_record("geoip_city", {"ip": ip})
+              if err == null {
+                .geo.src.country = rec.country.iso_code
+                .geo.src.country_name = rec.country.names.en
+                .geo.src.region = rec.subdivisions[0].names.en
+                .geo.src.city = rec.city.names.en
+                .geo.src.lat = rec.location.latitude
+                .geo.src.lon = rec.location.longitude
+              }
+              as, err = get_enrichment_table_record("geoip_asn", {"ip": ip})
+              if err == null {
+                .geo.src.asn = as.autonomous_system_number
+                .geo.src.asn_org = as.autonomous_system_organization
+              }
+            }
+          }
     sinks:
       victorialogs:
         type: http
         inputs:
-        - enrich
+          - enrich
         uri: http://vlsingle-victoria-logs.telemetry.svc.cluster.local:9428/insert/jsonline?_stream_fields=kubernetes.container_name,kubernetes.pod_name,kubernetes.pod_namespace&_msg_field=_msg&_time_field=_time
         method: post
         encoding:
@@ -214,7 +302,7 @@ vector:
       prometheus:
         type: prometheus_exporter
         inputs:
-        - internal_metrics
+          - internal_metrics
         address: 0.0.0.0:9090
   podMonitor:
     enabled: true
@@ -226,43 +314,43 @@ vector:
     limits:
       memory: 768Mi
   initContainers:
-  - name: geoip
-    image: docker.io/library/alpine:3.24@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6
-    command:
-    - /bin/sh
-    - -c
-    - |
-      set -u
-      cd /geoip
-      for f in city asn; do
-        file="dbip-$f-lite.mmdb"
-        if [ -s "$file" ] && [ -z "$(find "$file" -mtime +35)" ]; then
-          continue
-        fi
-        for m in $(date -u +%Y-%m) $(date -u -d "@$(($(date +%s) - 2592000))" +%Y-%m); do
-          if wget -q -T 120 -O "$file.gz.tmp" "https://download.db-ip.com/free/dbip-$f-lite-$m.mmdb.gz" && gunzip -c "$file.gz.tmp" > "$file.tmp" && [ -s "$file.tmp" ]; then
-            mv "$file.tmp" "$file"
-            break
-          fi
-        done
-        rm -f "$file.gz.tmp" "$file.tmp"
-        if [ ! -s "$file" ]; then
-          echo "no $file available" >&2
-          exit 1
-        fi
-      done
-    volumeMounts:
+    - name: geoip
+      image: docker.io/library/alpine:3.24@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6
+      command:
+        - /bin/sh
+        - -c
+        - |
+          set -u
+          cd /geoip
+          for f in city asn; do
+            file="dbip-$f-lite.mmdb"
+            if [ -s "$file" ] && [ -z "$(find "$file" -mtime +35)" ]; then
+              continue
+            fi
+            for m in $(date -u +%Y-%m) $(date -u -d "@$(($(date +%s) - 2592000))" +%Y-%m); do
+              if wget -q -T 120 -O "$file.gz.tmp" "https://download.db-ip.com/free/dbip-$f-lite-$m.mmdb.gz" && gunzip -c "$file.gz.tmp" > "$file.tmp" && [ -s "$file.tmp" ]; then
+                mv "$file.tmp" "$file"
+                break
+              fi
+            done
+            rm -f "$file.gz.tmp" "$file.tmp"
+            if [ ! -s "$file" ]; then
+              echo "no $file available" >&2
+              exit 1
+            fi
+          done
+      volumeMounts:
+        - name: geoip
+          mountPath: /geoip
+  extraVolumes:
+    - name: geoip
+      hostPath:
+        path: /var/lib/vector-geoip
+        type: DirectoryOrCreate
+  extraVolumeMounts:
     - name: geoip
       mountPath: /geoip
-  extraVolumes:
-  - name: geoip
-    hostPath:
-      path: /var/lib/vector-geoip
-      type: DirectoryOrCreate
-  extraVolumeMounts:
-  - name: geoip
-    mountPath: /geoip
-    readOnly: true
+      readOnly: true
 
 vector-syslog:
   fullnameOverride: vector-syslog
@@ -282,7 +370,7 @@ vector-syslog:
     readOnlyRootFilesystem: true
     capabilities:
       drop:
-      - ALL
+        - ALL
   persistence:
     enabled: true
     storageClassName: longhorn-ssd
@@ -309,19 +397,19 @@ vector-syslog:
       syslog_dedupe:
         type: dedupe
         inputs:
-        - vps_syslog
+          - vps_syslog
         cache:
           num_events: 10000
         fields:
           match:
-          - timestamp
-          - hostname
-          - appname
-          - message
+            - timestamp
+            - hostname
+            - appname
+            - message
       syslog_enrich:
         type: remap
         inputs:
-        - syslog_dedupe
+          - syslog_dedupe
         source: |2
 
           out = {
@@ -361,7 +449,7 @@ vector-syslog:
       victorialogs_syslog:
         type: http
         inputs:
-        - syslog_enrich
+          - syslog_enrich
         uri: http://vlsingle-victoria-logs.telemetry.svc.cluster.local:9428/insert/jsonline?_stream_fields=hostname,app_name&_msg_field=_msg&_time_field=_time
         method: post
         encoding:
@@ -382,7 +470,7 @@ vector-syslog:
       prometheus:
         type: prometheus_exporter
         inputs:
-        - internal_metrics
+          - internal_metrics
         address: 0.0.0.0:9090
   podMonitor:
     enabled: true
@@ -394,41 +482,41 @@ vector-syslog:
     limits:
       memory: 512Mi
   initContainers:
-  - name: geoip
-    image: docker.io/library/alpine:3.24@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6
-    command:
-    - /bin/sh
-    - -c
-    - |
-      set -u
-      mkdir -p /vector-data-dir/geoip
-      cd /vector-data-dir/geoip
-      for f in city asn; do
-        file="dbip-$f-lite.mmdb"
-        if [ -s "$file" ] && [ -z "$(find "$file" -mtime +35)" ]; then
-          continue
-        fi
-        for m in $(date -u +%Y-%m) $(date -u -d "@$(($(date +%s) - 2592000))" +%Y-%m); do
-          if wget -q -T 120 -O "$file.gz.tmp" "https://download.db-ip.com/free/dbip-$f-lite-$m.mmdb.gz" && gunzip -c "$file.gz.tmp" > "$file.tmp" && [ -s "$file.tmp" ]; then
-            mv "$file.tmp" "$file"
-            break
-          fi
-        done
-        rm -f "$file.gz.tmp" "$file.tmp"
-        if [ ! -s "$file" ]; then
-          echo "no $file available" >&2
-          exit 1
-        fi
-      done
-    securityContext:
-      allowPrivilegeEscalation: false
-      readOnlyRootFilesystem: true
-      capabilities:
-        drop:
-        - ALL
-    volumeMounts:
-    - name: data
-      mountPath: /vector-data-dir
+    - name: geoip
+      image: docker.io/library/alpine:3.24@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6
+      command:
+        - /bin/sh
+        - -c
+        - |
+          set -u
+          mkdir -p /vector-data-dir/geoip
+          cd /vector-data-dir/geoip
+          for f in city asn; do
+            file="dbip-$f-lite.mmdb"
+            if [ -s "$file" ] && [ -z "$(find "$file" -mtime +35)" ]; then
+              continue
+            fi
+            for m in $(date -u +%Y-%m) $(date -u -d "@$(($(date +%s) - 2592000))" +%Y-%m); do
+              if wget -q -T 120 -O "$file.gz.tmp" "https://download.db-ip.com/free/dbip-$f-lite-$m.mmdb.gz" && gunzip -c "$file.gz.tmp" > "$file.tmp" && [ -s "$file.tmp" ]; then
+                mv "$file.tmp" "$file"
+                break
+              fi
+            done
+            rm -f "$file.gz.tmp" "$file.tmp"
+            if [ ! -s "$file" ]; then
+              echo "no $file available" >&2
+              exit 1
+            fi
+          done
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+      volumeMounts:
+        - name: data
+          mountPath: /vector-data-dir
 
 helpers:
   infisicalSecrets:
