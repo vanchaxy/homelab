@@ -184,7 +184,7 @@ egressExceptions:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   actualbudget:
     toNamespaces: [envoy-gateway]
-    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, api.monobank.ua, bankaccountdata.gocardless.com, query2.finance.yahoo.com]
   amdgpu:
     toEntities: [kube-apiserver]
   argocd:
@@ -214,13 +214,13 @@ egressExceptions:
     toFQDNs: [api.cloudflare.com]
     toCIDRs: [10.10.60.1/32]
   factorio:
-    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, auth.factorio.com]
   grafana:
     toNamespaces: [telemetry, envoy-gateway]
     toEntities: [kube-apiserver]
-    toFQDNs: [s3.eu-central-003.backblazeb2.com, grafana.com]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, grafana.com, secure.gravatar.com]
   hermes-karyna:
-    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, platform.claude.com, api.github.com, raw.githubusercontent.com, antigravity-hub-auto-updater-974169037036.us-central1.run.app]
     toCIDRs: [149.154.166.110/32]
   icarus:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
@@ -242,17 +242,17 @@ egressExceptions:
     toFQDNs: [s3.eu-central-003.backblazeb2.com, longhorn-upgrade-responder.rancher.io]
   media:
     toNamespaces: [envoy-gateway]
-    toFQDNs: [s3.eu-central-003.backblazeb2.com, api.autobrr.com, api.radarr.video, api.themoviedb.org, image.tmdb.org, indexers.prowlarr.com, raw.githubusercontent.com, github.com]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, api.autobrr.com, api.radarr.video, api.themoviedb.org, image.tmdb.org, indexers.prowlarr.com, raw.githubusercontent.com, github.com, api.trakt.tv, prowlarr.servarr.com, radarr.servarr.com, services.sonarr.tv, skyhook.sonarr.tv, api4.thetvdb.com, artworks.thetvdb.com, thexem.info]
   necesse:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   palworld:
-    toFQDNs: [s3.eu-central-003.backblazeb2.com, telemetry.palworldgame.com]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, telemetry.palworldgame.com, api.epicgames.dev]
   paperless-ngx:
     toNamespaces: [envoy-gateway]
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   pocket-id:
     toEntities: [kube-apiserver]
-    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, api.github.com]
   robusta:
     toNamespaces: [telemetry]
     toEntities: [kube-apiserver]
@@ -268,14 +268,14 @@ egressExceptions:
   toloka-torznab:
     toNamespaces: [media]
     toEntities: [kube-apiserver]
-    toFQDNs: [s3.eu-central-003.backblazeb2.com, radarrapi.servarr.com, toloka.to, utp.to, skyhook.sonarr.tv]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, radarrapi.servarr.com, toloka.to, utp.to, skyhook.sonarr.tv, datasets.imdbws.com]
   versitygw:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   volsync:
     toEntities: [kube-apiserver]
   yamtrack:
     toNamespaces: [envoy-gateway]
-    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, api.trakt.tv]
 
 sameNamespaceEgress:
   - abiotic-factor
