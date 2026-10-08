@@ -13,7 +13,7 @@ spec:
   useDefaultResources: false
   resources:
     requests:
-      cpu: 50m
-      memory: 200Mi
+      cpu: 500m
+      memory: 2Gi
     limits:
-      memory: 1Gi
+      memory: 4Gi
