@@ -170,11 +170,11 @@ vector:
       cilium:
         type: kubernetes_logs
         extra_label_selector: k8s-app=cilium
-        read_from: end
+        read_from: beginning
       envoy:
         type: kubernetes_logs
         extra_label_selector: app.kubernetes.io/component=proxy,app.kubernetes.io/managed-by=envoy-gateway
-        read_from: end
+        read_from: beginning
       internal_metrics:
         type: internal_metrics
     transforms:
