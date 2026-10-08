@@ -13,7 +13,7 @@ crowdsec:
         victorialogs-raw.yaml: |
           name: homelab/victorialogs-raw
           description: "Claim lines read from VictoriaLogs, using the acquisition type label as program"
-          filter: "evt.Line.Labels.type in ['hubble', 'envoy']"
+          filter: "evt.Line.Labels.type in ['hubble', 'envoy', 'kernel', 'sshd']"
           onsuccess: next_stage
           statics:
             - parsed: program
@@ -23,7 +23,7 @@ crowdsec:
       s01-parse:
         hubble-drops.yaml: |
           name: homelab/hubble-drops
-          description: "Parse Hubble drops of internet traffic as iptables-style drops"
+          description: "Parse Hubble flows from the internet, dropped or accepted, as iptables-style lines"
           filter: "evt.Parsed.program == 'hubble'"
           onsuccess: next_stage
           statics:
@@ -47,6 +47,17 @@ crowdsec:
               expression: evt.Unmarshaled.hubble.DPT
             - parsed: proto
               expression: evt.Unmarshaled.hubble.PROTO
+      s02-enrich:
+        homelab-whitelist.yaml: |
+          name: homelab/whitelist
+          description: "Never ban the home uplink, the routed public IP or the tailnet"
+          whitelist:
+            reason: "homelab own addresses"
+            ip:
+              - 194.212.226.167
+              - 46.38.230.69
+            cidr:
+              - 100.64.0.0/10
 
     scenarios:
       hubble-udp-scan.yaml: |
@@ -109,7 +120,7 @@ crowdsec:
         url: http://vlsingle-victoria-logs.telemetry.svc.cluster.local:9428/
         limit: 1000
         query: >-
-          kubernetes.container_name:cilium-agent flow.verdict:DROPPED flow.source.identity:2
+          kubernetes.container_name:cilium-agent flow.source.identity:2 (flow.verdict:DROPPED or flow.event_type.type:4)
           | format if (flow.l4.TCP.destination_port:*) "tcp" as proto
           | format if (flow.l4.UDP.destination_port:*) "udp" as proto
           | format "SRC=<flow.IP.source> DST=<flow.IP.destination> PROTO=<proto> SPT=<flow.l4.TCP.source_port><flow.l4.UDP.source_port> DPT=<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port> REASON=<flow.drop_reason_desc>" as _msg
@@ -124,9 +135,23 @@ crowdsec:
           | pack_json fields (start_time, method, "x-envoy-origin-path", protocol, response_code, response_flags, response_code_details, bytes_received, bytes_sent, duration, "x-forwarded-for", "user-agent", "x-request-id", ":authority", upstream_host, downstream_remote_address, requested_server_name, route_name) as _msg
         labels:
           type: envoy
+      - source: victorialogs
+        mode: tail
+        url: http://vlsingle-victoria-logs.telemetry.svc.cluster.local:9428/
+        limit: 1000
+        query: hostname:="vps-router" app_name:kernel "[ipv4-"
+        labels:
+          type: kernel
+      - source: victorialogs
+        mode: tail
+        url: http://vlsingle-victoria-logs.telemetry.svc.cluster.local:9428/
+        limit: 1000
+        query: hostname:="vps-router" app_name:sshd
+        labels:
+          type: sshd
     env:
       - name: COLLECTIONS
-        value: crowdsecurity/iptables yanis-kouidri/envoy
+        value: crowdsecurity/iptables crowdsecurity/sshd yanis-kouidri/envoy
     metrics:
       serviceMonitor:
         enabled: true
