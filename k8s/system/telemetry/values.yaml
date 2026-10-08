@@ -306,10 +306,23 @@ vector-syslog:
       internal_metrics:
         type: internal_metrics
     transforms:
+      syslog_dedupe:
+        type: dedupe
+        inputs:
+        - vps_syslog
+        cache:
+          num_events: 10000
+        fields:
+          match:
+          - timestamp
+          - hostname
+          - appname
+          - procid
+          - message
       syslog_enrich:
         type: remap
         inputs:
-        - vps_syslog
+        - syslog_dedupe
         source: |2
 
           out = {
