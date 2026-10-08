@@ -1,0 +1,17 @@
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: public-gw-crowdsec
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: public-gw
+  extAuth:
+    failOpen: true
+    timeout: 2s
+    grpc:
+      backendRefs:
+        - name: crowdsec-envoy-bouncer
+          namespace: crowdsec
+          port: 8080

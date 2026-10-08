@@ -237,7 +237,7 @@ egressExceptions:
     toNamespaces: [envoy-gateway]
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   envoy-gateway:
-    toNamespaces: [actualbudget, argocd, backrest, donetick, grafana, hermes-karyna, home-infra, immich, kaneo, kube-system, librespeed, longhorn-system, media, paperless-ngx, pocket-id, toloka-torznab, versitygw, yamtrack]
+    toNamespaces: [actualbudget, argocd, backrest, crowdsec, donetick, grafana, hermes-karyna, home-infra, immich, kaneo, kube-system, librespeed, longhorn-system, media, paperless-ngx, pocket-id, toloka-torznab, versitygw, yamtrack]
     toEntities: [kube-apiserver]
     toCIDRs: [10.10.60.1/32]
   external-dns:

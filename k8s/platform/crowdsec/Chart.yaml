@@ -9,6 +9,10 @@ dependencies:
     version: 5.2.1
     repository: https://bjw-s-labs.github.io/helm-charts
     alias: blocklist-mirror
+  - name: envoy-proxy-bouncer
+    version: 0.8.2
+    repository: oci://ghcr.io/kdwils/charts
+    alias: envoy-bouncer
   - name: helpers
     version: 0.1.0
     repository: file://../../../k8s/_helpers
