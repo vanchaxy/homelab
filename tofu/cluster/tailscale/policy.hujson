@@ -35,8 +35,9 @@
 			"ip":  ["udp:53", "tcp:53"],
 		},
 		{"src": ["vanchaxy@github"], "dst": ["autogroup:internet"], "ip": ["*"]},
-		// VPS router: fetch CrowdSec bans from blocklist-mirror.
+		// VPS router: fetch CrowdSec bans from blocklist-mirror, ship firewall logs to VictoriaLogs.
 		{"src": ["tag:router"], "dst": ["10.10.61.242"], "ip": ["tcp:41412"]},
+		{"src": ["tag:router"], "dst": ["10.10.61.214"], "ip": ["udp:514"]},
 		// GitHub Actions (ephemeral tag:ci nodes): only what tofu needs.
 		{"src": ["tag:ci"], "dst": ["10.10.20.1", "10.10.10.2"], "ip": ["tcp:22"]},
 		{"src": ["tag:ci"], "dst": ["10.10.60.201", "10.10.60.202", "10.10.60.203"], "ip": ["tcp:6443", "tcp:50000"]},
