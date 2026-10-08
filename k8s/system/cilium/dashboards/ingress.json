@@ -1,0 +1,1458 @@
+{
+  "title": "Network — Ingress",
+  "uid": "cilium-ingress",
+  "tags": [
+    "cilium",
+    "hubble",
+    "network-policy",
+    "ingress"
+  ],
+  "timezone": "browser",
+  "editable": true,
+  "graphTooltip": 1,
+  "refresh": "1m",
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "schemaVersion": 41,
+  "templating": {
+    "list": [
+      {
+        "name": "ds_vm",
+        "label": "Metrics",
+        "type": "datasource",
+        "query": "prometheus",
+        "regex": "VictoriaMetrics",
+        "current": {
+          "text": "VictoriaMetrics",
+          "value": "VictoriaMetrics"
+        },
+        "hide": 2
+      },
+      {
+        "name": "ds_vl",
+        "label": "Logs",
+        "type": "datasource",
+        "query": "victoriametrics-logs-datasource",
+        "current": {},
+        "hide": 2
+      },
+      {
+        "name": "dst_namespace",
+        "label": "Destination namespace",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${ds_vm}"
+        },
+        "query": {
+          "query": "label_values(hubble_flows_processed_total{type=\"Trace\"}, destination)",
+          "refId": "ns"
+        },
+        "regex": "/^(?!reserved:).+$/",
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "refresh": 2,
+        "sort": 1
+      },
+      {
+        "name": "peer",
+        "label": "Peer",
+        "type": "custom",
+        "query": "internet,lan,cluster,node",
+        "multi": true,
+        "includeAll": false,
+        "current": {
+          "text": [
+            "internet",
+            "lan",
+            "cluster"
+          ],
+          "value": [
+            "internet",
+            "lan",
+            "cluster"
+          ]
+        },
+        "options": [
+          {
+            "text": "internet",
+            "value": "internet",
+            "selected": true
+          },
+          {
+            "text": "lan",
+            "value": "lan",
+            "selected": true
+          },
+          {
+            "text": "cluster",
+            "value": "cluster",
+            "selected": true
+          },
+          {
+            "text": "node",
+            "value": "node",
+            "selected": false
+          }
+        ]
+      }
+    ]
+  },
+  "annotations": {
+    "list": []
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "text",
+      "title": "",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 3
+      },
+      "transparent": true,
+      "options": {
+        "mode": "markdown",
+        "content": "### 📥 Inbound connections to pods\nOne record per new inbound TCP connection (SYN) and per inbound UDP/ICMP flow (ongoing UDP is re-reported every few seconds). **Peer**: *internet* = public addresses, *lan* = home network & tailnet, *cluster* = pods and API server, *node* = node addresses (mostly kubelet health probes, excluded by default). No ingress policy is enforced yet."
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Inbound connections",
+      "description": "",
+      "gridPos": {
+        "x": 0,
+        "y": 3,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.container_name:cilium-agent flow.event_type.type:4 flow.destination.pod_name:~\".\" flow.destination.namespace:~\"^${dst_namespace}$\" | format \"cluster\" as peer | format if (flow.source.namespace:\"\" and flow.source.identity:in(\"1\",\"6\")) \"node\" as peer | format if (flow.source.namespace:\"\" and not flow.source.identity:in(\"1\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\")) \"internet\" as peer | format if (peer:internet and (flow.IP.source:ipv4_range(\"10.0.0.0/8\") or flow.IP.source:ipv4_range(\"172.16.0.0/12\") or flow.IP.source:ipv4_range(\"192.168.0.0/16\") or flow.IP.source:ipv4_range(\"100.64.0.0/10\"))) \"lan\" as peer | filter peer:in($peer) | format \"<flow.destination.pod_name>\" as dst_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at dst_app | replace_regexp (\"-[0-9a-f]{32}$\", \"\") at dst_app | format \"<flow.destination.namespace>/<dst_app>\" as destination | format \"<flow.source.pod_name>\" as src_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at src_app | replace_regexp (\"-[0-9a-f]{32}$\", \"\") at src_app | format \"<flow.source.namespace>/<src_app>\" as source | format if (peer:in(internet, lan)) \"<flow.IP.source>\" as source | format if (peer:node) \"node <flow.IP.source>\" as source | format if (flow.source.identity:\"7\") \"kube-apiserver\" as source | format \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as port | format \"<flow.l4.TCP.destination_port>\" as tport | format \"<flow.l4.UDP.destination_port>\" as uport | format \"icmp\" as proto | format if (not uport:\"\") \"udp\" as proto | format if (not tport:\"\") \"tcp\" as proto | format \"same namespace\" as relation | format if (not flow.source.namespace:\"\" and not flow.source.namespace:eq_field(flow.destination.namespace)) \"cross-namespace\" as relation | format if (peer:in(internet, lan, node) or flow.source.identity:\"7\") \"<peer>\" as relation | format if (flow.source.identity:\"7\") \"api-server\" as relation | stats count() n",
+          "queryType": "stats",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "From the internet",
+      "description": "",
+      "gridPos": {
+        "x": 6,
+        "y": 3,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.container_name:cilium-agent flow.event_type.type:4 flow.destination.pod_name:~\".\" flow.destination.namespace:~\"^${dst_namespace}$\" | format \"cluster\" as peer | format if (flow.source.namespace:\"\" and flow.source.identity:in(\"1\",\"6\")) \"node\" as peer | format if (flow.source.namespace:\"\" and not flow.source.identity:in(\"1\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\")) \"internet\" as peer | format if (peer:internet and (flow.IP.source:ipv4_range(\"10.0.0.0/8\") or flow.IP.source:ipv4_range(\"172.16.0.0/12\") or flow.IP.source:ipv4_range(\"192.168.0.0/16\") or flow.IP.source:ipv4_range(\"100.64.0.0/10\"))) \"lan\" as peer | filter peer:in($peer) | format \"<flow.destination.pod_name>\" as dst_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at dst_app | replace_regexp (\"-[0-9a-f]{32}$\", \"\") at dst_app | format \"<flow.destination.namespace>/<dst_app>\" as destination | format \"<flow.source.pod_name>\" as src_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at src_app | replace_regexp (\"-[0-9a-f]{32}$\", \"\") at src_app | format \"<flow.source.namespace>/<src_app>\" as source | format if (peer:in(internet, lan)) \"<flow.IP.source>\" as source | format if (peer:node) \"node <flow.IP.source>\" as source | format if (flow.source.identity:\"7\") \"kube-apiserver\" as source | format \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as port | format \"<flow.l4.TCP.destination_port>\" as tport | format \"<flow.l4.UDP.destination_port>\" as uport | format \"icmp\" as proto | format if (not uport:\"\") \"udp\" as proto | format if (not tport:\"\") \"tcp\" as proto | format \"same namespace\" as relation | format if (not flow.source.namespace:\"\" and not flow.source.namespace:eq_field(flow.destination.namespace)) \"cross-namespace\" as relation | format if (peer:in(internet, lan, node) or flow.source.identity:\"7\") \"<peer>\" as relation | format if (flow.source.identity:\"7\") \"api-server\" as relation | filter peer:internet | stats count() n",
+          "queryType": "stats",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "purple"
+          },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Cross-namespace",
+      "description": "",
+      "gridPos": {
+        "x": 12,
+        "y": 3,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.container_name:cilium-agent flow.event_type.type:4 flow.destination.pod_name:~\".\" flow.destination.namespace:~\"^${dst_namespace}$\" | format \"cluster\" as peer | format if (flow.source.namespace:\"\" and flow.source.identity:in(\"1\",\"6\")) \"node\" as peer | format if (flow.source.namespace:\"\" and not flow.source.identity:in(\"1\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\")) \"internet\" as peer | format if (peer:internet and (flow.IP.source:ipv4_range(\"10.0.0.0/8\") or flow.IP.source:ipv4_range(\"172.16.0.0/12\") or flow.IP.source:ipv4_range(\"192.168.0.0/16\") or flow.IP.source:ipv4_range(\"100.64.0.0/10\"))) \"lan\" as peer | filter peer:in($peer) | format \"<flow.destination.pod_name>\" as dst_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at dst_app | replace_regexp (\"-[0-9a-f]{32}$\", \"\") at dst_app | format \"<flow.destination.namespace>/<dst_app>\" as destination | format \"<flow.source.pod_name>\" as src_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at src_app | replace_regexp (\"-[0-9a-f]{32}$\", \"\") at src_app | format \"<flow.source.namespace>/<src_app>\" as source | format if (peer:in(internet, lan)) \"<flow.IP.source>\" as source | format if (peer:node) \"node <flow.IP.source>\" as source | format if (flow.source.identity:\"7\") \"kube-apiserver\" as source | format \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as port | format \"<flow.l4.TCP.destination_port>\" as tport | format \"<flow.l4.UDP.destination_port>\" as uport | format \"icmp\" as proto | format if (not uport:\"\") \"udp\" as proto | format if (not tport:\"\") \"tcp\" as proto | format \"same namespace\" as relation | format if (not flow.source.namespace:\"\" and not flow.source.namespace:eq_field(flow.destination.namespace)) \"cross-namespace\" as relation | format if (peer:in(internet, lan, node) or flow.source.identity:\"7\") \"<peer>\" as relation | format if (flow.source.identity:\"7\") \"api-server\" as relation | filter relation:cross-namespace | stats count() n",
+          "queryType": "stats",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "orange"
+          },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Distinct internet sources",
+      "description": "",
+      "gridPos": {
+        "x": 18,
+        "y": 3,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.container_name:cilium-agent flow.event_type.type:4 flow.destination.pod_name:~\".\" flow.destination.namespace:~\"^${dst_namespace}$\" | format \"cluster\" as peer | format if (flow.source.namespace:\"\" and flow.source.identity:in(\"1\",\"6\")) \"node\" as peer | format if (flow.source.namespace:\"\" and not flow.source.identity:in(\"1\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\")) \"internet\" as peer | format if (peer:internet and (flow.IP.source:ipv4_range(\"10.0.0.0/8\") or flow.IP.source:ipv4_range(\"172.16.0.0/12\") or flow.IP.source:ipv4_range(\"192.168.0.0/16\") or flow.IP.source:ipv4_range(\"100.64.0.0/10\"))) \"lan\" as peer | filter peer:in($peer) | format \"<flow.destination.pod_name>\" as dst_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at dst_app | replace_regexp (\"-[0-9a-f]{32}$\", \"\") at dst_app | format \"<flow.destination.namespace>/<dst_app>\" as destination | format \"<flow.source.pod_name>\" as src_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at src_app | replace_regexp (\"-[0-9a-f]{32}$\", \"\") at src_app | format \"<flow.source.namespace>/<src_app>\" as source | format if (peer:in(internet, lan)) \"<flow.IP.source>\" as source | format if (peer:node) \"node <flow.IP.source>\" as source | format if (flow.source.identity:\"7\") \"kube-apiserver\" as source | format \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as port | format \"<flow.l4.TCP.destination_port>\" as tport | format \"<flow.l4.UDP.destination_port>\" as uport | format \"icmp\" as proto | format if (not uport:\"\") \"udp\" as proto | format if (not tport:\"\") \"tcp\" as proto | format \"same namespace\" as relation | format if (not flow.source.namespace:\"\" and not flow.source.namespace:eq_field(flow.destination.namespace)) \"cross-namespace\" as relation | format if (peer:in(internet, lan, node) or flow.source.identity:\"7\") \"<peer>\" as relation | format if (flow.source.identity:\"7\") \"api-server\" as relation | filter peer:internet | stats count_uniq(flow.IP.source) n",
+          "queryType": "stats",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "purple"
+          },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Inbound connections by source type",
+      "gridPos": {
+        "x": 0,
+        "y": 7,
+        "w": 16,
+        "h": 8
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.container_name:cilium-agent flow.event_type.type:4 flow.destination.pod_name:~\".\" flow.destination.namespace:~\"^${dst_namespace}$\" | format \"cluster\" as peer | format if (flow.source.namespace:\"\" and flow.source.identity:in(\"1\",\"6\")) \"node\" as peer | format if (flow.source.namespace:\"\" and not flow.source.identity:in(\"1\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\")) \"internet\" as peer | format if (peer:internet and (flow.IP.source:ipv4_range(\"10.0.0.0/8\") or flow.IP.source:ipv4_range(\"172.16.0.0/12\") or flow.IP.source:ipv4_range(\"192.168.0.0/16\") or flow.IP.source:ipv4_range(\"100.64.0.0/10\"))) \"lan\" as peer | filter peer:in($peer) | format \"<flow.destination.pod_name>\" as dst_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at dst_app | replace_regexp (\"-[0-9a-f]{32}$\", \"\") at dst_app | format \"<flow.destination.namespace>/<dst_app>\" as destination | format \"<flow.source.pod_name>\" as src_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at src_app | replace_regexp (\"-[0-9a-f]{32}$\", \"\") at src_app | format \"<flow.source.namespace>/<src_app>\" as source | format if (peer:in(internet, lan)) \"<flow.IP.source>\" as source | format if (peer:node) \"node <flow.IP.source>\" as source | format if (flow.source.identity:\"7\") \"kube-apiserver\" as source | format \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as port | format \"<flow.l4.TCP.destination_port>\" as tport | format \"<flow.l4.UDP.destination_port>\" as uport | format \"icmp\" as proto | format if (not uport:\"\") \"udp\" as proto | format if (not tport:\"\") \"tcp\" as proto | format \"same namespace\" as relation | format if (not flow.source.namespace:\"\" and not flow.source.namespace:eq_field(flow.destination.namespace)) \"cross-namespace\" as relation | format if (peer:in(internet, lan, node) or flow.source.identity:\"7\") \"<peer>\" as relation | format if (flow.source.identity:\"7\") \"api-server\" as relation | stats by (relation) count() n",
+          "queryType": "statsRange",
+          "editorMode": "code",
+          "maxLines": 1000,
+          "legendFormat": "{{relation}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 85,
+            "lineWidth": 0,
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            },
+            "showPoints": "never",
+            "scaleDistribution": {
+              "type": "log",
+              "log": 10
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "internet"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "purple"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "lan"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "cluster"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "node"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "text"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "cross-namespace"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "same namespace"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "api-server"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "yellow"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 7,
+      "type": "bargauge",
+      "title": "Most contacted services",
+      "gridPos": {
+        "x": 16,
+        "y": 7,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.container_name:cilium-agent flow.event_type.type:4 flow.destination.pod_name:~\".\" flow.destination.namespace:~\"^${dst_namespace}$\" | format \"cluster\" as peer | format if (flow.source.namespace:\"\" and flow.source.identity:in(\"1\",\"6\")) \"node\" as peer | format if (flow.source.namespace:\"\" and not flow.source.identity:in(\"1\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\")) \"internet\" as peer | format if (peer:internet and (flow.IP.source:ipv4_range(\"10.0.0.0/8\") or flow.IP.source:ipv4_range(\"172.16.0.0/12\") or flow.IP.source:ipv4_range(\"192.168.0.0/16\") or flow.IP.source:ipv4_range(\"100.64.0.0/10\"))) \"lan\" as peer | filter peer:in($peer) | format \"<flow.destination.pod_name>\" as dst_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at dst_app | replace_regexp (\"-[0-9a-f]{32}$\", \"\") at dst_app | format \"<flow.destination.namespace>/<dst_app>\" as destination | format \"<flow.source.pod_name>\" as src_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at src_app | replace_regexp (\"-[0-9a-f]{32}$\", \"\") at src_app | format \"<flow.source.namespace>/<src_app>\" as source | format if (peer:in(internet, lan)) \"<flow.IP.source>\" as source | format if (peer:node) \"node <flow.IP.source>\" as source | format if (flow.source.identity:\"7\") \"kube-apiserver\" as source | format \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as port | format \"<flow.l4.TCP.destination_port>\" as tport | format \"<flow.l4.UDP.destination_port>\" as uport | format \"icmp\" as proto | format if (not uport:\"\") \"udp\" as proto | format if (not tport:\"\") \"tcp\" as proto | format \"same namespace\" as relation | format if (not flow.source.namespace:\"\" and not flow.source.namespace:eq_field(flow.destination.namespace)) \"cross-namespace\" as relation | format if (peer:in(internet, lan, node) or flow.source.identity:\"7\") \"<peer>\" as relation | format if (flow.source.identity:\"7\") \"api-server\" as relation | stats by (destination) count() n | sort by (n desc) | limit 12",
+          "queryType": "stats",
+          "editorMode": "code",
+          "maxLines": 1000,
+          "legendFormat": "{{destination}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "min": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "namePlacement": "left",
+        "sizing": "manual",
+        "minVizHeight": 14,
+        "maxVizHeight": 20,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "legend": {
+          "showLegend": false
+        }
+      }
+    },
+    {
+      "id": 8,
+      "type": "table",
+      "title": "🌍 From outside the cluster (internet & LAN)",
+      "description": "Distinct external source → service pairs in the selected range.",
+      "gridPos": {
+        "x": 0,
+        "y": 15,
+        "w": 12,
+        "h": 11
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.container_name:cilium-agent flow.event_type.type:4 flow.destination.pod_name:~\".\" flow.destination.namespace:~\"^${dst_namespace}$\" | format \"cluster\" as peer | format if (flow.source.namespace:\"\" and flow.source.identity:in(\"1\",\"6\")) \"node\" as peer | format if (flow.source.namespace:\"\" and not flow.source.identity:in(\"1\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\")) \"internet\" as peer | format if (peer:internet and (flow.IP.source:ipv4_range(\"10.0.0.0/8\") or flow.IP.source:ipv4_range(\"172.16.0.0/12\") or flow.IP.source:ipv4_range(\"192.168.0.0/16\") or flow.IP.source:ipv4_range(\"100.64.0.0/10\"))) \"lan\" as peer | filter peer:in($peer) | format \"<flow.destination.pod_name>\" as dst_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at dst_app | replace_regexp (\"-[0-9a-f]{32}$\", \"\") at dst_app | format \"<flow.destination.namespace>/<dst_app>\" as destination | format \"<flow.source.pod_name>\" as src_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at src_app | replace_regexp (\"-[0-9a-f]{32}$\", \"\") at src_app | format \"<flow.source.namespace>/<src_app>\" as source | format if (peer:in(internet, lan)) \"<flow.IP.source>\" as source | format if (peer:node) \"node <flow.IP.source>\" as source | format if (flow.source.identity:\"7\") \"kube-apiserver\" as source | format \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as port | format \"<flow.l4.TCP.destination_port>\" as tport | format \"<flow.l4.UDP.destination_port>\" as uport | format \"icmp\" as proto | format if (not uport:\"\") \"udp\" as proto | format if (not tport:\"\") \"tcp\" as proto | format \"same namespace\" as relation | format if (not flow.source.namespace:\"\" and not flow.source.namespace:eq_field(flow.destination.namespace)) \"cross-namespace\" as relation | format if (peer:in(internet, lan, node) or flow.source.identity:\"7\") \"<peer>\" as relation | format if (flow.source.identity:\"7\") \"api-server\" as relation | filter peer:in(internet, lan) | stats by (peer, source, destination, proto, port) count() connections, min(_time) first_seen, max(_time) last_seen | sort by (connections desc) | limit 300",
+          "queryType": "instant",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "transformations": [
+        {
+          "id": "extractFields",
+          "options": {
+            "source": "labels",
+            "format": "json",
+            "replace": false,
+            "keepTime": false
+          }
+        },
+        {
+          "id": "convertFieldType",
+          "options": {
+            "conversions": [
+              {
+                "targetField": "connections",
+                "destinationType": "number"
+              },
+              {
+                "targetField": "first_seen",
+                "destinationType": "time"
+              },
+              {
+                "targetField": "last_seen",
+                "destinationType": "time"
+              }
+            ],
+            "fields": {}
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Line": true,
+              "id": true,
+              "labels": true,
+              "streams": true,
+              "streamId": true,
+              "tsNs": true,
+              "level": true,
+              "detected_level": true
+            },
+            "indexByName": {
+              "peer": 0,
+              "source": 1,
+              "destination": 2,
+              "proto": 3,
+              "port": 4,
+              "connections": 5,
+              "first_seen": 6,
+              "last_seen": 7
+            },
+            "renameByName": {
+              "peer": "Peer",
+              "source": "Source IP",
+              "destination": "Service",
+              "proto": "Proto",
+              "port": "Port",
+              "connections": "Connections",
+              "first_seen": "First seen",
+              "last_seen": "Last seen"
+            },
+            "includeByName": {}
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "filterable": true,
+            "cellOptions": {
+              "type": "auto"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Peer"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 80
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "internet": {
+                        "color": "purple",
+                        "index": 0
+                      },
+                      "lan": {
+                        "color": "green",
+                        "index": 1
+                      },
+                      "cluster": {
+                        "color": "blue",
+                        "index": 2
+                      },
+                      "node": {
+                        "color": "text",
+                        "index": 3
+                      },
+                      "cross-namespace": {
+                        "color": "orange",
+                        "index": 4
+                      },
+                      "same namespace": {
+                        "color": "blue",
+                        "index": 5
+                      },
+                      "api-server": {
+                        "color": "yellow",
+                        "index": 6
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Connections"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "lcd",
+                  "valueDisplayMode": "text"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "continuous-BlPu"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "First seen"
+            },
+            "properties": [
+              {
+                "id": "custom.hidden",
+                "value": true
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Last seen"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dateTimeFromNow"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Proto"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 60
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Port"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": true,
+          "reducer": [
+            "sum"
+          ],
+          "fields": [
+            "Connections"
+          ]
+        }
+      }
+    },
+    {
+      "id": 9,
+      "type": "table",
+      "title": "🔀 Cross-namespace callers",
+      "description": "Which pods in other namespaces open connections into each service — the input for future ingress rules.",
+      "gridPos": {
+        "x": 12,
+        "y": 15,
+        "w": 12,
+        "h": 11
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.container_name:cilium-agent flow.event_type.type:4 flow.destination.pod_name:~\".\" flow.destination.namespace:~\"^${dst_namespace}$\" | format \"cluster\" as peer | format if (flow.source.namespace:\"\" and flow.source.identity:in(\"1\",\"6\")) \"node\" as peer | format if (flow.source.namespace:\"\" and not flow.source.identity:in(\"1\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\")) \"internet\" as peer | format if (peer:internet and (flow.IP.source:ipv4_range(\"10.0.0.0/8\") or flow.IP.source:ipv4_range(\"172.16.0.0/12\") or flow.IP.source:ipv4_range(\"192.168.0.0/16\") or flow.IP.source:ipv4_range(\"100.64.0.0/10\"))) \"lan\" as peer | filter peer:in($peer) | format \"<flow.destination.pod_name>\" as dst_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at dst_app | replace_regexp (\"-[0-9a-f]{32}$\", \"\") at dst_app | format \"<flow.destination.namespace>/<dst_app>\" as destination | format \"<flow.source.pod_name>\" as src_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at src_app | replace_regexp (\"-[0-9a-f]{32}$\", \"\") at src_app | format \"<flow.source.namespace>/<src_app>\" as source | format if (peer:in(internet, lan)) \"<flow.IP.source>\" as source | format if (peer:node) \"node <flow.IP.source>\" as source | format if (flow.source.identity:\"7\") \"kube-apiserver\" as source | format \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as port | format \"<flow.l4.TCP.destination_port>\" as tport | format \"<flow.l4.UDP.destination_port>\" as uport | format \"icmp\" as proto | format if (not uport:\"\") \"udp\" as proto | format if (not tport:\"\") \"tcp\" as proto | format \"same namespace\" as relation | format if (not flow.source.namespace:\"\" and not flow.source.namespace:eq_field(flow.destination.namespace)) \"cross-namespace\" as relation | format if (peer:in(internet, lan, node) or flow.source.identity:\"7\") \"<peer>\" as relation | format if (flow.source.identity:\"7\") \"api-server\" as relation | filter relation:in(cross-namespace, api-server) | stats by (source, destination, proto, port) count() connections, max(_time) last_seen | sort by (connections desc) | limit 300",
+          "queryType": "instant",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "transformations": [
+        {
+          "id": "extractFields",
+          "options": {
+            "source": "labels",
+            "format": "json",
+            "replace": false,
+            "keepTime": false
+          }
+        },
+        {
+          "id": "convertFieldType",
+          "options": {
+            "conversions": [
+              {
+                "targetField": "connections",
+                "destinationType": "number"
+              },
+              {
+                "targetField": "last_seen",
+                "destinationType": "time"
+              }
+            ],
+            "fields": {}
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Line": true,
+              "id": true,
+              "labels": true,
+              "streams": true,
+              "streamId": true,
+              "tsNs": true,
+              "level": true,
+              "detected_level": true
+            },
+            "indexByName": {
+              "source": 0,
+              "destination": 1,
+              "proto": 2,
+              "port": 3,
+              "connections": 4,
+              "last_seen": 5
+            },
+            "renameByName": {
+              "source": "Caller",
+              "destination": "Service",
+              "proto": "Proto",
+              "port": "Port",
+              "connections": "Connections",
+              "last_seen": "Last seen"
+            },
+            "includeByName": {}
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "filterable": true,
+            "cellOptions": {
+              "type": "auto"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Connections"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "lcd",
+                  "valueDisplayMode": "text"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "continuous-YlRd"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Last seen"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dateTimeFromNow"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Proto"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 60
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Port"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      }
+    },
+    {
+      "id": 10,
+      "type": "table",
+      "title": "🧭 Who called who — inbound connections (latest 500)",
+      "description": "Every new inbound connection, newest first. Use the Peer filter to include or exclude internet, LAN, cluster and node sources.",
+      "gridPos": {
+        "x": 0,
+        "y": 26,
+        "w": 24,
+        "h": 12
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.container_name:cilium-agent flow.event_type.type:4 flow.destination.pod_name:~\".\" flow.destination.namespace:~\"^${dst_namespace}$\" | format \"cluster\" as peer | format if (flow.source.namespace:\"\" and flow.source.identity:in(\"1\",\"6\")) \"node\" as peer | format if (flow.source.namespace:\"\" and not flow.source.identity:in(\"1\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\")) \"internet\" as peer | format if (peer:internet and (flow.IP.source:ipv4_range(\"10.0.0.0/8\") or flow.IP.source:ipv4_range(\"172.16.0.0/12\") or flow.IP.source:ipv4_range(\"192.168.0.0/16\") or flow.IP.source:ipv4_range(\"100.64.0.0/10\"))) \"lan\" as peer | filter peer:in($peer) | format \"<flow.destination.pod_name>\" as dst_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at dst_app | replace_regexp (\"-[0-9a-f]{32}$\", \"\") at dst_app | format \"<flow.destination.namespace>/<dst_app>\" as destination | format \"<flow.source.pod_name>\" as src_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at src_app | replace_regexp (\"-[0-9a-f]{32}$\", \"\") at src_app | format \"<flow.source.namespace>/<src_app>\" as source | format if (peer:in(internet, lan)) \"<flow.IP.source>\" as source | format if (peer:node) \"node <flow.IP.source>\" as source | format if (flow.source.identity:\"7\") \"kube-apiserver\" as source | format \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as port | format \"<flow.l4.TCP.destination_port>\" as tport | format \"<flow.l4.UDP.destination_port>\" as uport | format \"icmp\" as proto | format if (not uport:\"\") \"udp\" as proto | format if (not tport:\"\") \"tcp\" as proto | format \"same namespace\" as relation | format if (not flow.source.namespace:\"\" and not flow.source.namespace:eq_field(flow.destination.namespace)) \"cross-namespace\" as relation | format if (peer:in(internet, lan, node) or flow.source.identity:\"7\") \"<peer>\" as relation | format if (flow.source.identity:\"7\") \"api-server\" as relation | fields _time, peer, relation, source, destination, flow.destination.pod_name, proto, port, node_name | sort by (_time desc) | limit 500",
+          "queryType": "instant",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "transformations": [
+        {
+          "id": "extractFields",
+          "options": {
+            "source": "labels",
+            "format": "json",
+            "replace": false,
+            "keepTime": false
+          }
+        },
+        {
+          "id": "convertFieldType",
+          "options": {
+            "conversions": [
+              {
+                "targetField": "_time",
+                "destinationType": "time"
+              }
+            ],
+            "fields": {}
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Line": true,
+              "id": true,
+              "labels": true,
+              "streams": true,
+              "streamId": true,
+              "tsNs": true,
+              "level": true,
+              "detected_level": true
+            },
+            "indexByName": {
+              "_time": 0,
+              "peer": 1,
+              "relation": 2,
+              "source": 3,
+              "destination": 4,
+              "flow.destination.pod_name": 5,
+              "proto": 6,
+              "port": 7,
+              "node_name": 8
+            },
+            "renameByName": {
+              "_time": "Time",
+              "peer": "Peer",
+              "relation": "Relation",
+              "source": "From",
+              "destination": "To",
+              "flow.destination.pod_name": "Pod",
+              "proto": "Proto",
+              "port": "Port",
+              "node_name": "Node"
+            },
+            "includeByName": {}
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "filterable": true,
+            "cellOptions": {
+              "type": "auto"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Peer"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 80
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "internet": {
+                        "color": "purple",
+                        "index": 0
+                      },
+                      "lan": {
+                        "color": "green",
+                        "index": 1
+                      },
+                      "cluster": {
+                        "color": "blue",
+                        "index": 2
+                      },
+                      "node": {
+                        "color": "text",
+                        "index": 3
+                      },
+                      "cross-namespace": {
+                        "color": "orange",
+                        "index": 4
+                      },
+                      "same namespace": {
+                        "color": "blue",
+                        "index": 5
+                      },
+                      "api-server": {
+                        "color": "yellow",
+                        "index": 6
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Relation"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 130
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "internet": {
+                        "color": "purple",
+                        "index": 0
+                      },
+                      "lan": {
+                        "color": "green",
+                        "index": 1
+                      },
+                      "cluster": {
+                        "color": "blue",
+                        "index": 2
+                      },
+                      "node": {
+                        "color": "text",
+                        "index": 3
+                      },
+                      "cross-namespace": {
+                        "color": "orange",
+                        "index": 4
+                      },
+                      "same namespace": {
+                        "color": "blue",
+                        "index": 5
+                      },
+                      "api-server": {
+                        "color": "yellow",
+                        "index": 6
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dateTimeAsLocal"
+              },
+              {
+                "id": "custom.width",
+                "value": 170
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Proto"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 60
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Port"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Node"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": [
+          {
+            "displayName": "Time",
+            "desc": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "type": "row",
+      "title": "⛔ Dropped inbound traffic",
+      "collapsed": true,
+      "gridPos": {
+        "x": 0,
+        "y": 38,
+        "w": 24,
+        "h": 1
+      },
+      "panels": [
+        {
+          "id": 12,
+          "type": "timeseries",
+          "title": "Inbound drops by reason",
+          "description": "SERVICE_BACKEND_NOT_FOUND = connections to the public IP on ports nothing listens on (scanners). POLICY_DENIED = refused by an ingress NetworkPolicy (e.g. argocd-redis).",
+          "gridPos": {
+            "x": 0,
+            "y": 39,
+            "w": 12,
+            "h": 8
+          },
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "victoriametrics-logs-datasource",
+                "uid": "${ds_vl}"
+              },
+              "expr": "kubernetes.container_name:cilium-agent flow.verdict:DROPPED flow.traffic_direction:INGRESS | stats by (flow.drop_reason_desc) count() n",
+              "queryType": "statsRange",
+              "editorMode": "code",
+              "maxLines": 1000,
+              "legendFormat": "{{flow.drop_reason_desc}}"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "drawStyle": "bars",
+                "fillOpacity": 80,
+                "lineWidth": 0,
+                "stacking": {
+                  "mode": "normal"
+                },
+                "showPoints": "never"
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          }
+        },
+        {
+          "id": 13,
+          "type": "table",
+          "title": "Top dropped sources",
+          "gridPos": {
+            "x": 12,
+            "y": 39,
+            "w": 12,
+            "h": 8
+          },
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "victoriametrics-logs-datasource",
+                "uid": "${ds_vl}"
+              },
+              "expr": "kubernetes.container_name:cilium-agent flow.verdict:DROPPED flow.traffic_direction:INGRESS | format \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as port | stats by (flow.IP.source, flow.drop_reason_desc) count() packets, count_uniq(port) ports, max(_time) last_seen | sort by (packets desc) | limit 100",
+              "queryType": "instant",
+              "editorMode": "code",
+              "maxLines": 1000
+            }
+          ],
+          "transformations": [
+            {
+              "id": "extractFields",
+              "options": {
+                "source": "labels",
+                "format": "json",
+                "replace": false,
+                "keepTime": false
+              }
+            },
+            {
+              "id": "convertFieldType",
+              "options": {
+                "conversions": [
+                  {
+                    "targetField": "packets",
+                    "destinationType": "number"
+                  },
+                  {
+                    "targetField": "ports",
+                    "destinationType": "number"
+                  },
+                  {
+                    "targetField": "last_seen",
+                    "destinationType": "time"
+                  }
+                ],
+                "fields": {}
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "Line": true,
+                  "id": true,
+                  "labels": true,
+                  "streams": true,
+                  "streamId": true,
+                  "tsNs": true,
+                  "level": true,
+                  "detected_level": true
+                },
+                "indexByName": {
+                  "flow.IP.source": 0,
+                  "flow.drop_reason_desc": 1,
+                  "packets": 2,
+                  "ports": 3,
+                  "last_seen": 4
+                },
+                "renameByName": {
+                  "flow.IP.source": "Source IP",
+                  "flow.drop_reason_desc": "Reason",
+                  "packets": "Packets",
+                  "ports": "Distinct ports",
+                  "last_seen": "Last seen"
+                },
+                "includeByName": {}
+              }
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "filterable": true
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Last seen"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "dateTimeFromNow"
+                  }
+                ]
+              }
+            ]
+          },
+          "options": {
+            "showHeader": true,
+            "cellHeight": "sm"
+          }
+        }
+      ]
+    }
+  ]
+}
