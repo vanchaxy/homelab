@@ -65,6 +65,48 @@
         },
         "refresh": 2,
         "sort": 1
+      },
+      {
+        "name": "peer",
+        "label": "Peer (who-called-who log)",
+        "type": "custom",
+        "query": "internet,lan,cluster,node",
+        "multi": true,
+        "includeAll": false,
+        "current": {
+          "text": [
+            "internet",
+            "lan",
+            "cluster"
+          ],
+          "value": [
+            "internet",
+            "lan",
+            "cluster"
+          ]
+        },
+        "options": [
+          {
+            "text": "internet",
+            "value": "internet",
+            "selected": true
+          },
+          {
+            "text": "lan",
+            "value": "lan",
+            "selected": true
+          },
+          {
+            "text": "cluster",
+            "value": "cluster",
+            "selected": true
+          },
+          {
+            "text": "node",
+            "value": "node",
+            "selected": false
+          }
+        ]
       }
     ]
   },
@@ -774,7 +816,7 @@
             "type": "victoriametrics-logs-datasource",
             "uid": "${ds_vl}"
           },
-          "expr": "kubernetes.container_name:cilium-agent flow.event_type.type:5 flow.traffic_direction:EGRESS flow.policy_log:in(\"[\\\"audit-cluster\\\"]\",\"[\\\"audit-world\\\"]\") flow.source.namespace:~\"^${namespace}$\" | format \"<flow.source.pod_name>\" as source_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at source_app | format \"<flow.destination.pod_name>\" as dst_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at dst_app | format \"<flow.destination.namespace>/<dst_app>\" as destination | format if (flow.destination.namespace:\"\") \"<flow.destination_names>\" as destination | replace_regexp (\"[\\\\[\\\\]\\\"]\", \"\") at destination | format if (flow.destination.namespace:\"\" and flow.destination_names:\"\") \"<flow.IP.destination> (no DNS)\" as destination | format if (flow.destination.identity:in(\"1\",\"6\")) \"node <flow.IP.destination>\" as destination | format if (flow.destination.identity:\"7\" or (flow.destination.identity:in(\"1\",\"6\") and flow.l4.TCP.destination_port:\"6443\")) \"kube-apiserver\" as destination | format \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as port | format if (flow.l4.UDP.destination_port:*) \"udp\" as proto | format if (flow.l4.TCP.destination_port:*) \"tcp\" as proto | format if (flow.policy_log:~\"audit-world\") \"internet\" as scope | format if (flow.policy_log:~\"audit-cluster\") \"cluster\" as scope | rename flow.source.namespace as namespace | stats by (scope, namespace, source_app, destination, proto, port) count() connections, min(_time) first_seen, max(_time) last_seen | sort by (last_seen desc)",
+          "expr": "kubernetes.container_name:cilium-agent flow.event_type.type:5 flow.traffic_direction:EGRESS flow.policy_log:in(\"[\\\"audit-cluster\\\"]\",\"[\\\"audit-world\\\"]\") flow.source.namespace:~\"^${namespace}$\" | format \"<flow.source.pod_name>\" as source_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at source_app | replace_regexp (\"-[0-9a-f]{32}$\", \"\") at source_app | format \"<flow.destination.pod_name>\" as dst_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at dst_app | replace_regexp (\"-[0-9a-f]{32}$\", \"\") at dst_app | format \"<flow.destination.namespace>/<dst_app>\" as destination | format if (flow.destination.namespace:\"\") \"<flow.destination_names>\" as destination | replace_regexp (\"[\\\\[\\\\]\\\"]\", \"\") at destination | format if (flow.destination.namespace:\"\" and flow.destination_names:\"\") \"<flow.IP.destination> (no DNS)\" as destination | format if (flow.destination.identity:in(\"1\",\"6\")) \"node <flow.IP.destination>\" as destination | format if (flow.destination.identity:\"7\" or (flow.destination.identity:in(\"1\",\"6\") and flow.l4.TCP.destination_port:\"6443\")) \"kube-apiserver\" as destination | format \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as port | format \"<flow.l4.TCP.destination_port>\" as tport | format \"<flow.l4.UDP.destination_port>\" as uport | format \"icmp\" as proto | format if (not uport:\"\") \"udp\" as proto | format if (not tport:\"\") \"tcp\" as proto | format if (flow.policy_log:~\"audit-world\") \"internet\" as scope | format if (flow.policy_log:~\"audit-cluster\") \"cluster\" as scope | rename flow.source.namespace as namespace | stats by (scope, namespace, source_app, destination, proto, port) count() connections, min(_time) first_seen, max(_time) last_seen | sort by (last_seen desc)",
           "queryType": "instant",
           "editorMode": "code",
           "maxLines": 1000
@@ -1455,7 +1497,7 @@
             "type": "victoriametrics-logs-datasource",
             "uid": "${ds_vl}"
           },
-          "expr": "kubernetes.container_name:cilium-agent flow.event_type.type:5 flow.traffic_direction:EGRESS flow.policy_log:in(\"[\\\"audit-cluster\\\"]\",\"[\\\"audit-world\\\"]\") flow.source.namespace:~\"^${namespace}$\" | format \"<flow.source.pod_name>\" as source_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at source_app | format \"<flow.destination.pod_name>\" as dst_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at dst_app | format \"<flow.destination.namespace>/<dst_app>\" as destination | format if (flow.destination.namespace:\"\") \"<flow.destination_names>\" as destination | replace_regexp (\"[\\\\[\\\\]\\\"]\", \"\") at destination | format if (flow.destination.namespace:\"\" and flow.destination_names:\"\") \"<flow.IP.destination> (no DNS)\" as destination | format if (flow.destination.identity:in(\"1\",\"6\")) \"node <flow.IP.destination>\" as destination | format if (flow.destination.identity:\"7\" or (flow.destination.identity:in(\"1\",\"6\") and flow.l4.TCP.destination_port:\"6443\")) \"kube-apiserver\" as destination | format \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as port | format if (flow.l4.UDP.destination_port:*) \"udp\" as proto | format if (flow.l4.TCP.destination_port:*) \"tcp\" as proto | format if (flow.policy_log:~\"audit-world\") \"internet\" as scope | format if (flow.policy_log:~\"audit-cluster\") \"cluster\" as scope | rename flow.source.namespace as namespace | fields _time, scope, namespace, flow.source.pod_name, destination, proto, port, flow.IP.destination, node_name | sort by (_time desc) | limit 500",
+          "expr": "kubernetes.container_name:cilium-agent flow.event_type.type:5 flow.traffic_direction:EGRESS flow.policy_log:in(\"[\\\"audit-cluster\\\"]\",\"[\\\"audit-world\\\"]\") flow.source.namespace:~\"^${namespace}$\" | format \"<flow.source.pod_name>\" as source_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at source_app | replace_regexp (\"-[0-9a-f]{32}$\", \"\") at source_app | format \"<flow.destination.pod_name>\" as dst_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at dst_app | replace_regexp (\"-[0-9a-f]{32}$\", \"\") at dst_app | format \"<flow.destination.namespace>/<dst_app>\" as destination | format if (flow.destination.namespace:\"\") \"<flow.destination_names>\" as destination | replace_regexp (\"[\\\\[\\\\]\\\"]\", \"\") at destination | format if (flow.destination.namespace:\"\" and flow.destination_names:\"\") \"<flow.IP.destination> (no DNS)\" as destination | format if (flow.destination.identity:in(\"1\",\"6\")) \"node <flow.IP.destination>\" as destination | format if (flow.destination.identity:\"7\" or (flow.destination.identity:in(\"1\",\"6\") and flow.l4.TCP.destination_port:\"6443\")) \"kube-apiserver\" as destination | format \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as port | format \"<flow.l4.TCP.destination_port>\" as tport | format \"<flow.l4.UDP.destination_port>\" as uport | format \"icmp\" as proto | format if (not uport:\"\") \"udp\" as proto | format if (not tport:\"\") \"tcp\" as proto | format if (flow.policy_log:~\"audit-world\") \"internet\" as scope | format if (flow.policy_log:~\"audit-cluster\") \"cluster\" as scope | rename flow.source.namespace as namespace | fields _time, scope, namespace, flow.source.pod_name, destination, proto, port, flow.IP.destination, node_name | sort by (_time desc) | limit 500",
           "queryType": "instant",
           "editorMode": "code",
           "maxLines": 1000
@@ -1639,23 +1681,261 @@
     },
     {
       "id": 17,
+      "type": "table",
+      "title": "🧭 Who called who — all outbound connections (latest 500)",
+      "description": "Every new outbound connection from pods, allowed or not. Use the Peer filter at the top to include or exclude internet, LAN (home network / tailnet), cluster (other pods, API server) and node destinations.",
+      "gridPos": {
+        "x": 0,
+        "y": 67,
+        "w": 24,
+        "h": 12
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.container_name:cilium-agent flow.event_type.type:5 flow.traffic_direction:EGRESS flow.source.namespace:~\"^${namespace}$\" | format \"cluster\" as peer | format if (flow.destination.namespace:\"\" and flow.destination.identity:in(\"1\",\"6\")) \"node\" as peer | format if (flow.destination.namespace:\"\" and not flow.destination.identity:in(\"1\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\")) \"internet\" as peer | format if (peer:internet and (flow.IP.destination:ipv4_range(\"10.0.0.0/8\") or flow.IP.destination:ipv4_range(\"172.16.0.0/12\") or flow.IP.destination:ipv4_range(\"192.168.0.0/16\") or flow.IP.destination:ipv4_range(\"100.64.0.0/10\"))) \"lan\" as peer | filter peer:in($peer) | format \"<flow.source.pod_name>\" as source_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at source_app | replace_regexp (\"-[0-9a-f]{32}$\", \"\") at source_app | format \"<flow.destination.pod_name>\" as dst_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at dst_app | replace_regexp (\"-[0-9a-f]{32}$\", \"\") at dst_app | format \"<flow.destination.namespace>/<dst_app>\" as destination | format if (flow.destination.namespace:\"\") \"<flow.destination_names>\" as destination | replace_regexp (\"[\\\\[\\\\]\\\"]\", \"\") at destination | format if (flow.destination.namespace:\"\" and flow.destination_names:\"\") \"<flow.IP.destination> (no DNS)\" as destination | format if (flow.destination.identity:in(\"1\",\"6\")) \"node <flow.IP.destination>\" as destination | format if (flow.destination.identity:\"7\" or (flow.destination.identity:in(\"1\",\"6\") and flow.l4.TCP.destination_port:\"6443\")) \"kube-apiserver\" as destination | format \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as port | format \"<flow.l4.TCP.destination_port>\" as tport | format \"<flow.l4.UDP.destination_port>\" as uport | format \"icmp\" as proto | format if (not uport:\"\") \"udp\" as proto | format if (not tport:\"\") \"tcp\" as proto | format if (flow.policy_log:~\"audit-world\") \"internet\" as scope | format if (flow.policy_log:~\"audit-cluster\") \"cluster\" as scope | rename flow.source.namespace as namespace | format if (flow.policy_log:~\"allow\") \"allow\" as tag | format if (not flow.policy_log:~\"allow\" and flow.policy_log:~\"audit\") \"would deny\" as tag | format if (flow.verdict:DROPPED) \"denied\" as tag | fields _time, peer, tag, namespace, flow.source.pod_name, destination, proto, port, flow.IP.destination | sort by (_time desc) | limit 500",
+          "queryType": "instant",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "transformations": [
+        {
+          "id": "extractFields",
+          "options": {
+            "source": "labels",
+            "format": "json",
+            "replace": false,
+            "keepTime": false
+          }
+        },
+        {
+          "id": "convertFieldType",
+          "options": {
+            "conversions": [
+              {
+                "targetField": "_time",
+                "destinationType": "time"
+              }
+            ],
+            "fields": {}
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Line": true,
+              "id": true,
+              "labels": true,
+              "streams": true,
+              "streamId": true,
+              "tsNs": true,
+              "level": true,
+              "detected_level": true
+            },
+            "indexByName": {
+              "_time": 0,
+              "peer": 1,
+              "tag": 2,
+              "namespace": 3,
+              "flow.source.pod_name": 4,
+              "destination": 5,
+              "proto": 6,
+              "port": 7,
+              "flow.IP.destination": 8
+            },
+            "renameByName": {
+              "_time": "Time",
+              "peer": "Peer",
+              "tag": "Policy",
+              "namespace": "Namespace",
+              "flow.source.pod_name": "Pod",
+              "destination": "Destination",
+              "proto": "Proto",
+              "port": "Port",
+              "flow.IP.destination": "IP"
+            },
+            "includeByName": {}
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "filterable": true,
+            "cellOptions": {
+              "type": "auto"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dateTimeAsLocal"
+              },
+              {
+                "id": "custom.width",
+                "value": 170
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Peer"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 90
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "internet": {
+                        "color": "purple",
+                        "index": 0
+                      },
+                      "lan": {
+                        "color": "green",
+                        "index": 1
+                      },
+                      "cluster": {
+                        "color": "blue",
+                        "index": 2
+                      },
+                      "node": {
+                        "color": "text",
+                        "index": 3
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Policy"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 100
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "allow": {
+                        "color": "green",
+                        "index": 0
+                      },
+                      "would deny": {
+                        "color": "orange",
+                        "index": 1
+                      },
+                      "denied": {
+                        "color": "red",
+                        "index": 2
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Proto"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Port"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": [
+          {
+            "displayName": "Time",
+            "desc": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 18,
       "type": "row",
       "title": "⛔ Enforced denies & raw flows",
       "collapsed": true,
       "gridPos": {
         "x": 0,
-        "y": 67,
+        "y": 79,
         "w": 24,
         "h": 1
       },
       "panels": [
         {
-          "id": 18,
+          "id": 19,
           "type": "table",
           "title": "Policy-denied connections — latest 500",
           "gridPos": {
             "x": 0,
-            "y": 68,
+            "y": 80,
             "w": 24,
             "h": 10
           },
@@ -1670,7 +1950,7 @@
                 "type": "victoriametrics-logs-datasource",
                 "uid": "${ds_vl}"
               },
-              "expr": "kubernetes.container_name:cilium-agent flow.verdict:DROPPED flow.drop_reason_desc:in(POLICY_DENIED, POLICY_DENY) flow.source.namespace:~\"^${namespace}$\" | format \"<flow.source.pod_name>\" as source_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at source_app | format \"<flow.destination.pod_name>\" as dst_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at dst_app | format \"<flow.destination.namespace>/<dst_app>\" as destination | format if (flow.destination.namespace:\"\") \"<flow.destination_names>\" as destination | replace_regexp (\"[\\\\[\\\\]\\\"]\", \"\") at destination | format if (flow.destination.namespace:\"\" and flow.destination_names:\"\") \"<flow.IP.destination> (no DNS)\" as destination | format if (flow.destination.identity:in(\"1\",\"6\")) \"node <flow.IP.destination>\" as destination | format if (flow.destination.identity:\"7\" or (flow.destination.identity:in(\"1\",\"6\") and flow.l4.TCP.destination_port:\"6443\")) \"kube-apiserver\" as destination | format \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as port | format if (flow.l4.UDP.destination_port:*) \"udp\" as proto | format if (flow.l4.TCP.destination_port:*) \"tcp\" as proto | format if (flow.policy_log:~\"audit-world\") \"internet\" as scope | format if (flow.policy_log:~\"audit-cluster\") \"cluster\" as scope | rename flow.source.namespace as namespace | fields _time, namespace, flow.source.pod_name, destination, proto, port, flow.drop_reason_desc, node_name | sort by (_time desc) | limit 500",
+              "expr": "kubernetes.container_name:cilium-agent flow.verdict:DROPPED flow.drop_reason_desc:in(POLICY_DENIED, POLICY_DENY) flow.source.namespace:~\"^${namespace}$\" | format \"<flow.source.pod_name>\" as source_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at source_app | replace_regexp (\"-[0-9a-f]{32}$\", \"\") at source_app | format \"<flow.destination.pod_name>\" as dst_app | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at dst_app | replace_regexp (\"-[0-9a-f]{32}$\", \"\") at dst_app | format \"<flow.destination.namespace>/<dst_app>\" as destination | format if (flow.destination.namespace:\"\") \"<flow.destination_names>\" as destination | replace_regexp (\"[\\\\[\\\\]\\\"]\", \"\") at destination | format if (flow.destination.namespace:\"\" and flow.destination_names:\"\") \"<flow.IP.destination> (no DNS)\" as destination | format if (flow.destination.identity:in(\"1\",\"6\")) \"node <flow.IP.destination>\" as destination | format if (flow.destination.identity:\"7\" or (flow.destination.identity:in(\"1\",\"6\") and flow.l4.TCP.destination_port:\"6443\")) \"kube-apiserver\" as destination | format \"<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port>\" as port | format \"<flow.l4.TCP.destination_port>\" as tport | format \"<flow.l4.UDP.destination_port>\" as uport | format \"icmp\" as proto | format if (not uport:\"\") \"udp\" as proto | format if (not tport:\"\") \"tcp\" as proto | format if (flow.policy_log:~\"audit-world\") \"internet\" as scope | format if (flow.policy_log:~\"audit-cluster\") \"cluster\" as scope | rename flow.source.namespace as namespace | fields _time, namespace, flow.source.pod_name, destination, proto, port, flow.drop_reason_desc, node_name | sort by (_time desc) | limit 500",
               "queryType": "instant",
               "editorMode": "code",
               "maxLines": 1000
@@ -1763,12 +2043,12 @@
           }
         },
         {
-          "id": 19,
+          "id": 20,
           "type": "logs",
           "title": "Raw audit flows (full Hubble JSON)",
           "gridPos": {
             "x": 0,
-            "y": 78,
+            "y": 90,
             "w": 24,
             "h": 12
           },
