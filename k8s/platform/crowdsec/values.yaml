@@ -79,6 +79,25 @@ crowdsec:
           label: "UDP Port Scan"
           spoofable: 3
           confidence: 1
+      slow-scan.yaml: |
+        type: leaky
+        name: homelab/slow-scan
+        description: "Detect slow port scans: several closed ports probed within about an hour"
+        filter: "evt.Meta.log_type == 'iptables_drop' && (evt.Parsed.program == 'kernel' || evt.Meta.drop_reason != '')"
+        groupby: evt.Meta.source_ip
+        distinct: evt.Meta.service + '/' + evt.Parsed.dst_port
+        capacity: 4
+        leakspeed: 15m
+        blackhole: 1h
+        labels:
+          remediation: true
+          classification:
+            - attack.T1595.001
+            - attack.T1046
+          behavior: "tcp:scan"
+          label: "Slow Port Scan"
+          spoofable: 0
+          confidence: 2
 
   lapi:
     env:
