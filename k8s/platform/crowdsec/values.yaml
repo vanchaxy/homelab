@@ -10,14 +10,14 @@ crowdsec:
   config:
     parsers:
       s00-raw:
-        hubble-raw.yaml: |
-          name: homelab/hubble-raw
-          description: "Claim Hubble drop lines read from VictoriaLogs"
-          filter: "evt.Line.Labels.type == 'hubble'"
+        victorialogs-raw.yaml: |
+          name: homelab/victorialogs-raw
+          description: "Claim lines read from VictoriaLogs, using the acquisition type label as program"
+          filter: "evt.Line.Labels.type in ['hubble', 'envoy']"
           onsuccess: next_stage
           statics:
             - parsed: program
-              value: hubble
+              expression: evt.Line.Labels.type
             - parsed: message
               expression: evt.Line.Raw
       s01-parse:
@@ -48,6 +48,27 @@ crowdsec:
             - parsed: proto
               expression: evt.Unmarshaled.hubble.PROTO
 
+    scenarios:
+      hubble-udp-scan.yaml: |
+        type: leaky
+        name: homelab/udp-scan-multi_ports
+        description: "Detect aggressive UDP port scans"
+        filter: "evt.Meta.log_type == 'iptables_drop' && evt.Meta.service == 'udp'"
+        groupby: evt.Meta.source_ip
+        distinct: evt.Parsed.dst_port
+        capacity: 15
+        leakspeed: 5s
+        blackhole: 1m
+        labels:
+          remediation: true
+          classification:
+            - attack.T1595.001
+            - attack.T1046
+          behavior: "udp:scan"
+          label: "UDP Port Scan"
+          spoofable: 3
+          confidence: 1
+
   lapi:
     env:
       - name: BOUNCER_KEY_blocklistmirror
@@ -55,6 +76,17 @@ crowdsec:
           secretKeyRef:
             name: crowdsec-secret
             key: BLOCKLIST_MIRROR_KEY
+      - name: ENROLL_KEY
+        valueFrom:
+          secretKeyRef:
+            name: crowdsec-secret
+            key: CONSOLE_ENROLL_KEY
+            optional: true
+      - name: ENROLL_INSTANCE_NAME
+        value: homelab
+    metrics:
+      serviceMonitor:
+        enabled: true
     persistentVolume:
       data:
         storageClassName: longhorn-ssd
@@ -83,9 +115,21 @@ crowdsec:
           | format "SRC=<flow.IP.source> DST=<flow.IP.destination> PROTO=<proto> SPT=<flow.l4.TCP.source_port><flow.l4.UDP.source_port> DPT=<flow.l4.TCP.destination_port><flow.l4.UDP.destination_port> REASON=<flow.drop_reason_desc>" as _msg
         labels:
           type: hubble
+      - source: victorialogs
+        mode: tail
+        url: http://vlsingle-victoria-logs.telemetry.svc.cluster.local:9428/
+        limit: 1000
+        query: >-
+          kubernetes.pod_namespace:envoy-gateway kubernetes.pod_name:public-gw* kubernetes.container_name:envoy response_code:*
+          | pack_json fields (start_time, method, "x-envoy-origin-path", protocol, response_code, response_flags, response_code_details, bytes_received, bytes_sent, duration, "x-forwarded-for", "user-agent", "x-request-id", ":authority", upstream_host, downstream_remote_address, requested_server_name, route_name) as _msg
+        labels:
+          type: envoy
     env:
       - name: COLLECTIONS
-        value: crowdsecurity/iptables
+        value: crowdsecurity/iptables yanis-kouidri/envoy
+    metrics:
+      serviceMonitor:
+        enabled: true
     resources:
       requests:
         cpu: 50m
