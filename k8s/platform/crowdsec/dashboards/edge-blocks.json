@@ -1159,6 +1159,364 @@
           }
         ]
       }
+    },
+    {
+      "id": 13,
+      "type": "row",
+      "title": "CrowdSec bans",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 46,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 14,
+      "type": "stat",
+      "title": "Your active bans",
+      "description": "IPs currently banned because your own agent detected them (port scans, HTTP attacks).",
+      "gridPos": {
+        "x": 0,
+        "y": 47,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "VictoriaMetrics"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "VictoriaMetrics"
+          },
+          "expr": "sum(cs_active_decisions{origin=\"crowdsec\"})",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "red"
+          },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 15,
+      "type": "stat",
+      "title": "Community bans",
+      "description": "IPs on the CrowdSec community blocklist, also enforced by the VPS.",
+      "gridPos": {
+        "x": 6,
+        "y": 47,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "VictoriaMetrics"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "VictoriaMetrics"
+          },
+          "expr": "sum(cs_active_decisions{origin=\"CAPI\"})",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "orange"
+          },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 16,
+      "type": "stat",
+      "title": "Bans issued in range",
+      "description": "Ban decisions your agent created in the selected time range.",
+      "gridPos": {
+        "x": 12,
+        "y": 47,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.pod_namespace:crowdsec kubernetes.container_name:crowdsec-lapi \"ban on\" | extract \"msg=\\\"(<machine>/<origin>) <scenario> by ip <ip> (<cc>/<asn>) : <duration> <action> on <scope> <value>\\\"\"  | stats count() n",
+          "queryType": "stats",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "purple"
+          },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 17,
+      "type": "stat",
+      "title": "Distinct banned IPs",
+      "description": "",
+      "gridPos": {
+        "x": 18,
+        "y": 47,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.pod_namespace:crowdsec kubernetes.container_name:crowdsec-lapi \"ban on\" | extract \"msg=\\\"(<machine>/<origin>) <scenario> by ip <ip> (<cc>/<asn>) : <duration> <action> on <scope> <value>\\\"\"  | stats count_uniq(ip) n",
+          "queryType": "stats",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 18,
+      "type": "table",
+      "title": "🔨 Bans issued by your agent",
+      "description": "Every ban your own CrowdSec agent issued: which scenario fired, against which IP, and for how long. Community bans are not listed (there are ~15k).",
+      "gridPos": {
+        "x": 0,
+        "y": 51,
+        "w": 24,
+        "h": 10
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.pod_namespace:crowdsec kubernetes.container_name:crowdsec-lapi \"ban on\" | extract \"msg=\\\"(<machine>/<origin>) <scenario> by ip <ip> (<cc>/<asn>) : <duration> <action> on <scope> <value>\\\"\"  | fields _time, scenario, ip, cc, asn, duration, action | sort by (_time desc) | limit 500",
+          "queryType": "instant",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "transformations": [
+        {
+          "id": "extractFields",
+          "options": {
+            "source": "labels",
+            "format": "json",
+            "replace": false,
+            "keepTime": false
+          }
+        },
+        {
+          "id": "convertFieldType",
+          "options": {
+            "conversions": [
+              {
+                "targetField": "_time",
+                "destinationType": "time"
+              }
+            ],
+            "fields": {}
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Line": true,
+              "id": true,
+              "labels": true,
+              "streams": true,
+              "streamId": true,
+              "tsNs": true,
+              "level": true,
+              "detected_level": true
+            },
+            "indexByName": {
+              "_time": 0,
+              "scenario": 1,
+              "ip": 2,
+              "cc": 3,
+              "asn": 4,
+              "duration": 5,
+              "action": 6
+            },
+            "renameByName": {
+              "_time": "Time",
+              "scenario": "Scenario",
+              "ip": "IP",
+              "cc": "CC",
+              "asn": "ASN",
+              "duration": "Duration",
+              "action": "Action"
+            },
+            "includeByName": {}
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "filterable": true,
+            "cellOptions": {
+              "type": "auto"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dateTimeAsLocal"
+              },
+              {
+                "id": "custom.width",
+                "value": 170
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": [
+          {
+            "displayName": "Time",
+            "desc": true
+          }
+        ]
+      }
     }
   ]
 }

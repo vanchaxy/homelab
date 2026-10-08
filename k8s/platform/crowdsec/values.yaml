@@ -84,6 +84,8 @@ crowdsec:
             optional: true
       - name: ENROLL_INSTANCE_NAME
         value: homelab
+      - name: DISABLE_COLLECTIONS
+        value: crowdsecurity/linux crowdsecurity/sshd crowdsecurity/whitelist-good-actors
     metrics:
       serviceMonitor:
         enabled: true
