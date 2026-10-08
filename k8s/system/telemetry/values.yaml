@@ -317,7 +317,6 @@ vector-syslog:
           - timestamp
           - hostname
           - appname
-          - procid
           - message
       syslog_enrich:
         type: remap
