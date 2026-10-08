@@ -22,9 +22,6 @@ factorio:
         game:
           port: 34197
           protocol: UDP
-        query:
-          port: 27015
-          protocol: TCP
     internal:
       controller: main
       type: LoadBalancer
