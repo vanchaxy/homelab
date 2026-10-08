@@ -84,15 +84,6 @@ crowdsec:
             optional: true
       - name: ENROLL_INSTANCE_NAME
         value: homelab
-    lifecycle:
-      postStart:
-        exec:
-          command:
-            - sh
-            - -c
-            - >-
-              for i in $(seq 60); do [ -e /etc/crowdsec/config.yaml ] && break; sleep 2; done;
-              cscli collections remove crowdsecurity/linux crowdsecurity/sshd crowdsecurity/whitelist-good-actors --force || true
     metrics:
       serviceMonitor:
         enabled: true
