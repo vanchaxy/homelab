@@ -1,0 +1,1698 @@
+{
+  "title": "Envoy — HTTP",
+  "uid": "envoy-http",
+  "tags": [
+    "envoy",
+    "http",
+    "geoip",
+    "security"
+  ],
+  "timezone": "browser",
+  "editable": true,
+  "graphTooltip": 1,
+  "refresh": "1m",
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "schemaVersion": 41,
+  "templating": {
+    "list": [
+      {
+        "name": "ds_vl",
+        "label": "Logs",
+        "type": "datasource",
+        "query": "victoriametrics-logs-datasource",
+        "current": {},
+        "hide": 2
+      },
+      {
+        "name": "gateway",
+        "label": "Gateway",
+        "type": "custom",
+        "query": "public-gw,internal-gw",
+        "multi": true,
+        "includeAll": true,
+        "allValue": "public-gw|internal-gw",
+        "current": {
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "options": []
+      },
+      {
+        "name": "peer",
+        "label": "Client",
+        "type": "custom",
+        "query": "internet,lan",
+        "multi": true,
+        "includeAll": false,
+        "current": {
+          "text": [
+            "internet",
+            "lan"
+          ],
+          "value": [
+            "internet",
+            "lan"
+          ]
+        },
+        "options": [
+          {
+            "text": "internet",
+            "value": "internet",
+            "selected": true
+          },
+          {
+            "text": "lan",
+            "value": "lan",
+            "selected": true
+          }
+        ]
+      },
+      {
+        "name": "status",
+        "label": "Status",
+        "type": "custom",
+        "query": "2xx,3xx,4xx,5xx,no response,other",
+        "multi": true,
+        "includeAll": false,
+        "current": {
+          "text": [
+            "2xx",
+            "3xx",
+            "4xx",
+            "5xx",
+            "no response",
+            "other"
+          ],
+          "value": [
+            "2xx",
+            "3xx",
+            "4xx",
+            "5xx",
+            "no response",
+            "other"
+          ]
+        },
+        "options": [
+          {
+            "text": "2xx",
+            "value": "2xx",
+            "selected": true
+          },
+          {
+            "text": "3xx",
+            "value": "3xx",
+            "selected": true
+          },
+          {
+            "text": "4xx",
+            "value": "4xx",
+            "selected": true
+          },
+          {
+            "text": "5xx",
+            "value": "5xx",
+            "selected": true
+          },
+          {
+            "text": "no response",
+            "value": "no response",
+            "selected": true
+          },
+          {
+            "text": "other",
+            "value": "other",
+            "selected": true
+          }
+        ]
+      },
+      {
+        "name": "host",
+        "label": "Host (regex)",
+        "type": "textbox",
+        "query": ".*",
+        "current": {
+          "text": ".*",
+          "value": ".*"
+        }
+      }
+    ]
+  },
+  "annotations": {
+    "list": []
+  },
+  "panels": [
+    {
+      "type": "text",
+      "title": "",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 2
+      },
+      "transparent": true,
+      "options": {
+        "mode": "markdown",
+        "content": "### 🌐 HTTP requests through Envoy Gateway (public-gw and internal-gw)\n*route_not_found* = host or path with no HTTPRoute (typical for scanners hitting the raw IP). *no response* = connection closed before a request (e.g. TLS without a known SNI). IP geolocation by [DB-IP.com](https://db-ip.com) (CC BY 4.0)"
+      },
+      "id": 1
+    },
+    {
+      "type": "stat",
+      "title": "Requests",
+      "description": "",
+      "gridPos": {
+        "x": 0,
+        "y": 2,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.pod_namespace:envoy-gateway kubernetes.container_name:envoy response_code:* kubernetes.pod_name:~\"^(${gateway})-\" | copy \":authority\" as host, \"x-envoy-origin-path\" as path, \"user-agent\" as ua | format if (host:\"\") \"(none)\" as host | format if (path:\"\") \"(none)\" as path | format if (ua:\"\") \"(none)\" as ua | extract \"<client>:<_>\" from downstream_remote_address | format \"<kubernetes.pod_name>\" as gateway | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at gateway | format \"other\" as status_class | format if (response_code:~\"^2\") \"2xx\" as status_class | format if (response_code:~\"^3\") \"3xx\" as status_class | format if (response_code:~\"^4\") \"4xx\" as status_class | format if (response_code:~\"^5\") \"5xx\" as status_class | format if (response_code:=\"0\") \"no response\" as status_class | format \"lan\" as peer | format if (geo.src.country:*) \"internet\" as peer | filter peer:in($peer) status_class:in($status) host:~\"${host}\" | stats count() n",
+          "queryType": "stats",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "showPercentChange": false
+      },
+      "id": 2
+    },
+    {
+      "type": "stat",
+      "title": "Clients",
+      "description": "",
+      "gridPos": {
+        "x": 4,
+        "y": 2,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.pod_namespace:envoy-gateway kubernetes.container_name:envoy response_code:* kubernetes.pod_name:~\"^(${gateway})-\" | copy \":authority\" as host, \"x-envoy-origin-path\" as path, \"user-agent\" as ua | format if (host:\"\") \"(none)\" as host | format if (path:\"\") \"(none)\" as path | format if (ua:\"\") \"(none)\" as ua | extract \"<client>:<_>\" from downstream_remote_address | format \"<kubernetes.pod_name>\" as gateway | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at gateway | format \"other\" as status_class | format if (response_code:~\"^2\") \"2xx\" as status_class | format if (response_code:~\"^3\") \"3xx\" as status_class | format if (response_code:~\"^4\") \"4xx\" as status_class | format if (response_code:~\"^5\") \"5xx\" as status_class | format if (response_code:=\"0\") \"no response\" as status_class | format \"lan\" as peer | format if (geo.src.country:*) \"internet\" as peer | filter peer:in($peer) status_class:in($status) host:~\"${host}\" | stats count_uniq(client) n",
+          "queryType": "stats",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "showPercentChange": false
+      },
+      "id": 3
+    },
+    {
+      "type": "stat",
+      "title": "4xx",
+      "description": "",
+      "gridPos": {
+        "x": 8,
+        "y": 2,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.pod_namespace:envoy-gateway kubernetes.container_name:envoy response_code:* kubernetes.pod_name:~\"^(${gateway})-\" | copy \":authority\" as host, \"x-envoy-origin-path\" as path, \"user-agent\" as ua | format if (host:\"\") \"(none)\" as host | format if (path:\"\") \"(none)\" as path | format if (ua:\"\") \"(none)\" as ua | extract \"<client>:<_>\" from downstream_remote_address | format \"<kubernetes.pod_name>\" as gateway | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at gateway | format \"other\" as status_class | format if (response_code:~\"^2\") \"2xx\" as status_class | format if (response_code:~\"^3\") \"3xx\" as status_class | format if (response_code:~\"^4\") \"4xx\" as status_class | format if (response_code:~\"^5\") \"5xx\" as status_class | format if (response_code:=\"0\") \"no response\" as status_class | format \"lan\" as peer | format if (geo.src.country:*) \"internet\" as peer | filter peer:in($peer) status_class:in($status) host:~\"${host}\" | filter status_class:4xx | stats count() n",
+          "queryType": "stats",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "orange"
+          },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "showPercentChange": false
+      },
+      "id": 4
+    },
+    {
+      "type": "stat",
+      "title": "5xx",
+      "description": "",
+      "gridPos": {
+        "x": 12,
+        "y": 2,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.pod_namespace:envoy-gateway kubernetes.container_name:envoy response_code:* kubernetes.pod_name:~\"^(${gateway})-\" | copy \":authority\" as host, \"x-envoy-origin-path\" as path, \"user-agent\" as ua | format if (host:\"\") \"(none)\" as host | format if (path:\"\") \"(none)\" as path | format if (ua:\"\") \"(none)\" as ua | extract \"<client>:<_>\" from downstream_remote_address | format \"<kubernetes.pod_name>\" as gateway | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at gateway | format \"other\" as status_class | format if (response_code:~\"^2\") \"2xx\" as status_class | format if (response_code:~\"^3\") \"3xx\" as status_class | format if (response_code:~\"^4\") \"4xx\" as status_class | format if (response_code:~\"^5\") \"5xx\" as status_class | format if (response_code:=\"0\") \"no response\" as status_class | format \"lan\" as peer | format if (geo.src.country:*) \"internet\" as peer | filter peer:in($peer) status_class:in($status) host:~\"${host}\" | filter status_class:5xx | stats count() n",
+          "queryType": "stats",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "red"
+          },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "showPercentChange": false
+      },
+      "id": 5
+    },
+    {
+      "type": "stat",
+      "title": "No matching route",
+      "description": "Requests for a host or path without an HTTPRoute: almost always scanners.",
+      "gridPos": {
+        "x": 16,
+        "y": 2,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.pod_namespace:envoy-gateway kubernetes.container_name:envoy response_code:* kubernetes.pod_name:~\"^(${gateway})-\" | copy \":authority\" as host, \"x-envoy-origin-path\" as path, \"user-agent\" as ua | format if (host:\"\") \"(none)\" as host | format if (path:\"\") \"(none)\" as path | format if (ua:\"\") \"(none)\" as ua | extract \"<client>:<_>\" from downstream_remote_address | format \"<kubernetes.pod_name>\" as gateway | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at gateway | format \"other\" as status_class | format if (response_code:~\"^2\") \"2xx\" as status_class | format if (response_code:~\"^3\") \"3xx\" as status_class | format if (response_code:~\"^4\") \"4xx\" as status_class | format if (response_code:~\"^5\") \"5xx\" as status_class | format if (response_code:=\"0\") \"no response\" as status_class | format \"lan\" as peer | format if (geo.src.country:*) \"internet\" as peer | filter peer:in($peer) status_class:in($status) host:~\"${host}\" | filter response_code_details:route_not_found | stats count() n",
+          "queryType": "stats",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "purple"
+          },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "showPercentChange": false
+      },
+      "id": 6
+    },
+    {
+      "type": "stat",
+      "title": "Suspicious probes",
+      "description": "Requests for paths typical of vulnerability scanners (.env, wp-login, .git, path traversal, …).",
+      "gridPos": {
+        "x": 20,
+        "y": 2,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.pod_namespace:envoy-gateway kubernetes.container_name:envoy response_code:* kubernetes.pod_name:~\"^(${gateway})-\" | copy \":authority\" as host, \"x-envoy-origin-path\" as path, \"user-agent\" as ua | format if (host:\"\") \"(none)\" as host | format if (path:\"\") \"(none)\" as path | format if (ua:\"\") \"(none)\" as ua | extract \"<client>:<_>\" from downstream_remote_address | format \"<kubernetes.pod_name>\" as gateway | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at gateway | format \"other\" as status_class | format if (response_code:~\"^2\") \"2xx\" as status_class | format if (response_code:~\"^3\") \"3xx\" as status_class | format if (response_code:~\"^4\") \"4xx\" as status_class | format if (response_code:~\"^5\") \"5xx\" as status_class | format if (response_code:=\"0\") \"no response\" as status_class | format \"lan\" as peer | format if (geo.src.country:*) \"internet\" as peer | filter peer:in($peer) status_class:in($status) host:~\"${host}\" | filter path:~\"(?i)(\\\\.env|\\\\.git|wp-(login|admin|content|includes)|xmlrpc|phpmyadmin|pma|\\\\.php|cgi-bin|\\\\.\\\\./|%2e%2e|/etc/passwd|actuator|/boot|\\\\.aws|\\\\.ssh|config\\\\.(json|yml|yaml)|/admin|/manager|/solr|/hnap|/shell|eval\\\\(|/vendor/|\\\\.sql|\\\\.bak|backup|/owa|/autodiscover|/geoserver|/remote|/druid)\" | stats count() n",
+          "queryType": "stats",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "red"
+          },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "showPercentChange": false
+      },
+      "id": 7
+    },
+    {
+      "type": "timeseries",
+      "title": "Requests by status",
+      "gridPos": {
+        "x": 0,
+        "y": 6,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.pod_namespace:envoy-gateway kubernetes.container_name:envoy response_code:* kubernetes.pod_name:~\"^(${gateway})-\" | copy \":authority\" as host, \"x-envoy-origin-path\" as path, \"user-agent\" as ua | format if (host:\"\") \"(none)\" as host | format if (path:\"\") \"(none)\" as path | format if (ua:\"\") \"(none)\" as ua | extract \"<client>:<_>\" from downstream_remote_address | format \"<kubernetes.pod_name>\" as gateway | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at gateway | format \"other\" as status_class | format if (response_code:~\"^2\") \"2xx\" as status_class | format if (response_code:~\"^3\") \"3xx\" as status_class | format if (response_code:~\"^4\") \"4xx\" as status_class | format if (response_code:~\"^5\") \"5xx\" as status_class | format if (response_code:=\"0\") \"no response\" as status_class | format \"lan\" as peer | format if (geo.src.country:*) \"internet\" as peer | filter peer:in($peer) status_class:in($status) host:~\"${host}\" | stats by (status_class) count() n",
+          "queryType": "statsRange",
+          "editorMode": "code",
+          "maxLines": 1000,
+          "legendFormat": "{{status_class}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 85,
+            "lineWidth": 0,
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            },
+            "showPoints": "never"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "2xx"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "3xx"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "4xx"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "5xx"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "no response"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "purple"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "other"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "text"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 8
+    },
+    {
+      "type": "timeseries",
+      "title": "Latency of routed requests (< 60 s)",
+      "description": "Excludes requests longer than 60 s: those are WebSockets and streams, not slow requests.",
+      "gridPos": {
+        "x": 12,
+        "y": 6,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.pod_namespace:envoy-gateway kubernetes.container_name:envoy response_code:* kubernetes.pod_name:~\"^(${gateway})-\" | copy \":authority\" as host, \"x-envoy-origin-path\" as path, \"user-agent\" as ua | format if (host:\"\") \"(none)\" as host | format if (path:\"\") \"(none)\" as path | format if (ua:\"\") \"(none)\" as ua | extract \"<client>:<_>\" from downstream_remote_address | format \"<kubernetes.pod_name>\" as gateway | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at gateway | format \"other\" as status_class | format if (response_code:~\"^2\") \"2xx\" as status_class | format if (response_code:~\"^3\") \"3xx\" as status_class | format if (response_code:~\"^4\") \"4xx\" as status_class | format if (response_code:~\"^5\") \"5xx\" as status_class | format if (response_code:=\"0\") \"no response\" as status_class | format \"lan\" as peer | format if (geo.src.country:*) \"internet\" as peer | filter peer:in($peer) status_class:in($status) host:~\"${host}\" | filter -response_code_details:route_not_found duration:<60000 | stats quantile(0.5, duration) p50, quantile(0.95, duration) p95, quantile(0.99, duration) p99",
+          "queryType": "statsRange",
+          "editorMode": "code",
+          "maxLines": 1000,
+          "legendFormat": "{{__name__}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "id": 9
+    },
+    {
+      "type": "bargauge",
+      "title": "Top hosts",
+      "description": "",
+      "gridPos": {
+        "x": 0,
+        "y": 14,
+        "w": 8,
+        "h": 9
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.pod_namespace:envoy-gateway kubernetes.container_name:envoy response_code:* kubernetes.pod_name:~\"^(${gateway})-\" | copy \":authority\" as host, \"x-envoy-origin-path\" as path, \"user-agent\" as ua | format if (host:\"\") \"(none)\" as host | format if (path:\"\") \"(none)\" as path | format if (ua:\"\") \"(none)\" as ua | extract \"<client>:<_>\" from downstream_remote_address | format \"<kubernetes.pod_name>\" as gateway | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at gateway | format \"other\" as status_class | format if (response_code:~\"^2\") \"2xx\" as status_class | format if (response_code:~\"^3\") \"3xx\" as status_class | format if (response_code:~\"^4\") \"4xx\" as status_class | format if (response_code:~\"^5\") \"5xx\" as status_class | format if (response_code:=\"0\") \"no response\" as status_class | format \"lan\" as peer | format if (geo.src.country:*) \"internet\" as peer | filter peer:in($peer) status_class:in($status) host:~\"${host}\" | stats by (host) count() n | sort by (n desc) | limit 12",
+          "queryType": "stats",
+          "editorMode": "code",
+          "maxLines": 1000,
+          "legendFormat": "{{host}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "min": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "namePlacement": "left",
+        "sizing": "manual",
+        "minVizHeight": 14,
+        "maxVizHeight": 20,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "legend": {
+          "showLegend": false
+        }
+      },
+      "id": 10
+    },
+    {
+      "type": "bargauge",
+      "title": "Top paths",
+      "description": "",
+      "gridPos": {
+        "x": 8,
+        "y": 14,
+        "w": 8,
+        "h": 9
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.pod_namespace:envoy-gateway kubernetes.container_name:envoy response_code:* kubernetes.pod_name:~\"^(${gateway})-\" | copy \":authority\" as host, \"x-envoy-origin-path\" as path, \"user-agent\" as ua | format if (host:\"\") \"(none)\" as host | format if (path:\"\") \"(none)\" as path | format if (ua:\"\") \"(none)\" as ua | extract \"<client>:<_>\" from downstream_remote_address | format \"<kubernetes.pod_name>\" as gateway | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at gateway | format \"other\" as status_class | format if (response_code:~\"^2\") \"2xx\" as status_class | format if (response_code:~\"^3\") \"3xx\" as status_class | format if (response_code:~\"^4\") \"4xx\" as status_class | format if (response_code:~\"^5\") \"5xx\" as status_class | format if (response_code:=\"0\") \"no response\" as status_class | format \"lan\" as peer | format if (geo.src.country:*) \"internet\" as peer | filter peer:in($peer) status_class:in($status) host:~\"${host}\" | stats by (path) count() n | sort by (n desc) | limit 12",
+          "queryType": "stats",
+          "editorMode": "code",
+          "maxLines": 1000,
+          "legendFormat": "{{path}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "continuous-GrYlRd"
+          },
+          "min": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "namePlacement": "left",
+        "sizing": "manual",
+        "minVizHeight": 14,
+        "maxVizHeight": 20,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "legend": {
+          "showLegend": false
+        }
+      },
+      "id": 11
+    },
+    {
+      "type": "bargauge",
+      "title": "Top user agents",
+      "description": "",
+      "gridPos": {
+        "x": 16,
+        "y": 14,
+        "w": 8,
+        "h": 9
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.pod_namespace:envoy-gateway kubernetes.container_name:envoy response_code:* kubernetes.pod_name:~\"^(${gateway})-\" | copy \":authority\" as host, \"x-envoy-origin-path\" as path, \"user-agent\" as ua | format if (host:\"\") \"(none)\" as host | format if (path:\"\") \"(none)\" as path | format if (ua:\"\") \"(none)\" as ua | extract \"<client>:<_>\" from downstream_remote_address | format \"<kubernetes.pod_name>\" as gateway | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at gateway | format \"other\" as status_class | format if (response_code:~\"^2\") \"2xx\" as status_class | format if (response_code:~\"^3\") \"3xx\" as status_class | format if (response_code:~\"^4\") \"4xx\" as status_class | format if (response_code:~\"^5\") \"5xx\" as status_class | format if (response_code:=\"0\") \"no response\" as status_class | format \"lan\" as peer | format if (geo.src.country:*) \"internet\" as peer | filter peer:in($peer) status_class:in($status) host:~\"${host}\" | stats by (ua) count() n | sort by (n desc) | limit 12",
+          "queryType": "stats",
+          "editorMode": "code",
+          "maxLines": 1000,
+          "legendFormat": "{{ua}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "continuous-YlRd"
+          },
+          "min": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "namePlacement": "left",
+        "sizing": "manual",
+        "minVizHeight": 14,
+        "maxVizHeight": 20,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "legend": {
+          "showLegend": false
+        }
+      },
+      "id": 12
+    },
+    {
+      "type": "geomap",
+      "title": "Where requests come from (internet clients)",
+      "description": "",
+      "gridPos": {
+        "x": 0,
+        "y": 23,
+        "w": 14,
+        "h": 12
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.pod_namespace:envoy-gateway kubernetes.container_name:envoy response_code:* kubernetes.pod_name:~\"^(${gateway})-\" | copy \":authority\" as host, \"x-envoy-origin-path\" as path, \"user-agent\" as ua | format if (host:\"\") \"(none)\" as host | format if (path:\"\") \"(none)\" as path | format if (ua:\"\") \"(none)\" as ua | extract \"<client>:<_>\" from downstream_remote_address | format \"<kubernetes.pod_name>\" as gateway | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at gateway | format \"other\" as status_class | format if (response_code:~\"^2\") \"2xx\" as status_class | format if (response_code:~\"^3\") \"3xx\" as status_class | format if (response_code:~\"^4\") \"4xx\" as status_class | format if (response_code:~\"^5\") \"5xx\" as status_class | format if (response_code:=\"0\") \"no response\" as status_class | format \"lan\" as peer | format if (geo.src.country:*) \"internet\" as peer | filter peer:in($peer) status_class:in($status) host:~\"${host}\" | filter geo.src.country:* | stats by (geo.src.lat, geo.src.lon, geo.src.city, geo.src.country_name) count() n, count_uniq(client) ips | rename geo.src.lat as lat, geo.src.lon as lon, geo.src.city as city, geo.src.country_name as country",
+          "queryType": "instant",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "transformations": [
+        {
+          "id": "extractFields",
+          "options": {
+            "source": "labels",
+            "format": "json",
+            "replace": false,
+            "keepTime": false
+          }
+        },
+        {
+          "id": "convertFieldType",
+          "options": {
+            "conversions": [
+              {
+                "targetField": "lat",
+                "destinationType": "number"
+              },
+              {
+                "targetField": "lon",
+                "destinationType": "number"
+              },
+              {
+                "targetField": "n",
+                "destinationType": "number"
+              }
+            ],
+            "fields": {}
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Line": true,
+              "id": true,
+              "labels": true,
+              "streams": true,
+              "streamId": true,
+              "tsNs": true,
+              "level": true,
+              "detected_level": true
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "view": {
+          "id": "coords",
+          "lat": 25,
+          "lon": 10,
+          "zoom": 1.25,
+          "allLayers": false
+        },
+        "controls": {
+          "showZoom": true,
+          "mouseWheelZoom": true,
+          "showAttribution": true
+        },
+        "basemap": {
+          "type": "carto",
+          "name": "Basemap",
+          "config": {
+            "theme": "auto",
+            "showLabels": true
+          }
+        },
+        "layers": [
+          {
+            "type": "markers",
+            "name": "requests",
+            "tooltip": true,
+            "filterData": {
+              "id": "byRefId",
+              "options": "A"
+            },
+            "location": {
+              "mode": "coords",
+              "latitude": "lat",
+              "longitude": "lon"
+            },
+            "config": {
+              "showLegend": true,
+              "style": {
+                "color": {
+                  "fixed": "orange"
+                },
+                "opacity": 0.55,
+                "size": {
+                  "field": "n",
+                  "fixed": 5,
+                  "min": 4,
+                  "max": 28
+                },
+                "symbol": {
+                  "mode": "fixed",
+                  "fixed": "img/icons/marker/circle.svg"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "fixed": ""
+                }
+              }
+            }
+          }
+        ],
+        "tooltip": {
+          "mode": "details"
+        }
+      },
+      "id": 13
+    },
+    {
+      "type": "table",
+      "title": "Top clients",
+      "gridPos": {
+        "x": 14,
+        "y": 23,
+        "w": 10,
+        "h": 12
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.pod_namespace:envoy-gateway kubernetes.container_name:envoy response_code:* kubernetes.pod_name:~\"^(${gateway})-\" | copy \":authority\" as host, \"x-envoy-origin-path\" as path, \"user-agent\" as ua | format if (host:\"\") \"(none)\" as host | format if (path:\"\") \"(none)\" as path | format if (ua:\"\") \"(none)\" as ua | extract \"<client>:<_>\" from downstream_remote_address | format \"<kubernetes.pod_name>\" as gateway | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at gateway | format \"other\" as status_class | format if (response_code:~\"^2\") \"2xx\" as status_class | format if (response_code:~\"^3\") \"3xx\" as status_class | format if (response_code:~\"^4\") \"4xx\" as status_class | format if (response_code:~\"^5\") \"5xx\" as status_class | format if (response_code:=\"0\") \"no response\" as status_class | format \"lan\" as peer | format if (geo.src.country:*) \"internet\" as peer | filter peer:in($peer) status_class:in($status) host:~\"${host}\" | stats by (client, geo.src.country, geo.src.asn_org) count() requests, count() if (status_class:in(4xx, 5xx)) errors, count_uniq(path) paths, max(_time) last_seen | sort by (requests desc) | limit 200",
+          "queryType": "instant",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "transformations": [
+        {
+          "id": "extractFields",
+          "options": {
+            "source": "labels",
+            "format": "json",
+            "replace": false,
+            "keepTime": false
+          }
+        },
+        {
+          "id": "convertFieldType",
+          "options": {
+            "conversions": [
+              {
+                "targetField": "requests",
+                "destinationType": "number"
+              },
+              {
+                "targetField": "errors",
+                "destinationType": "number"
+              },
+              {
+                "targetField": "paths",
+                "destinationType": "number"
+              },
+              {
+                "targetField": "last_seen",
+                "destinationType": "time"
+              }
+            ],
+            "fields": {}
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Line": true,
+              "id": true,
+              "labels": true,
+              "streams": true,
+              "streamId": true,
+              "tsNs": true,
+              "level": true,
+              "detected_level": true
+            },
+            "indexByName": {
+              "client": 0,
+              "geo.src.country": 1,
+              "geo.src.asn_org": 2,
+              "requests": 3,
+              "errors": 4,
+              "paths": 5,
+              "last_seen": 6
+            },
+            "renameByName": {
+              "client": "Client",
+              "geo.src.country": "CC",
+              "geo.src.asn_org": "Network",
+              "requests": "Requests",
+              "errors": "4xx/5xx",
+              "paths": "Paths",
+              "last_seen": "Last seen"
+            },
+            "includeByName": {}
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "filterable": true,
+            "cellOptions": {
+              "type": "auto"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "CC"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 45
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Requests"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 80
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "4xx/5xx"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Paths"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 60
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Last seen"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dateTimeFromNow"
+              },
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      },
+      "id": 14
+    },
+    {
+      "type": "table",
+      "title": "🚨 Suspicious requests",
+      "description": "Paths matching common vulnerability-scanner probes, grouped by client and path.",
+      "gridPos": {
+        "x": 0,
+        "y": 35,
+        "w": 24,
+        "h": 10
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.pod_namespace:envoy-gateway kubernetes.container_name:envoy response_code:* kubernetes.pod_name:~\"^(${gateway})-\" | copy \":authority\" as host, \"x-envoy-origin-path\" as path, \"user-agent\" as ua | format if (host:\"\") \"(none)\" as host | format if (path:\"\") \"(none)\" as path | format if (ua:\"\") \"(none)\" as ua | extract \"<client>:<_>\" from downstream_remote_address | format \"<kubernetes.pod_name>\" as gateway | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at gateway | format \"other\" as status_class | format if (response_code:~\"^2\") \"2xx\" as status_class | format if (response_code:~\"^3\") \"3xx\" as status_class | format if (response_code:~\"^4\") \"4xx\" as status_class | format if (response_code:~\"^5\") \"5xx\" as status_class | format if (response_code:=\"0\") \"no response\" as status_class | format \"lan\" as peer | format if (geo.src.country:*) \"internet\" as peer | filter peer:in($peer) status_class:in($status) host:~\"${host}\" | filter path:~\"(?i)(\\\\.env|\\\\.git|wp-(login|admin|content|includes)|xmlrpc|phpmyadmin|pma|\\\\.php|cgi-bin|\\\\.\\\\./|%2e%2e|/etc/passwd|actuator|/boot|\\\\.aws|\\\\.ssh|config\\\\.(json|yml|yaml)|/admin|/manager|/solr|/hnap|/shell|eval\\\\(|/vendor/|\\\\.sql|\\\\.bak|backup|/owa|/autodiscover|/geoserver|/remote|/druid)\" | stats by (client, geo.src.country, geo.src.asn_org, gateway, host, method, path, response_code) count() n, max(_time) last_seen | sort by (last_seen desc) | limit 500",
+          "queryType": "instant",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "transformations": [
+        {
+          "id": "extractFields",
+          "options": {
+            "source": "labels",
+            "format": "json",
+            "replace": false,
+            "keepTime": false
+          }
+        },
+        {
+          "id": "convertFieldType",
+          "options": {
+            "conversions": [
+              {
+                "targetField": "n",
+                "destinationType": "number"
+              },
+              {
+                "targetField": "last_seen",
+                "destinationType": "time"
+              }
+            ],
+            "fields": {}
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Line": true,
+              "id": true,
+              "labels": true,
+              "streams": true,
+              "streamId": true,
+              "tsNs": true,
+              "level": true,
+              "detected_level": true
+            },
+            "indexByName": {
+              "last_seen": 0,
+              "client": 1,
+              "geo.src.country": 2,
+              "geo.src.asn_org": 3,
+              "gateway": 4,
+              "host": 5,
+              "method": 6,
+              "path": 7,
+              "response_code": 8,
+              "n": 9
+            },
+            "renameByName": {
+              "last_seen": "Last seen",
+              "client": "Client",
+              "geo.src.country": "CC",
+              "geo.src.asn_org": "Network",
+              "gateway": "Gateway",
+              "host": "Host",
+              "method": "Method",
+              "path": "Path",
+              "response_code": "Status",
+              "n": "Count"
+            },
+            "includeByName": {}
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "filterable": true,
+            "cellOptions": {
+              "type": "auto"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Last seen"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dateTimeFromNow"
+              },
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "CC"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 45
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Method"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Status"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 65
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Count"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 65
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Path"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      },
+      "id": 15
+    },
+    {
+      "type": "table",
+      "title": "📜 Latest requests",
+      "gridPos": {
+        "x": 0,
+        "y": 45,
+        "w": 24,
+        "h": 13
+      },
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${ds_vl}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${ds_vl}"
+          },
+          "expr": "kubernetes.pod_namespace:envoy-gateway kubernetes.container_name:envoy response_code:* kubernetes.pod_name:~\"^(${gateway})-\" | copy \":authority\" as host, \"x-envoy-origin-path\" as path, \"user-agent\" as ua | format if (host:\"\") \"(none)\" as host | format if (path:\"\") \"(none)\" as path | format if (ua:\"\") \"(none)\" as ua | extract \"<client>:<_>\" from downstream_remote_address | format \"<kubernetes.pod_name>\" as gateway | replace_regexp (\"-[a-z0-9]{6,10}-[a-z0-9]{5}$\", \"\") at gateway | format \"other\" as status_class | format if (response_code:~\"^2\") \"2xx\" as status_class | format if (response_code:~\"^3\") \"3xx\" as status_class | format if (response_code:~\"^4\") \"4xx\" as status_class | format if (response_code:~\"^5\") \"5xx\" as status_class | format if (response_code:=\"0\") \"no response\" as status_class | format \"lan\" as peer | format if (geo.src.country:*) \"internet\" as peer | filter peer:in($peer) status_class:in($status) host:~\"${host}\" | fields _time, gateway, client, geo.src.country, geo.src.city, geo.src.asn_org, method, host, path, response_code, response_flags, response_code_details, duration, bytes_sent, ua | sort by (_time desc) | limit 500",
+          "queryType": "instant",
+          "editorMode": "code",
+          "maxLines": 1000
+        }
+      ],
+      "transformations": [
+        {
+          "id": "extractFields",
+          "options": {
+            "source": "labels",
+            "format": "json",
+            "replace": false,
+            "keepTime": false
+          }
+        },
+        {
+          "id": "convertFieldType",
+          "options": {
+            "conversions": [
+              {
+                "targetField": "duration",
+                "destinationType": "number"
+              },
+              {
+                "targetField": "bytes_sent",
+                "destinationType": "number"
+              },
+              {
+                "targetField": "_time",
+                "destinationType": "time"
+              }
+            ],
+            "fields": {}
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Line": true,
+              "id": true,
+              "labels": true,
+              "streams": true,
+              "streamId": true,
+              "tsNs": true,
+              "level": true,
+              "detected_level": true
+            },
+            "indexByName": {
+              "_time": 0,
+              "gateway": 1,
+              "client": 2,
+              "geo.src.country": 3,
+              "geo.src.city": 4,
+              "geo.src.asn_org": 5,
+              "method": 6,
+              "host": 7,
+              "path": 8,
+              "response_code": 9,
+              "response_flags": 10,
+              "response_code_details": 11,
+              "duration": 12,
+              "bytes_sent": 13,
+              "ua": 14
+            },
+            "renameByName": {
+              "_time": "Time",
+              "gateway": "Gateway",
+              "client": "Client",
+              "geo.src.country": "CC",
+              "geo.src.city": "City",
+              "geo.src.asn_org": "Network",
+              "method": "Method",
+              "host": "Host",
+              "path": "Path",
+              "response_code": "Status",
+              "response_flags": "Flags",
+              "response_code_details": "Details",
+              "duration": "ms",
+              "bytes_sent": "Bytes",
+              "ua": "User agent"
+            },
+            "includeByName": {}
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "filterable": true,
+            "cellOptions": {
+              "type": "auto"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dateTimeAsLocal"
+              },
+              {
+                "id": "custom.width",
+                "value": 165
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Gateway"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 95
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "CC"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 45
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Method"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Flags"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 60
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "ms"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 60
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bytes"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bytes"
+              },
+              {
+                "id": "custom.width",
+                "value": 80
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Status"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 65
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "purple",
+                      "value": null
+                    },
+                    {
+                      "color": "green",
+                      "value": 200
+                    },
+                    {
+                      "color": "blue",
+                      "value": 300
+                    },
+                    {
+                      "color": "orange",
+                      "value": 400
+                    },
+                    {
+                      "color": "red",
+                      "value": 500
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "unit",
+                "value": "none"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": [
+          {
+            "displayName": "Time",
+            "desc": true
+          }
+        ]
+      },
+      "id": 16
+    }
+  ]
+}
