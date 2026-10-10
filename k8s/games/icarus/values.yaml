@@ -61,3 +61,4 @@ helpers:
   backups:
     - pvcName: icarus-config
       resticRepoSuffix: icarus
+      unlock: "2026-10-10"

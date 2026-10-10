@@ -332,3 +332,8 @@ helpers:
     - name: crowdsec-secret
       infisical:
         path: "/crowdsec"
+  backups:
+    - pvcName: crowdsec-config-pvc
+      resticRepoSuffix: crowdsec-config
+    - pvcName: crowdsec-db-pvc
+      resticRepoSuffix: crowdsec-db
