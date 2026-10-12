@@ -34,6 +34,7 @@ spec:
               deviceName: homelab.io/unraid-flash
           interfaces:
             - name: default
+              macAddress: "00:d0:b4:04:1d:50"
               masquerade: {}
       networks:
         - name: default
