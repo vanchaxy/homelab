@@ -61,8 +61,9 @@ module "vyos" {
 module "talos" {
   source = "./talos"
 
-  cluster   = local.cluster
-  nodes_ips = [for k, v in local.nodes : v.ip]
+  cluster    = local.cluster
+  nodes_ips  = [for k, v in local.nodes : v.ip]
+  worker_ips = local.neptune_node ? [local.neptune.ip] : []
 }
 
 module "node-mars" {
