@@ -163,6 +163,8 @@ resource "terraform_data" "upgrade_talos" {
       ETCD_NODES = join(" ", [for n in local.nodes : n.ip])
     }
   }
+
+  depends_on = [module.talos]
 }
 
 resource "terraform_data" "upgrade_k8s" {

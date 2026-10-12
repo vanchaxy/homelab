@@ -1,38 +1,23 @@
 locals {
-  schematic = yamlencode(
-    {
-      customization = {
-        systemExtensions = {
-          officialExtensions = [
-            "siderolabs/amdgpu",
-            "siderolabs/amd-ucode",
-            "siderolabs/intel-ucode",
-            "siderolabs/iscsi-tools",
-            "siderolabs/util-linux-tools",
-          ]
-        }
-      }
-    }
-  )
-  schematic_id = jsondecode(data.http.schematic.response_body).id
+  extensions = [
+    "siderolabs/amdgpu",
+    "siderolabs/amd-ucode",
+    "siderolabs/intel-ucode",
+    "siderolabs/iscsi-tools",
+    "siderolabs/util-linux-tools",
+  ]
+  schematic    = join("", concat(["customization:\n    systemExtensions:\n        officialExtensions:\n"], [for e in local.extensions : "            - ${e}\n"]))
+  schematic_id = sha256(local.schematic)
 }
 
-data "http" "schematic" {
-  url                = "https://factory.talos.dev/schematics"
-  method             = "POST"
-  request_body       = local.schematic
-  request_timeout_ms = 30000
+resource "terraform_data" "schematic" {
+  triggers_replace = [local.schematic_id]
 
-  retry {
-    attempts     = 5
-    min_delay_ms = 2000
-    max_delay_ms = 30000
-  }
-
-  lifecycle {
-    postcondition {
-      condition     = self.status_code == 200 || self.status_code == 201
-      error_message = "factory.talos.dev returned ${self.status_code} for the schematic: ${self.response_body}"
+  provisioner "local-exec" {
+    command = "${path.module}/register-schematic.sh"
+    environment = {
+      SCHEMATIC    = local.schematic
+      SCHEMATIC_ID = local.schematic_id
     }
   }
 }
