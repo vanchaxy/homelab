@@ -27,6 +27,17 @@
     },
     {
       "customType": "regex",
+      "description": "GitHub release assets referenced from kustomizations (e.g. the KubeVirt operator manifest)",
+      "managerFilePatterns": [
+        "/^k8s/.+/kustomization\\.yaml$/"
+      ],
+      "matchStrings": [
+        "https://github\\.com/(?<depName>[^/\\s]+/[^/\\s]+)/releases/download/(?<currentValue>[^/\\s]+)/"
+      ],
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
       "description": "Container images run on the VyOS routers",
       "managerFilePatterns": [
         "/^tofu/cluster/vyos/.+\\.sh\\.tftpl$/"

@@ -135,6 +135,7 @@ appsSync:
     - media
     - spegel
     - telemetry
+    - unraid
   unmanagedReplicas:
     - abiotic-factor
     - core-keeper

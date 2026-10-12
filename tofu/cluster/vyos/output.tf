@@ -11,6 +11,7 @@ output "home_router_config" {
     laptop_public_ed25519_key = split(" ", var.laptop_public_ed25519)[1]
     ci_public_ed25519_key     = split(" ", var.ci_public_ed25519)[1]
     vps_wg_public_key         = wireguard_asymmetric_key.vps.public_key
+    neptune_enabled           = var.neptune_enabled
   })
 }
 

@@ -5,3 +5,8 @@ variable "laptop_public_ed25519" {
 variable "ci_public_ed25519" {
   type = string
 }
+
+variable "neptune_enabled" {
+  type    = bool
+  default = false
+}

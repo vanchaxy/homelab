@@ -1,0 +1,19 @@
+apiVersion: v1alpha1
+kind: KubeNodeConfig
+labels:
+  homelab/role: nas
+taints:
+  homelab/nas: "true:NoSchedule"
+---
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: vfio_pci
+---
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: vfio_iommu_type1
+---
+apiVersion: v1alpha1
+kind: PCIDriverRebindConfig
+name: "0000:05:00.0"
+targetDriver: vfio-pci

@@ -1,0 +1,59 @@
+apiVersion: v1alpha1
+kind: KubeNodeConfig
+labels:
+  node.kubernetes.io/exclude-from-external-load-balancers:
+    $patch: delete
+taints:
+  node-role.kubernetes.io/control-plane:
+    $patch: delete
+---
+apiVersion: v1alpha1
+kind: KubeServiceAccountConfig
+issuer:
+  issuerURL: https://192.168.50.201:6443
+---
+apiVersion: v1alpha1
+kind: KubeAdmissionControlConfig
+name: PodSecurity
+configuration:
+  exemptions:
+    namespaces:
+      - longhorn-system
+---
+apiVersion: v1alpha1
+kind: KubeControllerManagerConfig
+extraArgs:
+  bind-address: 0.0.0.0
+---
+apiVersion: v1alpha1
+kind: KubeSchedulerConfig
+extraArgs:
+  bind-address: 0.0.0.0
+---
+apiVersion: v1alpha1
+kind: KubeFlannelCNIConfig
+$patch: delete
+---
+apiVersion: v1alpha1
+kind: KubeProxyConfig
+enabled: false
+---
+apiVersion: v1alpha1
+kind: KubeInlineManifestConfig
+name: cilium-values
+manifest: |
+  ---
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: cilium-values
+    namespace: kube-system
+  data:
+    values.yaml: |-
+      ${indent(6, cilium_values)}
+---
+apiVersion: v1alpha1
+kind: KubeInlineManifestConfig
+name: cilium-bootstrap
+manifest: |
+  ${indent(2, cilium_install)}

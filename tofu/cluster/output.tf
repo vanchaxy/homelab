@@ -1,5 +1,5 @@
 output "files" {
-  value = {
+  value = merge({
     "talos-machine-config-mars.yaml"    = module.node-mars.machine_config.machine_configuration
     "talos-machine-config-jupiter.yaml" = module.node-jupiter.machine_config.machine_configuration
     "talos-machine-config-saturn.yaml"  = module.node-saturn.machine_config.machine_configuration
@@ -7,8 +7,14 @@ output "files" {
     "kube-config.yaml"                  = module.talos.kubeconfig
     "vps-router-config.sh"              = module.vyos.vps_router_config
     "home-router-config.sh"             = module.vyos.home_router_config
-  }
+    }, local.neptune_enabled ? {
+    "talos-machine-config-neptune.yaml" = module.node-neptune[0].machine_config.machine_configuration
+  } : {})
   sensitive = true
+}
+
+output "nas_iso_url" {
+  value = module.talos.nas_iso_url
 }
 
 removed {

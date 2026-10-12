@@ -3,6 +3,10 @@
 #
 #   upgrade-talos.sh <version> <installer-image> <name=ip>...   APPLY_MODE=apply | dry-run
 #
+# The nodes are taken as the etcd members for the health checks, unless
+# ETCD_NODES (space-separated control-plane IPs) is set, as it must be when
+# upgrading a worker.
+#
 # Per node: skip if already on <version>; refuse jumps of more than one minor
 # version; check the cluster is healthy; pre-pull the installer
 # into the system namespace (a legacy Upgrade RPC fallback blocks silently while it
@@ -31,7 +35,11 @@ check_jump() {
 client=$(talosctl version --client 2>/dev/null | awk '/Tag:/{print $2; exit}')
 [ "$client" = "$want" ] || echo "note: talosctl client is ${client}, nodes go to ${want}; update talosctl to match"
 
-ips=(); for p in "$@"; do ips+=("${p#*=}"); done
+if [ -n "${ETCD_NODES:-}" ]; then
+  read -ra ips <<<"$ETCD_NODES"
+else
+  ips=(); for p in "$@"; do ips+=("${p#*=}"); done
+fi
 for pair in "$@"; do
   name="${pair%%=*}"; ip="${pair#*=}"
   have=$(talos_version "$ip")
