@@ -3,7 +3,7 @@ kind: VirtualMachine
 metadata:
   name: unraid
 spec:
-  runStrategy: Halted
+  runStrategy: Always
   template:
     metadata:
       labels:

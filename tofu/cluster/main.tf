@@ -30,7 +30,7 @@ locals {
   }
 
   neptune_network = true
-  neptune_node    = false
+  neptune_node    = true
   neptune = {
     name            = "neptune"
     ip              = "10.10.60.204"
