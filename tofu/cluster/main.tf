@@ -29,8 +29,6 @@ locals {
     }
   }
 
-  neptune_network = true
-  neptune_node    = true
   neptune = {
     name            = "neptune"
     ip              = "10.10.60.204"
@@ -52,7 +50,6 @@ locals {
 module "vyos" {
   source = "./vyos"
 
-  neptune_enabled = local.neptune_network
 
   laptop_public_ed25519 = var.laptop_public_ed25519
   ci_public_ed25519     = local.ci_public_ed25519
@@ -63,7 +60,7 @@ module "talos" {
 
   cluster    = local.cluster
   nodes_ips  = [for k, v in local.nodes : v.ip]
-  worker_ips = local.neptune_node ? [local.neptune.ip] : []
+  worker_ips = [local.neptune.ip]
 }
 
 module "node-mars" {
@@ -108,9 +105,13 @@ module "node-saturn" {
   client_configuration = module.talos.client_configuration
 }
 
+moved {
+  from = module.node-neptune[0]
+  to   = module.node-neptune
+}
+
 module "node-neptune" {
   source = "./node"
-  count  = local.neptune_node ? 1 : 0
 
   after = module.node-saturn.talos_machine_configuration_apply_id
 
