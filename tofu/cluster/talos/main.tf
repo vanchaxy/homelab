@@ -5,7 +5,7 @@ resource "talos_machine_secrets" "this" {
 data "talos_client_configuration" "this" {
   cluster_name         = var.cluster.name
   client_configuration = talos_machine_secrets.this.client_configuration
-  nodes                = var.nodes_ips
+  nodes                = concat(var.nodes_ips, var.worker_ips)
   endpoints            = var.nodes_ips
 }
 

@@ -1,5 +1,5 @@
 output "files" {
-  value = merge({
+  value = {
     "talos-machine-config-mars.yaml"    = module.node-mars.machine_config.machine_configuration
     "talos-machine-config-jupiter.yaml" = module.node-jupiter.machine_config.machine_configuration
     "talos-machine-config-saturn.yaml"  = module.node-saturn.machine_config.machine_configuration
@@ -7,9 +7,8 @@ output "files" {
     "kube-config.yaml"                  = module.talos.kubeconfig
     "vps-router-config.sh"              = module.vyos.vps_router_config
     "home-router-config.sh"             = module.vyos.home_router_config
-    }, local.neptune_node ? {
-    "talos-machine-config-neptune.yaml" = module.node-neptune[0].machine_config.machine_configuration
-  } : {})
+    "talos-machine-config-neptune.yaml" = module.node-neptune.machine_config.machine_configuration
+  }
   sensitive = true
 }
 
@@ -156,7 +155,7 @@ resource "terraform_data" "upgrade_talos" {
     command = join(" ", concat(
       ["${path.module}/talos/upgrade-talos.sh", local.cluster.talos_version, module.talos.installer_url],
       [for name in ["mars", "jupiter", "saturn"] : "${name}=${local.nodes[name].ip}"],
-      local.neptune_node ? ["neptune=${local.neptune.ip}"] : [],
+      ["neptune=${local.neptune.ip}"],
     ))
     environment = {
       APPLY_MODE = var.apply_mode
