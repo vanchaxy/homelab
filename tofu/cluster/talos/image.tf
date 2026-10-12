@@ -1,22 +1,15 @@
-data "talos_image_factory_extensions_versions" "this" {
-  talos_version = var.cluster.talos_version
-  filters = {
-    names = [
-      "amdgpu",
-      "amd-ucode",
-      "intel-ucode",
-      "iscsi-tools",
-      "util-linux-tools",
-    ]
-  }
-}
-
 resource "talos_image_factory_schematic" "this" {
   schematic = yamlencode(
     {
       customization = {
         systemExtensions = {
-          officialExtensions = data.talos_image_factory_extensions_versions.this.extensions_info.*.name
+          officialExtensions = [
+            "siderolabs/amdgpu",
+            "siderolabs/amd-ucode",
+            "siderolabs/intel-ucode",
+            "siderolabs/iscsi-tools",
+            "siderolabs/util-linux-tools",
+          ]
         }
       }
     }
