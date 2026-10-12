@@ -1,0 +1,29 @@
+apiVersion: kubevirt.io/v1
+kind: KubeVirt
+metadata:
+  name: kubevirt
+  namespace: kubevirt
+spec:
+  configuration:
+    developerConfiguration:
+      featureGates:
+        - HostDevices
+    permittedHostDevices:
+      pciHostDevices:
+        - pciVendorSelector: "197B:0585"
+          resourceName: homelab.io/jmb585-sata
+      usb:
+        - resourceName: homelab.io/unraid-flash
+          selectors:
+            - vendor: "0781"
+              product: "5567"
+  workloads:
+    nodePlacement:
+      nodeSelector:
+        homelab/role: nas
+      tolerations:
+        - key: homelab/nas
+          operator: Exists
+          effect: NoSchedule
+  workloadUpdateStrategy:
+    workloadUpdateMethods: []

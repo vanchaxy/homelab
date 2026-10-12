@@ -2,9 +2,16 @@ variable "node" {
   type = object({
     name            = string
     ip              = string
-    ssd_disk_id     = string
+    machine_type    = optional(string, "controlplane")
+    ssd_disk_id     = optional(string, "")
     install_disk_id = string
   })
+}
+
+variable "extra_patches" {
+  type        = list(string)
+  default     = []
+  description = "Additional machine config patches applied after the generated ones"
 }
 
 

@@ -3,6 +3,7 @@ machine:
     image: ghcr.io/siderolabs/kubelet:${kubernetes_version}
     defaultRuntimeSeccompProfileEnabled: true
     disableManifestsDirectory: true
+%{ if ssd_disk_id != "" ~}
     extraMounts:
       - destination: /var/mnt/storage
         type: bind
@@ -15,6 +16,7 @@ machine:
     - device: /dev/disk/by-id/${ssd_disk_id}
       partitions:
         - mountpoint: /var/mnt/storage
+%{ endif ~}
 ---
 apiVersion: v1alpha1
 kind: KubeletConfig
@@ -66,65 +68,13 @@ kind: KubeNodeConfig
 labels:
   topology.kubernetes.io/region: ${cluster_name}
   topology.kubernetes.io/zone: ${node_name}
+%{ if ssd_disk_id != "" ~}
   node.longhorn.io/create-default-disk: 'config'
-  node.kubernetes.io/exclude-from-external-load-balancers:
-    $patch: delete
+%{ endif ~}
+%{ if ssd_disk_id != "" ~}
 annotations:
   node.longhorn.io/default-disks-config: '${
     jsonencode(
       [{name="nmve", path="/var/mnt/storage", allowScheduling=true, tags=["ssd"]}])
   }'
-taints:
-  node-role.kubernetes.io/control-plane:
-    $patch: delete
----
-apiVersion: v1alpha1
-kind: KubeServiceAccountConfig
-issuer:
-  issuerURL: https://192.168.50.201:6443
----
-apiVersion: v1alpha1
-kind: KubeAdmissionControlConfig
-name: PodSecurity
-configuration:
-  exemptions:
-    namespaces:
-      - longhorn-system
----
-apiVersion: v1alpha1
-kind: KubeControllerManagerConfig
-extraArgs:
-  bind-address: 0.0.0.0
----
-apiVersion: v1alpha1
-kind: KubeSchedulerConfig
-extraArgs:
-  bind-address: 0.0.0.0
----
-apiVersion: v1alpha1
-kind: KubeFlannelCNIConfig
-$patch: delete
----
-apiVersion: v1alpha1
-kind: KubeProxyConfig
-enabled: false
----
-apiVersion: v1alpha1
-kind: KubeInlineManifestConfig
-name: cilium-values
-manifest: |
-  ---
-  apiVersion: v1
-  kind: ConfigMap
-  metadata:
-    name: cilium-values
-    namespace: kube-system
-  data:
-    values.yaml: |-
-      ${indent(6, cilium_values)}
----
-apiVersion: v1alpha1
-kind: KubeInlineManifestConfig
-name: cilium-bootstrap
-manifest: |
-  ${indent(2, cilium_install)}
+%{ endif ~}

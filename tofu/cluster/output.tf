@@ -1,5 +1,5 @@
 output "files" {
-  value = {
+  value = merge({
     "talos-machine-config-mars.yaml"    = module.node-mars.machine_config.machine_configuration
     "talos-machine-config-jupiter.yaml" = module.node-jupiter.machine_config.machine_configuration
     "talos-machine-config-saturn.yaml"  = module.node-saturn.machine_config.machine_configuration
@@ -7,8 +7,14 @@ output "files" {
     "kube-config.yaml"                  = module.talos.kubeconfig
     "vps-router-config.sh"              = module.vyos.vps_router_config
     "home-router-config.sh"             = module.vyos.home_router_config
-  }
+    }, local.neptune_enabled ? {
+    "talos-machine-config-neptune.yaml" = module.node-neptune[0].machine_config.machine_configuration
+  } : {})
   sensitive = true
+}
+
+output "iso_url" {
+  value = module.talos.iso_url
 }
 
 removed {
@@ -150,11 +156,15 @@ resource "terraform_data" "upgrade_talos" {
     command = join(" ", concat(
       ["${path.module}/talos/upgrade-talos.sh", local.cluster.talos_version, module.talos.installer_url],
       [for name in ["mars", "jupiter", "saturn"] : "${name}=${local.nodes[name].ip}"],
+      local.neptune_enabled ? ["neptune=${local.neptune.ip}"] : [],
     ))
     environment = {
       APPLY_MODE = var.apply_mode
+      ETCD_NODES = join(" ", [for n in local.nodes : n.ip])
     }
   }
+
+  depends_on = [module.talos]
 }
 
 resource "terraform_data" "upgrade_k8s" {
