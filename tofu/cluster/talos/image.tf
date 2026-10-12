@@ -1,4 +1,4 @@
-resource "talos_image_factory_schematic" "this" {
+locals {
   schematic = yamlencode(
     {
       customization = {
@@ -14,18 +14,40 @@ resource "talos_image_factory_schematic" "this" {
       }
     }
   )
+  schematic_id = jsondecode(data.http.schematic.response_body).id
 }
 
-data "talos_image_factory_urls" "this" {
-  talos_version = var.cluster.talos_version
-  schematic_id  = talos_image_factory_schematic.this.id
-  platform      = "metal"
+data "http" "schematic" {
+  url                = "https://factory.talos.dev/schematics"
+  method             = "POST"
+  request_body       = local.schematic
+  request_timeout_ms = 30000
+
+  retry {
+    attempts     = 5
+    min_delay_ms = 2000
+    max_delay_ms = 30000
+  }
+
+  lifecycle {
+    postcondition {
+      condition     = self.status_code == 200 || self.status_code == 201
+      error_message = "factory.talos.dev returned ${self.status_code} for the schematic: ${self.response_body}"
+    }
+  }
+}
+
+removed {
+  from = talos_image_factory_schematic.this
+  lifecycle {
+    destroy = false
+  }
 }
 
 output "installer_url" {
-  value = data.talos_image_factory_urls.this.urls.installer
+  value = "factory.talos.dev/metal-installer/${local.schematic_id}:${var.cluster.talos_version}"
 }
 
 output "iso_url" {
-  value = data.talos_image_factory_urls.this.urls.iso
+  value = "https://factory.talos.dev/image/${local.schematic_id}/${var.cluster.talos_version}/metal-amd64.iso"
 }
