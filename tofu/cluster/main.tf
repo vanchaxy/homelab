@@ -29,7 +29,8 @@ locals {
     }
   }
 
-  neptune_enabled = false
+  neptune_network = true
+  neptune_node    = false
   neptune = {
     name            = "neptune"
     ip              = "10.10.60.204"
@@ -51,7 +52,7 @@ locals {
 module "vyos" {
   source = "./vyos"
 
-  neptune_enabled = local.neptune_enabled
+  neptune_enabled = local.neptune_network
 
   laptop_public_ed25519 = var.laptop_public_ed25519
   ci_public_ed25519     = local.ci_public_ed25519
@@ -108,7 +109,7 @@ module "node-saturn" {
 
 module "node-neptune" {
   source = "./node"
-  count  = local.neptune_enabled ? 1 : 0
+  count  = local.neptune_node ? 1 : 0
 
   after = module.node-saturn.talos_machine_configuration_apply_id
 
