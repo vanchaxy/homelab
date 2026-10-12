@@ -5,7 +5,7 @@ csi-driver-nfs:
     create: true
     name: nfs-csi
     parameters:
-      server: 10.10.60.10
+      server: nfs.ivanchenko.io
       share: /mnt/user/nfs-csi/
       mountPermissions: "0"
     reclaimPolicy: Retain
