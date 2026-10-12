@@ -13,8 +13,8 @@ output "files" {
   sensitive = true
 }
 
-output "nas_iso_url" {
-  value = module.talos.nas_iso_url
+output "iso_url" {
+  value = module.talos.iso_url
 }
 
 removed {
@@ -156,9 +156,11 @@ resource "terraform_data" "upgrade_talos" {
     command = join(" ", concat(
       ["${path.module}/talos/upgrade-talos.sh", local.cluster.talos_version, module.talos.installer_url],
       [for name in ["mars", "jupiter", "saturn"] : "${name}=${local.nodes[name].ip}"],
+      local.neptune_enabled ? ["neptune=${local.neptune.ip}"] : [],
     ))
     environment = {
       APPLY_MODE = var.apply_mode
+      ETCD_NODES = join(" ", [for n in local.nodes : n.ip])
     }
   }
 }

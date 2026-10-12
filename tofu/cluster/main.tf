@@ -115,7 +115,7 @@ module "node-neptune" {
   cluster = local.cluster
   node    = local.neptune
 
-  talos_installer_url = module.talos.nas_installer_url
+  talos_installer_url = module.talos.installer_url
   extra_patches       = [file("${path.module}/node/nas-patch.yaml")]
 
   machine_secrets      = module.talos.machine_secrets
