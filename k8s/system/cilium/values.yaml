@@ -232,7 +232,7 @@ egressExceptions:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   crowdsec:
     toNamespaces: [telemetry]
-    toFQDNs: ['*.crowdsec.net']
+    toFQDNs: ['*.crowdsec.net', s3.eu-central-003.backblazeb2.com]
   donetick:
     toNamespaces: [envoy-gateway]
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
@@ -251,14 +251,14 @@ egressExceptions:
     toEntities: [kube-apiserver]
     toFQDNs: [s3.eu-central-003.backblazeb2.com, grafana.com, secure.gravatar.com]
   hermes-karyna:
-    toFQDNs: [s3.eu-central-003.backblazeb2.com, platform.claude.com, api.github.com, raw.githubusercontent.com, antigravity-hub-auto-updater-974169037036.us-central1.run.app]
-    toCIDRs: [149.154.166.110/32]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, platform.claude.com, api.github.com, raw.githubusercontent.com, antigravity-hub-auto-updater-974169037036.us-central1.run.app, github.com, registry.npmjs.org, api.telegram.org, cloudflare-dns.com, dns.google, huggingface.co, http-intake.logs.us5.datadoghq.com, query.wikidata.org, rules1.clearurls.xyz]
+    toCIDRs: [149.154.166.110/32, 149.154.167.220/32]
   icarus:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   immich:
     toNamespaces: [envoy-gateway]
     toEntities: [kube-apiserver]
-    toFQDNs: [s3.eu-central-003.backblazeb2.com, version.immich.cloud]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, version.immich.cloud, huggingface.co, '*.xethub.hf.co', '*.aws.cdn.hf.co', '*.modelscope.cn']
   infisical:
     toEntities: [kube-apiserver]
     toFQDNs: [app.infisical.com]
@@ -273,7 +273,7 @@ egressExceptions:
     toFQDNs: [s3.eu-central-003.backblazeb2.com, longhorn-upgrade-responder.rancher.io]
   media:
     toNamespaces: [envoy-gateway]
-    toFQDNs: [s3.eu-central-003.backblazeb2.com, api.autobrr.com, api.radarr.video, api.themoviedb.org, image.tmdb.org, indexers.prowlarr.com, raw.githubusercontent.com, github.com, api.trakt.tv, prowlarr.servarr.com, radarr.servarr.com, services.sonarr.tv, skyhook.sonarr.tv, api4.thetvdb.com, artworks.thetvdb.com, thexem.info]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, api.autobrr.com, api.radarr.video, api.themoviedb.org, image.tmdb.org, indexers.prowlarr.com, raw.githubusercontent.com, github.com, api.trakt.tv, prowlarr.servarr.com, radarr.servarr.com, services.sonarr.tv, skyhook.sonarr.tv, api4.thetvdb.com, artworks.thetvdb.com, thexem.info, sentry.servarr.com, utp.to, registry.npmjs.org, www.omdbapi.com, repo.jellyfin.org, '*.mirror.jellyfin.org', intro-skipper.org, www.iamparadox.dev, cdn.jsdelivr.net, lscr.io, ghcr.io, pkg-containers.githubusercontent.com, archive.ubuntu.com, security.ubuntu.com, keyserver.ubuntu.com, ppa.launchpad.net, repo.radeon.com]
     toCIDRs: [89.222.96.30/32]
   necesse:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
@@ -284,13 +284,13 @@ egressExceptions:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   pocket-id:
     toEntities: [kube-apiserver]
-    toFQDNs: [s3.eu-central-003.backblazeb2.com, api.github.com]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, api.github.com, analytics.pocket-id.org, cdn.jsdelivr.net]
   robusta:
     toNamespaces: [telemetry]
     toEntities: [kube-apiserver]
-    toFQDNs: [api.eu.robusta.dev, sp.eu.robusta.dev, o4510692373299200.ingest.de.sentry.io]
+    toFQDNs: [api.eu.robusta.dev, sp.eu.robusta.dev, o4510692373299200.ingest.de.sentry.io, api.robusta.dev, api.github.com, raw.githubusercontent.com]
   satisfactory:
-    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, api.steampowered.com, '*.steamserver.net', '*.steamcontent.com', client-update.steamstatic.com, clientconfig.akamai.steamstatic.com, api.ipify.org, o4510000618995712.ingest.de.sentry.io]
   spegel:
     toEntities: [kube-apiserver]
   telemetry:
@@ -300,14 +300,14 @@ egressExceptions:
   toloka-torznab:
     toNamespaces: [media]
     toEntities: [kube-apiserver]
-    toFQDNs: [s3.eu-central-003.backblazeb2.com, radarrapi.servarr.com, toloka.to, utp.to, skyhook.sonarr.tv, datasets.imdbws.com]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, radarrapi.servarr.com, toloka.to, utp.to, skyhook.sonarr.tv, datasets.imdbws.com, api.openai.com]
   versitygw:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   volsync:
     toEntities: [kube-apiserver]
   yamtrack:
     toNamespaces: [envoy-gateway]
-    toFQDNs: [s3.eu-central-003.backblazeb2.com, api.trakt.tv]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, api.trakt.tv, api.themoviedb.org, api.tvmaze.com, api.igdb.com, id.twitch.tv]
 
 sameNamespaceEgress:
   - abiotic-factor
