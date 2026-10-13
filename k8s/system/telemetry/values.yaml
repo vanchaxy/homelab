@@ -472,10 +472,10 @@ vector-syslog:
 
           ip = string(.host) ?? ""
           hostname = ip
-          if ip == "10.10.60.201" { hostname = "mars" }
-          if ip == "10.10.60.202" { hostname = "jupiter" }
-          if ip == "10.10.60.203" { hostname = "saturn" }
-          if ip == "10.10.60.204" { hostname = "neptune" }
+          if ip_cidr_contains(["10.10.60.201/32", "10.244.0.0/24"], ip) ?? false { hostname = "mars" }
+          if ip_cidr_contains(["10.10.60.202/32", "10.244.2.0/24"], ip) ?? false { hostname = "jupiter" }
+          if ip_cidr_contains(["10.10.60.203/32", "10.244.1.0/24"], ip) ?? false { hostname = "saturn" }
+          if ip_cidr_contains(["10.10.60.204/32", "10.244.3.0/24"], ip) ?? false { hostname = "neptune" }
           out = {
             "_time": ."talos-time",
             "_msg": .msg,
