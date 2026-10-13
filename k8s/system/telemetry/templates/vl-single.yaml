@@ -6,6 +6,7 @@ spec:
   retentionPeriod: "30d"
   extraArgs:
     syslog.listenAddr.udp: ":5514"
+    syslog.useLocalTimestamp.udp: "true"
   storage:
     resources:
       requests:
