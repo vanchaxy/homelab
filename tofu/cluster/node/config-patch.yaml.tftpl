@@ -42,6 +42,11 @@ nameservers:
   - address: 10.10.60.1
 ---
 apiVersion: v1alpha1
+kind: KmsgLogConfig
+name: victorialogs
+url: udp://10.10.61.243:6050/
+---
+apiVersion: v1alpha1
 kind: SysctlConfig
 params:
   net.core.default_qdisc: fq

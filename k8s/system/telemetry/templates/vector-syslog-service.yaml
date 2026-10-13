@@ -14,3 +14,7 @@ spec:
       protocol: UDP
       port: 514
       targetPort: 5514
+    - name: talos-kmsg-udp
+      protocol: UDP
+      port: 6050
+      targetPort: 6050
