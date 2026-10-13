@@ -306,7 +306,8 @@ egressExceptions:
     toFQDNs: [s3.eu-central-003.backblazeb2.com, radarrapi.servarr.com, toloka.to, utp.to, skyhook.sonarr.tv, datasets.imdbws.com, api.openai.com]
   unraid:
     toNamespaces: [telemetry]
-    toFQDNs: [raw.githubusercontent.com, releases.unraid.net, time.google.com, version.pm2.io]
+    toFQDNs: [raw.githubusercontent.com, releases.unraid.net, version.pm2.io]
+    toCIDRs: [216.239.35.0/32, 216.239.35.4/32, 216.239.35.8/32, 216.239.35.12/32]
   versitygw:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   volsync:
