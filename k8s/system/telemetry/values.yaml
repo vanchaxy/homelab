@@ -403,6 +403,13 @@ vector-syslog:
         type: syslog
         mode: udp
         address: 0.0.0.0:5514
+      talos_kmsg:
+        type: socket
+        mode: udp
+        address: 0.0.0.0:6050
+        max_length: 102400
+        decoding:
+          codec: json
       internal_metrics:
         type: internal_metrics
     transforms:
@@ -457,11 +464,35 @@ vector-syslog:
               .geo.src.asn_org = as.autonomous_system_organization
             }
           }
+      talos_kmsg_enrich:
+        type: remap
+        inputs:
+          - talos_kmsg
+        source: |2
+
+          ip = string(.host) ?? ""
+          hostname = ip
+          if ip == "10.10.60.201" { hostname = "mars" }
+          if ip == "10.10.60.202" { hostname = "jupiter" }
+          if ip == "10.10.60.203" { hostname = "saturn" }
+          if ip == "10.10.60.204" { hostname = "neptune" }
+          out = {
+            "_time": ."talos-time",
+            "_msg": .msg,
+            "hostname": hostname,
+            "app_name": "kernel",
+            "facility_keyword": .facility,
+            "level": ."talos-level",
+            "seq": .seq,
+            "format": "talos-kmsg"
+          }
+          . = compact(out, nullish: true)
     sinks:
       victorialogs_syslog:
         type: http
         inputs:
           - syslog_enrich
+          - talos_kmsg_enrich
         uri: http://vlsingle-victoria-logs.telemetry.svc.cluster.local:9428/insert/jsonline?_stream_fields=hostname,app_name&_msg_field=_msg&_time_field=_time
         method: post
         encoding:
