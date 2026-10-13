@@ -275,7 +275,7 @@ egressExceptions:
     toFQDNs: [s3.eu-central-003.backblazeb2.com, longhorn-upgrade-responder.rancher.io]
   media:
     toNamespaces: [envoy-gateway]
-    toFQDNs: [s3.eu-central-003.backblazeb2.com, api.autobrr.com, api.radarr.video, api.themoviedb.org, image.tmdb.org, indexers.prowlarr.com, raw.githubusercontent.com, github.com, api.trakt.tv, prowlarr.servarr.com, radarr.servarr.com, services.sonarr.tv, skyhook.sonarr.tv, api4.thetvdb.com, artworks.thetvdb.com, thexem.info, sentry.servarr.com, utp.to, registry.npmjs.org, www.omdbapi.com, repo.jellyfin.org, '*.mirror.jellyfin.org', intro-skipper.org, www.iamparadox.dev, cdn.jsdelivr.net, lscr.io, ghcr.io, pkg-containers.githubusercontent.com, archive.ubuntu.com, security.ubuntu.com, keyserver.ubuntu.com, ppa.launchpad.net, repo.radeon.com]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, api.autobrr.com, api.radarr.video, api.themoviedb.org, image.tmdb.org, indexers.prowlarr.com, raw.githubusercontent.com, github.com, api.trakt.tv, prowlarr.servarr.com, radarr.servarr.com, services.sonarr.tv, skyhook.sonarr.tv, api4.thetvdb.com, artworks.thetvdb.com, thexem.info, sentry.servarr.com, sentry.sonarr.tv, utp.to, registry.npmjs.org, www.omdbapi.com, repo.jellyfin.org, '*.mirror.jellyfin.org', intro-skipper.org, www.iamparadox.dev, cdn.jsdelivr.net, lscr.io, ghcr.io, pkg-containers.githubusercontent.com, archive.ubuntu.com, security.ubuntu.com, keyserver.ubuntu.com, ppa.launchpad.net, repo.radeon.com]
     toCIDRs: [89.222.96.30/32]
   necesse:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
@@ -299,10 +299,14 @@ egressExceptions:
     toNamespaces: [argocd, cert-manager, immich, kaneo, kube-system, longhorn-system, pocket-id, robusta, spegel, toloka-torznab, volsync, crowdsec]
     toEntities: [kube-apiserver, host, remote-node]
     toFQDNs: [api.telegram.org, hc-ping.com, raw.githubusercontent.com, download.db-ip.com]
+    toCIDRs: [10.10.60.1/32, 10.255.254.1/32]
   toloka-torznab:
     toNamespaces: [media]
     toEntities: [kube-apiserver]
     toFQDNs: [s3.eu-central-003.backblazeb2.com, radarrapi.servarr.com, toloka.to, utp.to, skyhook.sonarr.tv, datasets.imdbws.com, api.openai.com]
+  unraid:
+    toNamespaces: [telemetry]
+    toFQDNs: [raw.githubusercontent.com, releases.unraid.net, time.google.com, version.pm2.io]
   versitygw:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   volsync:
