@@ -167,6 +167,10 @@ victoria-metrics-k8s-stack:
 
 vector:
   role: Agent
+  tolerations:
+    - key: homelab/nas
+      operator: Exists
+      effect: NoSchedule
   customConfig:
     data_dir: /vector-data-dir
     api:
