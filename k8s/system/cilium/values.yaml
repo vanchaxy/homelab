@@ -85,7 +85,7 @@ cilium:
     enabled: true
 
   dnsProxy:
-    minTtl: 3600
+    minTtl: 86400
     proxyResponseMaxDelay: 1s
 
   hubble:
@@ -237,7 +237,7 @@ egressExceptions:
     toNamespaces: [envoy-gateway]
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   enshrouded:
-    toFQDNs: [s3.eu-central-003.backblazeb2.com]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, '*.steamcontent.com']
   envoy-gateway:
     toNamespaces: [actualbudget, argocd, backrest, crowdsec, donetick, grafana, hermes-karyna, home-infra, immich, kaneo, kube-system, librespeed, longhorn-system, media, paperless-ngx, pocket-id, toloka-torznab, versitygw, yamtrack]
     toEntities: [kube-apiserver]
@@ -282,7 +282,7 @@ egressExceptions:
   necesse:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   palworld:
-    toFQDNs: [s3.eu-central-003.backblazeb2.com, telemetry.palworldgame.com, api.epicgames.dev]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, telemetry.palworldgame.com, api.epicgames.dev, o1291919.ingest.us.sentry.io]
   paperless-ngx:
     toNamespaces: [envoy-gateway]
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
@@ -305,7 +305,7 @@ egressExceptions:
   toloka-torznab:
     toNamespaces: [media]
     toEntities: [kube-apiserver]
-    toFQDNs: [s3.eu-central-003.backblazeb2.com, radarrapi.servarr.com, toloka.to, utp.to, skyhook.sonarr.tv, datasets.imdbws.com, api.openai.com]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, radarrapi.servarr.com, toloka.to, utp.to, skyhook.sonarr.tv, services.sonarr.tv, datasets.imdbws.com, api.openai.com]
   unraid:
     toNamespaces: [telemetry]
     toFQDNs: [raw.githubusercontent.com, releases.unraid.net, version.pm2.io]
