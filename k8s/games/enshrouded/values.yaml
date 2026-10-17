@@ -51,7 +51,7 @@ enshrouded:
       type: LoadBalancer
       annotations:
         internal.ivanchenko.io/hostname: "enshrouded.ivanchenko.io"
-      loadBalancerIP: 10.10.61.237
+      loadBalancerIP: 10.10.61.231
       ports:
         query:
           port: 15637
