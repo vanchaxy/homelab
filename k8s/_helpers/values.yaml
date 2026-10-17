@@ -18,7 +18,7 @@ global:
       daily: 12
       weekly: 12
       monthly: 12
-    schedule: "0 0 * * *"
+    scheduleWindowHours: 4
 
 ghcrSecret:
   enabled: false
