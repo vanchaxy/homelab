@@ -15,14 +15,21 @@ enshrouded:
             SERVER_SAVE_DIR: /home/enshrouded/savegame
             UPDATE_CRON: "*/30 * * * *"
             UPDATE_CHECK_PLAYERS: "true"
-          envFrom:
-            - secretRef:
-                name: enshrouded-secret
+            SERVER_ROLE_0_NAME: Admin
+            SERVER_ROLE_0_PASSWORD:
+              valueFrom:
+                secretKeyRef:
+                  name: enshrouded-secret
+                  key: SERVER_ROLE_0_PASSWORD
+            SERVER_ROLE_0_CAN_KICK_BAN: "true"
+            SERVER_ROLE_0_CAN_ACCESS_INVENTORIES: "true"
+            SERVER_ROLE_0_CAN_EDIT_WORLD: "true"
+            SERVER_ROLE_0_CAN_EDIT_BASE: "true"
+            SERVER_ROLE_0_CAN_EXTEND_BASE: "true"
+            SERVER_ROLE_0_RESERVED_SLOTS: 0
           resources:
             requests:
-              memory: 16Gi
-            limits:
-              memory: 16Gi
+              memory: 6Gi
 
   service:
     main:
