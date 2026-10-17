@@ -1,0 +1,68 @@
+enshrouded:
+  controllers:
+    main:
+      pod:
+        terminationGracePeriodSeconds: 90
+      containers:
+        main:
+          image:
+            repository: mornedhels/enshrouded-server
+            tag: 1.8.0-proton@sha256:689dcb30037b0c63e6929b2fe5951eaf8eca52a43792b2764440baeb012b2aa1
+          env:
+            SERVER_NAME: Enshrouded Server
+            SERVER_SLOT_COUNT: 16
+            SERVER_QUERYPORT: 15637
+            SERVER_SAVE_DIR: /home/enshrouded/savegame
+            UPDATE_CRON: "*/30 * * * *"
+            UPDATE_CHECK_PLAYERS: "true"
+          envFrom:
+            - secretRef:
+                name: enshrouded-secret
+          resources:
+            requests:
+              memory: 16Gi
+            limits:
+              memory: 16Gi
+
+  service:
+    main:
+      controller: main
+      type: LoadBalancer
+      loadBalancerIP: 10.10.61.237
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: "enshrouded.ivanchenko.io"
+      ports:
+        query:
+          port: 15637
+          protocol: UDP
+
+  persistence:
+    savegame:
+      enabled: true
+      suffix: savegame
+      storageClass: longhorn-ssd
+      size: 2Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        main:
+          main:
+            - path: /home/enshrouded/savegame
+    gamefiles:
+      enabled: true
+      suffix: gamefiles
+      storageClass: longhorn-ssd
+      size: 40Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        main:
+          main:
+            - path: /opt/enshrouded
+
+helpers:
+  infisicalSecrets:
+    - name: enshrouded-secret
+      infisical:
+        path: "/enshrouded"
+  backups:
+    - pvcName: enshrouded-savegame
+      resticRepoSuffix: enshrouded

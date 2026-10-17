@@ -236,6 +236,8 @@ egressExceptions:
   donetick:
     toNamespaces: [envoy-gateway]
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
+  enshrouded:
+    toFQDNs: [s3.eu-central-003.backblazeb2.com]
   envoy-gateway:
     toNamespaces: [actualbudget, argocd, backrest, crowdsec, donetick, grafana, hermes-karyna, home-infra, immich, kaneo, kube-system, librespeed, longhorn-system, media, paperless-ngx, pocket-id, toloka-torznab, versitygw, yamtrack]
     toEntities: [kube-apiserver]
@@ -329,6 +331,7 @@ sameNamespaceEgress:
   - crowdsec
   - csi-driver-nfs
   - donetick
+  - enshrouded
   - envoy-gateway
   - external-dns
   - factorio
