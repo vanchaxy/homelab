@@ -163,7 +163,7 @@ victoria-metrics-k8s-stack:
           - targetLabel: job
             replacement: kubelet
           - action: labeldrop
-            regex: (amd_com_gpu_.*|beta_amd_com_gpu_.*|extensions_talos_dev_.*)
+            regex: (amd_com_gpu_.*|beta_amd_com_gpu_.*|extensions_talos_dev_.*|.*kubevirt_io_.*)
 
 vector:
   role: Agent

@@ -34,7 +34,8 @@ spec:
   sourcePVC: {{ $backup.pvcName }}
   trigger:
     {{- if ne $backup.enabled false }}
-    schedule: {{ $backup.schedule | default $.Values.global.restic.schedule | quote }}
+    {{- $hash := adler32sum $backup.pvcName | atoi }}
+    schedule: {{ $backup.schedule | default (printf "%d %d * * *" (mod $hash 60) (mod (div $hash 60) $.Values.global.restic.scheduleWindowHours)) | quote }}
     {{- else }}
     manual: disabled
     {{- end }}
