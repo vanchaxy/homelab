@@ -1,6 +1,11 @@
 csi-driver-nfs:
   controller:
     runOnControlPlane: true
+  node:
+    resources:
+      nfs:
+        limits:
+          memory: 384Mi
   storageClass:
     create: true
     name: nfs-csi

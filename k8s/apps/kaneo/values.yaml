@@ -6,6 +6,10 @@ kaneo:
           image:
             repository: ghcr.io/usekaneo/api
             tag: 2.46.2@sha256:8a758cbd8e229b877ee9f8b87200d39241d850f39507e000a21d983ebbbaa7a6
+          resources:
+            requests:
+              cpu: 10m
+              memory: 448Mi
           envFrom:
             - secretRef:
                 name: kaneo-s3
@@ -42,6 +46,10 @@ kaneo:
           image:
             repository: ghcr.io/usekaneo/web
             tag: 2.46.2@sha256:42f299412d44a27da5d98afc123f79a3c53ec3e5631880edf864c33d15bd5a7e
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
           env:
             KANEO_API_URL: "https://kaneo.ivanchenko.io"
             KANEO_CLIENT_URL: "https://kaneo.ivanchenko.io"

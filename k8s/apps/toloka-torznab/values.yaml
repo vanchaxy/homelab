@@ -9,6 +9,10 @@ toloka-torznab:
           image:
             repository: ghcr.io/vanchaxy/toloka-indexer
             tag: sha-5939c0d
+          resources:
+            requests:
+              cpu: 200m
+              memory: 384Mi
           envFrom:
             - secretRef:
                 name: toloka-torznab-secret
@@ -18,6 +22,10 @@ toloka-torznab:
           image:
             repository: electricsql/electric-temp
             tag: 1.8.1@sha256:910d5ebeca68c87c930ccd1b35426c7bc94d79c099ccacc8f27547b74fb4353a
+          resources:
+            requests:
+              cpu: 20m
+              memory: 384Mi
           env:
             ELECTRIC_INSECURE: 'true'
             ELECTRIC_MANUAL_TABLE_PUBLISHING: 'true'

@@ -126,8 +126,8 @@ crowdsec:
         storageClassName: longhorn-ssd
     resources:
       requests:
-        cpu: 50m
-        memory: 128Mi
+        cpu: 20m
+        memory: 256Mi
       limits:
         memory: 512Mi
 
@@ -178,7 +178,7 @@ crowdsec:
         enabled: true
     resources:
       requests:
-        cpu: 50m
+        cpu: 10m
         memory: 128Mi
       limits:
         memory: 512Mi
@@ -205,8 +205,8 @@ crowdsec:
         value: crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-generic-rules crowdsecurity/appsec-crs
     resources:
       requests:
-        cpu: 50m
-        memory: 128Mi
+        cpu: 10m
+        memory: 224Mi
       limits:
         memory: 512Mi
     metrics:

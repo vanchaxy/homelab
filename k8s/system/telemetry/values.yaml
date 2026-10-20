@@ -23,18 +23,18 @@ victoria-metrics-k8s-stack:
       useDefaultResources: false
       resources:
         requests:
-          cpu: 200m
-          memory: 500Mi
+          cpu: 300m
+          memory: 2560Mi
         limits:
-          memory: 2Gi
+          memory: 3Gi
 
   vmagent:
     spec:
       useDefaultResources: false
       resources:
         requests:
-          cpu: 50m
-          memory: 200Mi
+          cpu: 200m
+          memory: 768Mi
         limits:
           memory: 1Gi
 

@@ -6,6 +6,10 @@ yamtrack:
           image:
             repository: ghcr.io/fuzzygrim/yamtrack
             tag: 0.26.3@sha256:78497b454b2b52d3b1062f6fd238351d714cff0895db4369e49ace36f4622e75
+          resources:
+            requests:
+              cpu: 10m
+              memory: 512Mi
           env:
             REDIS_URL: redis://yamtrack-redis-headless:6379
             SOCIAL_PROVIDERS: allauth.socialaccount.providers.openid_connect
@@ -66,6 +70,9 @@ redis:
     persistence:
       enabled: false
     resources:
+      requests:
+        cpu: 40m
+        memory: 64Mi
       limits:
         cpu: null
   replica:

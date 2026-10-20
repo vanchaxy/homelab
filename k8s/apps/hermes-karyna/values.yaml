@@ -23,7 +23,7 @@ hermes-karyna:
                 name: hermes-karyna-secret
           resources:
             requests:
-              cpu: 100m
+              cpu: 10m
               memory: 512Mi
             limits:
               memory: 2Gi
@@ -47,7 +47,7 @@ hermes-karyna:
               drop: ["ALL"]
           resources:
             requests:
-              cpu: 50m
+              cpu: 10m
               memory: 64Mi
             limits:
               memory: 256Mi
@@ -100,7 +100,7 @@ hermes-karyna:
                 name: hermes-karyna-secret
           resources:
             requests:
-              cpu: 250m
+              cpu: 10m
               memory: 4Gi
             limits:
               memory: 6Gi
@@ -134,8 +134,8 @@ hermes-karyna:
             tag: v8.0.38@sha256:113a70240fb48f5c6fd674c9de40b1af4e7ff629f7acc6a412c6014ab1922daf
           resources:
             requests:
-              cpu: 50m
-              memory: 64Mi
+              cpu: 10m
+              memory: 96Mi
             limits:
               memory: 256Mi
 
@@ -152,8 +152,8 @@ hermes-karyna:
                 name: hermes-karyna-secret
           resources:
             requests:
-              cpu: 50m
-              memory: 128Mi
+              cpu: 10m
+              memory: 192Mi
             limits:
               memory: 512Mi
 

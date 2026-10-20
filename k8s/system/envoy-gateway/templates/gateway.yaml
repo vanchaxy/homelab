@@ -99,6 +99,12 @@ spec:
   provider:
     type: Kubernetes
     kubernetes:
+      envoyDeployment:
+        container:
+          resources:
+            requests:
+              cpu: 10m
+              memory: 128Mi
       envoyService:
         externalTrafficPolicy: Cluster
 ---
