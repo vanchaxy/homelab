@@ -32,6 +32,13 @@ spec:
                 - count: 1000
                   paths:
                     - path: /dev/net/tun
+            - --device
+            - |
+              name: dri
+              groups:
+                - count: 10
+                  paths:
+                    - path: /dev/dri/renderD128
           name: generic-device-plugin
           resources:
             requests:

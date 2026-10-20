@@ -2,6 +2,7 @@ locals {
   extensions = [
     "siderolabs/amdgpu",
     "siderolabs/amd-ucode",
+    "siderolabs/i915",
     "siderolabs/intel-ucode",
     "siderolabs/iscsi-tools",
     "siderolabs/util-linux-tools",
