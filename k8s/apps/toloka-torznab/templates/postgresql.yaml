@@ -10,7 +10,9 @@ spec:
   resources:
     requests:
       cpu: 50m
-      memory: 960Mi
+      memory: 2816Mi
+    limits:
+      memory: 2816Mi
   monitoring:
     enablePodMonitor: true
   bootstrap:

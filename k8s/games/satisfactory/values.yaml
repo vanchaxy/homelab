@@ -8,9 +8,9 @@ satisfactory:
             tag: v1.9.11@sha256:ac252dba41653eb21c6feed94b577f98fa152f5792b1aeff2ce11fe364355137
           resources:
             requests:
-              memory: 16Gi
+              memory: 1280Mi
             limits:
-              memory: 16Gi
+              memory: 1280Mi
 
   service:
     main:

@@ -10,6 +10,8 @@ backrest:
             requests:
               cpu: 10m
               memory: 128Mi
+            limits:
+              memory: 128Mi
           env:
             BACKREST_DATA: /data
             BACKREST_CONFIG: /config/config.json
@@ -58,6 +60,12 @@ backrest-volsync-operator:
   image:
     repository: ghcr.io/jogotcha/backrest-volsync-operator
     tag: 0.3.1@sha256:032036d57fdead3992c63bc7b93c4090cc7a1587b967acb1c5a43999a8cab400
+
+  resources:
+    requests:
+      memory: 96Mi
+    limits:
+      memory: 96Mi
 
   operatorConfig:
     create: true

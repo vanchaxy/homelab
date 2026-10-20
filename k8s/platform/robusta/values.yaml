@@ -24,6 +24,8 @@ robusta:
       requests:
         cpu: 10m
         memory: 704Mi
+      limits:
+        memory: 704Mi
   isSmallCluster: false
   kubewatch:
     resources:
@@ -52,6 +54,9 @@ robusta:
     resources:
       requests:
         cpu: 40m
+        memory: 896Mi
+      limits:
+        memory: 896Mi
     sendAdditionalTelemetry: true
   sinksConfig:
     - robusta_sink:

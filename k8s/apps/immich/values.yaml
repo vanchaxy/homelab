@@ -46,6 +46,8 @@ immich:
               requests:
                 cpu: 20m
                 memory: 96Mi
+              limits:
+                memory: 96Mi
 
   server:
     controllers:
@@ -59,7 +61,9 @@ immich:
             resources:
               requests:
                 cpu: 10m
-                memory: 3584Mi
+                memory: 3840Mi
+              limits:
+                memory: 3840Mi
     route:
       main:
         hostnames:
@@ -82,6 +86,8 @@ immich:
               requests:
                 cpu: 10m
                 memory: 1280Mi
+              limits:
+                memory: 1280Mi
 
 immichframe:
   fullnameOverride: immich-frame
@@ -95,6 +101,8 @@ immichframe:
           resources:
             requests:
               cpu: 10m
+              memory: 192Mi
+            limits:
               memory: 192Mi
           env:
             TZ: Europe/Berlin

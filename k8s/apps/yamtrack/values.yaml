@@ -9,7 +9,9 @@ yamtrack:
           resources:
             requests:
               cpu: 10m
-              memory: 512Mi
+              memory: 576Mi
+            limits:
+              memory: 576Mi
           env:
             REDIS_URL: redis://yamtrack-redis-headless:6379
             SOCIAL_PROVIDERS: allauth.socialaccount.providers.openid_connect
@@ -72,9 +74,10 @@ redis:
     resources:
       requests:
         cpu: 40m
-        memory: 64Mi
+        memory: 96Mi
       limits:
         cpu: null
+        memory: 96Mi
   replica:
     replicaCount: 0
     resources:

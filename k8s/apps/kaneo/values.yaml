@@ -9,7 +9,9 @@ kaneo:
           resources:
             requests:
               cpu: 10m
-              memory: 448Mi
+              memory: 512Mi
+            limits:
+              memory: 512Mi
           envFrom:
             - secretRef:
                 name: kaneo-s3
@@ -49,7 +51,9 @@ kaneo:
           resources:
             requests:
               cpu: 10m
-              memory: 32Mi
+              memory: 64Mi
+            limits:
+              memory: 64Mi
           env:
             KANEO_API_URL: "https://kaneo.ivanchenko.io"
             KANEO_CLIENT_URL: "https://kaneo.ivanchenko.io"

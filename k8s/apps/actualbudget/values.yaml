@@ -21,7 +21,9 @@ actualbudget:
           resources:
             requests:
               cpu: 10m
-              memory: 448Mi
+              memory: 704Mi
+            limits:
+              memory: 704Mi
           env:
             ACTUAL_OPENID_SERVER_HOSTNAME: https://budget.ivanchenko.io
             # ACTUAL_OPENID_ENFORCE: true
@@ -58,7 +60,9 @@ actualbudget:
           resources:
             requests:
               cpu: 10m
-              memory: 192Mi
+              memory: 224Mi
+            limits:
+              memory: 224Mi
 
   service:
     actualbudget:

@@ -13,6 +13,8 @@ toloka-torznab:
             requests:
               cpu: 200m
               memory: 384Mi
+            limits:
+              memory: 384Mi
           envFrom:
             - secretRef:
                 name: toloka-torznab-secret
@@ -25,6 +27,8 @@ toloka-torznab:
           resources:
             requests:
               cpu: 20m
+              memory: 384Mi
+            limits:
               memory: 384Mi
           env:
             ELECTRIC_INSECURE: 'true'

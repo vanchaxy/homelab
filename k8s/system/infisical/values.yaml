@@ -2,5 +2,8 @@ secrets-operator:
   controllerManager:
     manager:
       resources:
+        requests:
+          memory: 128Mi
         limits:
           cpu: null
+          memory: 128Mi

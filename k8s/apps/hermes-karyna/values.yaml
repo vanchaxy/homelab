@@ -24,9 +24,9 @@ hermes-karyna:
           resources:
             requests:
               cpu: 10m
-              memory: 512Mi
+              memory: 704Mi
             limits:
-              memory: 2Gi
+              memory: 704Mi
 
         browser:
           image: *hermesImage
@@ -50,7 +50,7 @@ hermes-karyna:
               cpu: 10m
               memory: 64Mi
             limits:
-              memory: 256Mi
+              memory: 64Mi
           probes:
             liveness:
               enabled: true
@@ -101,9 +101,9 @@ hermes-karyna:
           resources:
             requests:
               cpu: 10m
-              memory: 4Gi
+              memory: 5Gi
             limits:
-              memory: 6Gi
+              memory: 5Gi
           probes:
             liveness:
               enabled: true
@@ -137,7 +137,7 @@ hermes-karyna:
               cpu: 10m
               memory: 96Mi
             limits:
-              memory: 256Mi
+              memory: 96Mi
 
     searxng:
       containers:
@@ -155,7 +155,7 @@ hermes-karyna:
               cpu: 10m
               memory: 192Mi
             limits:
-              memory: 512Mi
+              memory: 192Mi
 
   service:
     hindsight:

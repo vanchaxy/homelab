@@ -29,7 +29,9 @@ enshrouded:
             SERVER_ROLE_0_RESERVED_SLOTS: 0
           resources:
             requests:
-              memory: 6Gi
+              memory: 1280Mi
+            limits:
+              memory: 1280Mi
 
   service:
     main:

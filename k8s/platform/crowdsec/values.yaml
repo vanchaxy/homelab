@@ -127,9 +127,9 @@ crowdsec:
     resources:
       requests:
         cpu: 20m
-        memory: 256Mi
+        memory: 320Mi
       limits:
-        memory: 512Mi
+        memory: 320Mi
 
   agent:
     isDeployment: true
@@ -179,9 +179,9 @@ crowdsec:
     resources:
       requests:
         cpu: 10m
-        memory: 128Mi
+        memory: 320Mi
       limits:
-        memory: 512Mi
+        memory: 320Mi
 
   appsec:
     enabled: true
@@ -208,7 +208,7 @@ crowdsec:
         cpu: 10m
         memory: 224Mi
       limits:
-        memory: 512Mi
+        memory: 224Mi
     metrics:
       enabled: true
       serviceMonitor:
@@ -245,9 +245,9 @@ envoy-bouncer:
   resources:
     requests:
       cpu: 20m
-      memory: 32Mi
+      memory: 64Mi
     limits:
-      memory: 128Mi
+      memory: 64Mi
 
 blocklist-mirror:
   global:
@@ -269,9 +269,9 @@ blocklist-mirror:
           resources:
             requests:
               cpu: 10m
-              memory: 32Mi
+              memory: 64Mi
             limits:
-              memory: 128Mi
+              memory: 64Mi
 
   configMaps:
     config:

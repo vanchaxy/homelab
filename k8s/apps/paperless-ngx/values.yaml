@@ -9,7 +9,9 @@ paperless-ngx:
           resources:
             requests:
               cpu: 10m
-              memory: 1Gi
+              memory: 1280Mi
+            limits:
+              memory: 1280Mi
           env:
             PAPERLESS_REDIS: redis://paperless-ngx-redis-headless:6379
             PAPERLESS_TIKA_ENABLED: 1
@@ -47,6 +49,8 @@ paperless-ngx:
             requests:
               cpu: 10m
               memory: 64Mi
+            limits:
+              memory: 64Mi
           command:
             - "gotenberg"
             - "--chromium-disable-javascript=true"
@@ -60,7 +64,9 @@ paperless-ngx:
           resources:
             requests:
               cpu: 10m
-              memory: 384Mi
+              memory: 448Mi
+            limits:
+              memory: 448Mi
   service:
     paperless:
       controller: paperless
@@ -124,6 +130,7 @@ redis:
         memory: 64Mi
       limits:
         cpu: null
+        memory: 64Mi
   replica:
     replicaCount: 0
     resources:

@@ -4,7 +4,9 @@ gateway-helm:
       resources:
         requests:
           cpu: 10m
-          memory: 128Mi
+          memory: 224Mi
+        limits:
+          memory: 224Mi
   config:
     envoyGateway:
       extensionApis:

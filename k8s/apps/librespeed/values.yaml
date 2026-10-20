@@ -9,7 +9,9 @@ librespeed:
           resources:
             requests:
               cpu: 10m
-              memory: 96Mi
+              memory: 128Mi
+            limits:
+              memory: 128Mi
           env:
             MODE: standalone
 

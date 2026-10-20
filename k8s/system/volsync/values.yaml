@@ -7,3 +7,4 @@ volsync:
       memory: 128Mi
     limits:
       cpu: null
+      memory: 128Mi
