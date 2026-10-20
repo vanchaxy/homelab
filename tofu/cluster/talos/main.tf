@@ -1,5 +1,9 @@
 resource "talos_machine_secrets" "this" {
   talos_version = var.cluster.talos_version
+
+  lifecycle {
+    ignore_changes = [talos_version]
+  }
 }
 
 data "talos_client_configuration" "this" {
