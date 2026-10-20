@@ -51,6 +51,7 @@ kind: SysctlConfig
 params:
   net.core.default_qdisc: fq
   net.ipv4.tcp_congestion_control: bbr
+  kernel.kexec_load_disabled: "1"
 ---
 apiVersion: v1alpha1
 kind: CRICustomizationConfig
