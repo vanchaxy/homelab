@@ -1,0 +1,24 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: krr
+  namespace: telemetry
+spec:
+  groups:
+    - name: krr.rules
+      interval: 1m
+      rules:
+        - record: namespace_workload_container:container_cpu_usage_seconds_total:max_rate5m
+          expr: |
+            max by (namespace, workload_type, workload, container) (
+              node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m{container!=""}
+              * on (namespace, pod) group_left (workload, workload_type)
+              max by (namespace, pod, workload, workload_type) (namespace_workload_pod:kube_pod_owner:relabel)
+            )
+        - record: namespace_workload_container:container_memory_working_set_bytes:max
+          expr: |
+            max by (namespace, workload_type, workload, container) (
+              node_namespace_pod_container:container_memory_working_set_bytes{container!=""}
+              * on (namespace, pod) group_left (workload, workload_type)
+              max by (namespace, pod, workload, workload_type) (namespace_workload_pod:kube_pod_owner:relabel)
+            )
