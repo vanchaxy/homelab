@@ -1,0 +1,16 @@
+{{- range $path, $_ := .Files.Glob "dashboards/*.json" }}
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: telemetry-{{ base $path | trimSuffix ".json" }}
+spec:
+  allowCrossNamespaceImport: true
+  folder: Kubernetes
+  resyncPeriod: 10m
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  json: |
+{{ $.Files.Get $path | indent 4 }}
+{{- end }}
