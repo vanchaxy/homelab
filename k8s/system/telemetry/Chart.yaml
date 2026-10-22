@@ -9,10 +9,10 @@ dependencies:
     version: 32.0.1
     repository: https://prometheus-community.github.io/helm-charts/
   - name: vector
-    version: 0.59.0
+    version: 0.60.0
     repository: https://helm.vector.dev
   - name: vector
-    version: 0.59.0
+    version: 0.60.0
     repository: https://helm.vector.dev
     alias: vector-syslog
   - name: helpers
