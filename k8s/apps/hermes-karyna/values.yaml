@@ -80,7 +80,7 @@ hermes-karyna:
         main:
           image:
             repository: ghcr.io/vectorize-io/hindsight
-            tag: 1.0.0@sha256:a88678c038b0e4340822b02a5efc566c56d8176b5bffa731bc433fd37f978e4c
+            tag: 1.1.0@sha256:50311d02b4d5d2b7c5242bd336edf8735df8374eaad496a92f49c83b37d2aa06
           env:
             HINDSIGHT_API_WORKER_ID: hermes-karyna-hindsight
             HINDSIGHT_API_LLM_PROVIDER: claude-code
