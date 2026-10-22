@@ -17,7 +17,7 @@ media:
         main:
           image:
             repository: linuxserver/qbittorrent
-            tag: 5.2.4-libtorrentv1@sha256:d6890b0d79dfdb67d09e8c393409254c41ca7848188e2117f1147abcedf14254
+            tag: 5.2.4-libtorrentv1@sha256:4053d5e07c3353022cba697edae8b105a299b0740c07eb0597d4f3bb9c9297f8
           env:
             PUID: 568
             PGID: 568
