@@ -8,6 +8,13 @@ spec:
   enablePDB: false
   smartShutdownTimeout: 10
 
+  resources:
+    requests:
+      cpu: 30m
+      memory: 1280Mi
+    limits:
+      memory: 1280Mi
+
   monitoring:
     enablePodMonitor: true
 

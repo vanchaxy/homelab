@@ -59,6 +59,12 @@ spec:
                 claimName: grafana-pvc
           containers:
             - name: grafana
+              resources:
+                requests:
+                  cpu: 30m
+                  memory: 1088Mi
+                limits:
+                  memory: 1088Mi
               env:
                 - name: OAUTH_CLIENT_ID
                   valueFrom:

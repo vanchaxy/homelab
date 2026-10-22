@@ -38,6 +38,16 @@ immich:
         size: 1Gi
         storageClass: longhorn-ssd
         accessMode: ReadWriteOnce
+    controllers:
+      main:
+        containers:
+          main:
+            resources:
+              requests:
+                cpu: 20m
+                memory: 96Mi
+              limits:
+                memory: 96Mi
 
   server:
     controllers:
@@ -48,6 +58,12 @@ immich:
             image:
               repository: ghcr.io/immich-app/immich-server
               tag: v3.3.5@sha256:485d546a2e31d6a8b4db8423fcba5c109de8c218d93410af115fd1ccfc4352a6
+            resources:
+              requests:
+                cpu: 10m
+                memory: 3840Mi
+              limits:
+                memory: 3840Mi
     route:
       main:
         hostnames:
@@ -66,6 +82,12 @@ immich:
             image:
               repository: ghcr.io/immich-app/immich-machine-learning
               tag: v3.3.5@sha256:5b28c9352c8374b8a1ed96fbdd8d6755fea6e43510ec43fdf6538aa02ea40f56
+            resources:
+              requests:
+                cpu: 10m
+                memory: 1280Mi
+              limits:
+                memory: 1280Mi
 
 immichframe:
   fullnameOverride: immich-frame
@@ -76,6 +98,12 @@ immichframe:
           image:
             repository: ghcr.io/immichframe/immichframe
             tag: v1.0.39.0@sha256:b4bd2ac6ec75c0117a24bd627dc0b449d485ac87ec3a410c73d5db05a4bbfcaf
+          resources:
+            requests:
+              cpu: 10m
+              memory: 192Mi
+            limits:
+              memory: 192Mi
           env:
             TZ: Europe/Berlin
   service:

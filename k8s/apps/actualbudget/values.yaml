@@ -18,6 +18,12 @@ actualbudget:
           image:
             repository: actualbudget/actual-server
             tag: 26.10.0@sha256:24645e971da6bb1a1f953d6859e307a0b29be1e8b4130a35b3220c209b5b860c
+          resources:
+            requests:
+              cpu: 10m
+              memory: 704Mi
+            limits:
+              memory: 704Mi
           env:
             ACTUAL_OPENID_SERVER_HOSTNAME: https://budget.ivanchenko.io
             # ACTUAL_OPENID_ENFORCE: true
@@ -51,6 +57,12 @@ actualbudget:
           image:
             repository: ghcr.io/vanchaxy/bank-sync
             tag: sha-c55fc32
+          resources:
+            requests:
+              cpu: 10m
+              memory: 224Mi
+            limits:
+              memory: 224Mi
 
   service:
     actualbudget:

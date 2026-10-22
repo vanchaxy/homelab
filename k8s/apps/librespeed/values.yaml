@@ -6,6 +6,12 @@ librespeed:
           image:
             repository: ghcr.io/librespeed/speedtest
             tag: 6.3.1@sha256:bc34bf69b6c102b23ab81b6e77beb7cce321fb0d3be33ec6e80edef3e9dd8bab
+          resources:
+            requests:
+              cpu: 10m
+              memory: 128Mi
+            limits:
+              memory: 128Mi
           env:
             MODE: standalone
 

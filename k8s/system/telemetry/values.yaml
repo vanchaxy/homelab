@@ -23,20 +23,20 @@ victoria-metrics-k8s-stack:
       useDefaultResources: false
       resources:
         requests:
-          cpu: 200m
-          memory: 500Mi
+          cpu: 300m
+          memory: 2560Mi
         limits:
-          memory: 2Gi
+          memory: 2560Mi
 
   vmagent:
     spec:
       useDefaultResources: false
       resources:
         requests:
-          cpu: 50m
-          memory: 200Mi
+          cpu: 200m
+          memory: 832Mi
         limits:
-          memory: 1Gi
+          memory: 832Mi
 
   vmalert:
     spec:
@@ -44,9 +44,9 @@ victoria-metrics-k8s-stack:
       resources:
         requests:
           cpu: 50m
-          memory: 100Mi
+          memory: 128Mi
         limits:
-          memory: 500Mi
+          memory: 128Mi
 
   alertmanager:
     spec:
@@ -55,9 +55,9 @@ victoria-metrics-k8s-stack:
       resources:
         requests:
           cpu: 20m
-          memory: 50Mi
+          memory: 96Mi
         limits:
-          memory: 200Mi
+          memory: 96Mi
 
   grafana:
     enabled: false
@@ -326,9 +326,9 @@ vector:
   resources:
     requests:
       cpu: 50m
-      memory: 256Mi
+      memory: 448Mi
     limits:
-      memory: 1Gi
+      memory: 448Mi
   initContainers:
     - name: geoip
       image: docker.io/library/alpine:3.24@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6
@@ -525,9 +525,9 @@ vector-syslog:
   resources:
     requests:
       cpu: 10m
-      memory: 192Mi
+      memory: 256Mi
     limits:
-      memory: 512Mi
+      memory: 256Mi
   initContainers:
     - name: geoip
       image: docker.io/library/alpine:3.24@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6

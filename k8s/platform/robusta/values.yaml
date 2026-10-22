@@ -20,7 +20,17 @@ robusta:
           secretKeyRef:
             key: ROBUSTA_UI_TOKEN
             name: robusta-secrets
+    resources:
+      requests:
+        cpu: 10m
+        memory: 704Mi
+      limits:
+        memory: 704Mi
   isSmallCluster: false
+  kubewatch:
+    resources:
+      requests:
+        memory: 256Mi
   runner:
     additional_env_vars:
       - name: SIGNING_KEY
@@ -41,6 +51,12 @@ robusta:
           secretKeyRef:
             key: ROBUSTA_UI_TOKEN
             name: robusta-secrets
+    resources:
+      requests:
+        cpu: 40m
+        memory: 896Mi
+      limits:
+        memory: 896Mi
     sendAdditionalTelemetry: true
   sinksConfig:
     - robusta_sink:

@@ -6,6 +6,12 @@ paperless-ngx:
           image:
             repository: ghcr.io/paperless-ngx/paperless-ngx
             tag: 3.3.3@sha256:dba0242c1df1843643df4eb50ce5639f3a7900f414879088fd5bed8eaf2d456d
+          resources:
+            requests:
+              cpu: 10m
+              memory: 1280Mi
+            limits:
+              memory: 1280Mi
           env:
             PAPERLESS_REDIS: redis://paperless-ngx-redis-headless:6379
             PAPERLESS_TIKA_ENABLED: 1
@@ -39,6 +45,12 @@ paperless-ngx:
           image:
             repository: docker.io/gotenberg/gotenberg
             tag: 8.38@sha256:aa552cc115db488e0f0bcb07446aac13071ad51505b642c84bb894500907b42b
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              memory: 64Mi
           command:
             - "gotenberg"
             - "--chromium-disable-javascript=true"
@@ -49,6 +61,12 @@ paperless-ngx:
           image:
             repository: docker.io/apache/tika
             tag: 3.3.3.0@sha256:326b238b37904c94ff61fed87afe0af72e6a29fa715933b10af97b7d56f1d4cb
+          resources:
+            requests:
+              cpu: 10m
+              memory: 448Mi
+            limits:
+              memory: 448Mi
   service:
     paperless:
       controller: paperless
@@ -107,8 +125,12 @@ redis:
     persistence:
       enabled: true
     resources:
+      requests:
+        cpu: 40m
+        memory: 64Mi
       limits:
         cpu: null
+        memory: 64Mi
   replica:
     replicaCount: 0
     resources:

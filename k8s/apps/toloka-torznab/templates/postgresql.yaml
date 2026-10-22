@@ -7,6 +7,12 @@ spec:
   instances: 1
   enablePDB: false
   smartShutdownTimeout: 10
+  resources:
+    requests:
+      cpu: 50m
+      memory: 2816Mi
+    limits:
+      memory: 2816Mi
   monitoring:
     enablePodMonitor: true
   bootstrap:

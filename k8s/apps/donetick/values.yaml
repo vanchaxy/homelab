@@ -6,6 +6,12 @@ donetick:
           image:
             repository: donetick/donetick
             tag: v0.1.83@sha256:a4f41fc67942eeec1016ab1025f98382ff9179c1d366d2f7856d99073c98582e
+          resources:
+            requests:
+              cpu: 10m
+              memory: 128Mi
+            limits:
+              memory: 128Mi
           env:
             DT_ENV: selfhosted
             DT_OAUTH2_CLIENT_SECRET:

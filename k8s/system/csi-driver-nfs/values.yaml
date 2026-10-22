@@ -1,6 +1,49 @@
 csi-driver-nfs:
   controller:
     runOnControlPlane: true
+    resources:
+      csiProvisioner:
+        requests:
+          memory: 96Mi
+        limits:
+          memory: 96Mi
+      csiResizer:
+        requests:
+          memory: 96Mi
+        limits:
+          memory: 96Mi
+      csiSnapshotter:
+        requests:
+          memory: 96Mi
+        limits:
+          memory: 96Mi
+      livenessProbe:
+        requests:
+          memory: 32Mi
+        limits:
+          memory: 32Mi
+      nfs:
+        requests:
+          memory: 32Mi
+        limits:
+          memory: 32Mi
+  node:
+    resources:
+      livenessProbe:
+        requests:
+          memory: 32Mi
+        limits:
+          memory: 32Mi
+      nodeDriverRegistrar:
+        requests:
+          memory: 64Mi
+        limits:
+          memory: 64Mi
+      nfs:
+        requests:
+          memory: 384Mi
+        limits:
+          memory: 384Mi
   storageClass:
     create: true
     name: nfs-csi
