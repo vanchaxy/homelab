@@ -8,7 +8,7 @@ toloka-torznab:
         main:
           image:
             repository: ghcr.io/vanchaxy/toloka-indexer
-            tag: sha-e60d4d7
+            tag: 0.0.2
           resources:
             requests:
               cpu: 200m
