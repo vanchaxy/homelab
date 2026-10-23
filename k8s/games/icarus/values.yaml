@@ -23,7 +23,7 @@ icarus:
       type: LoadBalancer
       loadBalancerIP: 10.10.61.238
       annotations:
-        external-dns.alpha.kubernetes.io/hostname: "icarus.ivanchenko.io"
+        external-dns.kubernetes.io/hostname: "icarus.ivanchenko.io"
       ports:
         game:
           port: 17777

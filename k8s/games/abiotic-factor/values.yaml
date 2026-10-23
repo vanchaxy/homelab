@@ -23,7 +23,7 @@ abiotic-factor:
       type: LoadBalancer
       loadBalancerIP: 10.10.61.236
       annotations:
-        external-dns.alpha.kubernetes.io/hostname: "af.ivanchenko.io"
+        external-dns.kubernetes.io/hostname: "af.ivanchenko.io"
       ports:
         game:
           port: 7777

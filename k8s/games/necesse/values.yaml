@@ -16,7 +16,7 @@ necesse:
       controller: main
       type: LoadBalancer
       annotations:
-        external-dns.alpha.kubernetes.io/hostname: "necesse.ivanchenko.io"
+        external-dns.kubernetes.io/hostname: "necesse.ivanchenko.io"
       ports:
         game:
           port: 14159

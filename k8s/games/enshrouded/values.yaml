@@ -38,7 +38,7 @@ enshrouded:
       controller: main
       type: LoadBalancer
       annotations:
-        external-dns.alpha.kubernetes.io/hostname: "enshrouded.ivanchenko.io"
+        external-dns.kubernetes.io/hostname: "enshrouded.ivanchenko.io"
         lbipam.cilium.io/lb-ipam-ips: 46.38.230.69
         lbipam.cilium.io/sharing-key: vps-tunnel
         lbipam.cilium.io/sharing-cross-namespace: "*"
