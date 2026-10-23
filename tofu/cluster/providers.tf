@@ -41,10 +41,18 @@ terraform {
       source  = "tailscale/tailscale"
       version = "0.29.2"
     }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "5.28.1"
+    }
   }
 }
 
 provider "tailscale" {
   oauth_client_id     = var.tailscale.oauth_client_id
   oauth_client_secret = var.tailscale.oauth_client_secret
+}
+
+provider "cloudflare" {
+  api_token = var.cloudflare_api_token
 }

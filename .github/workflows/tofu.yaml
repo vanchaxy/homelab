@@ -35,6 +35,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.B2_APPLICATION_KEY }}
       TF_VAR_state_passphrase: ${{ secrets.TOFU_STATE_PASSPHRASE }}
       TF_VAR_tailscale: ${{ secrets.TOFU_TAILSCALE }}
+      TF_VAR_cloudflare_api_token: ${{ secrets.TOFU_CLOUDFLARE_API_TOKEN }}
       TF_VAR_laptop_public_ed25519: ${{ secrets.LAPTOP_PUBLIC_ED25519 }}
       TF_IN_AUTOMATION: "1"
       TALOSCONFIG: ${{ github.workspace }}/.ci/talosconfig

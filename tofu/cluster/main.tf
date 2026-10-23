@@ -129,6 +129,10 @@ module "tailscale" {
   source = "./tailscale"
 }
 
+module "cloudflare" {
+  source = "./cloudflare"
+}
+
 import {
   to = module.tailscale.tailscale_acl.this
   id = "acl"
