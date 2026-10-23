@@ -90,6 +90,25 @@ spec:
           - kind: Secret
             name: ivanchenko-io-wildcard-tls
             namespace: cert-manager
+    - name: http-vnchx
+      protocol: HTTP
+      port: 80
+      hostname: "*.vnchx.com"
+      allowedRoutes:
+        namespaces:
+          from: Same
+    - name: https-vnchx
+      protocol: HTTPS
+      port: 443
+      hostname: "*.vnchx.com"
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        certificateRefs:
+          - kind: Secret
+            name: vnchx-com-wildcard-tls
+            namespace: cert-manager
 ---
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: EnvoyProxy
@@ -122,6 +141,8 @@ spec:
       sectionName: http
     - name: public-gw
       sectionName: http
+    - name: public-gw
+      sectionName: http-vnchx
   rules:
     - filters:
         - type: RequestRedirect
