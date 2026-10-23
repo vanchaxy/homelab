@@ -8,7 +8,7 @@ toloka-torznab:
         main:
           image:
             repository: ghcr.io/vanchaxy/ukr-torznab
-            tag: 0.0.5
+            tag: 0.0.6
           resources:
             requests:
               cpu: 200m
