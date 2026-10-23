@@ -8,13 +8,15 @@ toloka-torznab:
         main:
           image:
             repository: ghcr.io/vanchaxy/ukr-torznab
-            tag: 0.0.6
+            tag: 0.0.7
           resources:
             requests:
               cpu: 200m
               memory: 384Mi
             limits:
               memory: 384Mi
+          env:
+            ELECTRIC_URL: ''
           envFrom:
             - secretRef:
                 name: toloka-torznab-secret
