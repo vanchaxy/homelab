@@ -66,6 +66,8 @@ toloka-torznab:
         - backendRefs:
             - identifier: main
     electric:
+      annotations:
+        external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
       hostnames:
         - toloka-torznab-electric.ivanchenko.io
         - electric.vnchx.com
