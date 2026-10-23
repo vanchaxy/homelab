@@ -12,9 +12,9 @@ toloka-torznab:
           resources:
             requests:
               cpu: 200m
-              memory: 512Mi
+              memory: 1024Mi
             limits:
-              memory: 512Mi
+              memory: 1024Mi
           env:
             ELECTRIC_URL: ''
           envFrom:
