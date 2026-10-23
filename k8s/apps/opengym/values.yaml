@@ -1,0 +1,113 @@
+opengym:
+  defaultPodOptions:
+    automountServiceAccountToken: false
+    securityContext:
+      fsGroup: 1000
+      fsGroupChangePolicy: "OnRootMismatch"
+
+  controllers:
+    main:
+      strategy: Recreate
+      containers:
+        api:
+          image:
+            repository: ghcr.io/duartesantos8/opengym-api
+            tag: 1.4.2@sha256:57f4dd3fb9e4a6f48aa139b09de60398098ba85457f9498c1bcd4ac86c948f12
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+          resources:
+            requests:
+              cpu: 10m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+          env:
+            PORT: "3000"
+            DATA_DIR: /data
+            RP_ID: gym.ivanchenko.io
+            ORIGIN: https://gym.ivanchenko.io
+            RP_NAME: openGym
+            FIRST_USER_ADMIN: "1"
+          probes:
+            readiness:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /api/health
+                  port: 3000
+            liveness:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /api/health
+                  port: 3000
+                initialDelaySeconds: 30
+
+        web:
+          image:
+            repository: ghcr.io/duartesantos8/opengym-web
+            tag: 1.4.2@sha256:748c77417d40969d9840f064fd0cafecd84e47ac786d424688d0cff0d6b53299
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
+          env:
+            NGINX_PORT: "8080"
+            BACKEND: 127.0.0.1
+            PORT: "3000"
+          probes:
+            readiness:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /
+                  port: 8080
+            liveness:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /
+                  port: 8080
+                initialDelaySeconds: 30
+
+  service:
+    main:
+      controller: main
+      type: ClusterIP
+      ports:
+        http:
+          port: 8080
+
+  route:
+    main:
+      hostnames:
+        - gym.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+
+  persistence:
+    data:
+      enabled: true
+      suffix: data
+      storageClass: longhorn-ssd
+      size: 2Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        main:
+          api:
+            - path: /data
+
+helpers:
+  backups:
+    - enabled: true
+      pvcName: opengym-data
+      resticRepoSuffix: opengym
