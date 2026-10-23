@@ -12,3 +12,17 @@ spec:
     - ivanchenko.io
     - "*.ivanchenko.io"
     - "*.s3.ivanchenko.io"
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: vnchx-com-wildcard
+spec:
+  secretName: vnchx-com-wildcard-tls
+  issuerRef:
+    name: letsencrypt
+    kind: ClusterIssuer
+  commonName: vnchx.com
+  dnsNames:
+    - vnchx.com
+    - "*.vnchx.com"

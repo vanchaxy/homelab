@@ -68,10 +68,17 @@ toloka-torznab:
     electric:
       hostnames:
         - toloka-torznab-electric.ivanchenko.io
+        - electric.vnchx.com
       parentRefs:
         - name: internal-gw
           namespace: envoy-gateway
           sectionName: https
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https-vnchx
+        - name: public-gw
+          namespace: envoy-gateway
+          sectionName: https-vnchx
       rules:
         - backendRefs:
             - identifier: electric
