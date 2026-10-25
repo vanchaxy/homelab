@@ -47,6 +47,8 @@ spec:
           image: {{ .Values.configure.cliImage }}
           args: [apply, --file, /work/plan.ndjson]
           env:
+            - name: HOME
+              value: /work
             - name: STALWART_URL
               value: http://stalwart-http:8080
             - name: STALWART_USER
