@@ -6,6 +6,7 @@
 {"@type":"update","object":"SystemSettings","value":{"defaultHostname":"stalwart.ivanchenko.io","defaultDomainId":"#ivanchenko","defaultCertificateId":"#tls"}}
 {"@type":"update","object":"Http","value":{"useXForwarded":true,"usePermissiveCors":true}}
 {"@type":"reconcile","object":"NetworkListener","matchOn":["name"],"value":{"http":{"name":"http","protocol":"http","bind":{"[::]:8080":true},"useTls":false},"lmtp":{"name":"lmtp","protocol":"lmtp","bind":{"127.0.0.1:24":true},"useTls":false},"imaps":{"name":"imaps","protocol":"imap","bind":{"[::]:993":true},"useTls":true,"tlsImplicit":true},"submissions":{"name":"submissions","protocol":"smtp","bind":{"[::]:465":true},"useTls":true,"tlsImplicit":true},"submission":{"name":"submission","protocol":"smtp","bind":{"[::]:587":true},"useTls":true,"tlsImplicit":false},"sieve":{"name":"sieve","protocol":"manageSieve","bind":{"[::]:4190":true},"useTls":true,"tlsImplicit":false}}}
+{"@type":"upsert","object":"Application","matchOn":["description"],"value":{"webui":{"description":"Stalwart Web Interface","oauthClientId":"bulwark"}}}
 {"@type":"update","object":"Email","value":{"maxMailboxes":2000}}
 {"@type":"update","object":"MtaStageAuth","value":{"require":{"match":{"0":{"if":"local_port == 24","then":"false"}},"else":"true"},"mustMatchSender":{"match":{},"else":"false"}}}
 {"@type":"update","object":"MtaStageData","value":{"enableSpamFilter":{"match":{},"else":"false"}}}
