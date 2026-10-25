@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: stalwart-files
+data:
+  config.json: |
+    {"@type":"RocksDb","path":"/var/lib/stalwart/data"}
+  plan.ndjson: |
+{{ .Files.Get "files/plan.ndjson" | indent 4 }}
+    {{ dict "@type" "upsert" "object" "SieveUserScript" "matchOn" (list "name") "value" (dict "inbound" (dict "name" "inbound" "description" "Inbound filing, included by each account's active script" "isActive" true "contents" (.Files.Get "files/inbound.sieve"))) | toJson }}
+    {"@type":"create","object":"Action","value":{"reload":{"@type":"ReloadSettings"}}}
+  fetch.py: |
+{{ .Files.Get "files/fetch.py" | indent 4 }}
+  sources: |
+{{ .Files.Get "files/sources" | indent 4 }}
