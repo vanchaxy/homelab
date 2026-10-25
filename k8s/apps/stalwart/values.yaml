@@ -1,10 +1,6 @@
 configure:
   renderImage: docker.io/library/alpine:3.24@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6
   cliImage: docker.io/stalwartlabs/cli:1.0.13@sha256:9a1e07307d6f890a193322c4b737fc0868405f0f8486a19922cbf362f43884fd
-  pythonImage: docker.io/library/python:3.14-alpine@sha256:601e99e090cb08c2784a42395487709500bc39930307fe72f3f11a8f3c430762
-  sieveAccounts:
-    - maksym@ivanchenko.io
-    - karyna@ivanchenko.io
 
 stalwart:
   defaultPodOptions:
