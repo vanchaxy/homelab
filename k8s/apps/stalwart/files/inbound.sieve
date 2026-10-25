@@ -1,4 +1,4 @@
-require ["fileinto", "mailbox", "variables", "regex", "envelope", "relational", "comparator-i;ascii-numeric"];
+require ["fileinto", "mailbox", "variables", "regex", "envelope", "relational", "comparator-i;ascii-numeric", "special-use"];
 
 set "to" "";
 set "local" "";
@@ -8,7 +8,7 @@ if anyof(
   header :value "ge" :comparator "i;ascii-numeric" "X-Spam-score" "5",
   header :contains "X-Spam" "Yes"
 ) {
-  fileinto :create "Junk";
+  fileinto :specialuse "\\Junk" :create "Junk";
   stop;
 }
 
