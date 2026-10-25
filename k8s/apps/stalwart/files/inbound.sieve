@@ -30,10 +30,6 @@ if string :regex "${to}" "^([^@]+)@([^@]+)$" {
     addheader :last "Bcc" "${to}";
   }
 
-  if string :regex "${local}" "^([^.]*)\\.?([^.]*)\\.?([^.]*)\\.?([^.]*)$" {
-    set "local" "${1}${2}${3}${4}";
-  }
-
   fileinto "INBOX";
   fileinto :create "${domain}";
   fileinto :create "${domain}/${local}";
