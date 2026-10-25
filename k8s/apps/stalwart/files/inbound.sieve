@@ -30,10 +30,8 @@ if string :regex "${to}" "^([^@]+)@([^@]+)$" {
   set :lower "local" "${1}";
   set :lower "domain" "${2}";
 
-  if string :is "${domain}" "ivanchenko.io" {
-    if string :regex "${local}" "^([^.]*)\\.?([^.]*)\\.?([^.]*)\\.?([^.]*)$" {
-      set "local" "${1}${2}${3}${4}";
-    }
+  if string :regex "${local}" "^([^.]*)\\.?([^.]*)\\.?([^.]*)\\.?([^.]*)$" {
+    set "local" "${1}${2}${3}${4}";
   }
 
   fileinto :create "${domain}/${local}";
