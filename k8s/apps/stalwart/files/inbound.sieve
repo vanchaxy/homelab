@@ -1,4 +1,4 @@
-require ["fileinto", "mailbox", "variables", "regex", "envelope", "relational", "comparator-i;ascii-numeric", "imap4flags", "copy"];
+require ["fileinto", "mailbox", "variables", "regex", "envelope", "relational", "comparator-i;ascii-numeric", "copy"];
 
 set "to" "";
 set "local" "";
@@ -9,18 +9,6 @@ if anyof(
   header :contains "X-Spam" "Yes"
 ) {
   fileinto :create "Junk";
-  stop;
-}
-
-if address :is "From" [
-  "hello@ecoflow.com",
-  "joy.hill@netnut.io",
-  "naomi@netnut.io",
-  "disneydestinations@mail.disneydestinations.com",
-  "disneyvacationclub@vacations.disneydestinations.com"
-] {
-  addflag "\\Seen";
-  fileinto :create "Trash";
   stop;
 }
 
