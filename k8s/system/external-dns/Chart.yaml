@@ -9,6 +9,10 @@ dependencies:
     version: 1.23.0
     repository: https://kubernetes-sigs.github.io/external-dns
     alias: internal-external-dns
+  - name: external-dns
+    version: 1.23.0
+    repository: https://kubernetes-sigs.github.io/external-dns
+    alias: cloudflare-records-external-dns
   - name: helpers
     version: 0.1.0
     repository: file://../../../k8s/_helpers
