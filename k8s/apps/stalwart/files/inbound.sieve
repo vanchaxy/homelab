@@ -1,4 +1,4 @@
-require ["fileinto", "mailbox", "variables", "regex", "envelope", "relational", "comparator-i;ascii-numeric", "copy"];
+require ["fileinto", "mailbox", "variables", "regex", "envelope", "relational", "comparator-i;ascii-numeric"];
 
 set "to" "";
 set "local" "";
@@ -10,10 +10,6 @@ if anyof(
 ) {
   fileinto :create "Junk";
   stop;
-}
-
-if header :contains ["X-Delivered-To", "X-Original-Delivered-To", "Delivered-To"] "interactivebrokerskaryna@ivanchenko.io" {
-  redirect :copy "karyna@ivanchenko.io";
 }
 
 if header :regex "X-Forwarded-For" "^([^ ]+)" {
