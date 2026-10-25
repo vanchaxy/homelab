@@ -299,7 +299,7 @@ egressExceptions:
     toEntities: [kube-apiserver]
   stalwart:
     toNamespaces: [envoy-gateway]
-    toFQDNs: [s3.eu-central-003.backblazeb2.com, imap.fastmail.com, smtp.fastmail.com, imap.purelymail.com, smtp.purelymail.com, github.com, release-assets.githubusercontent.com, objects.githubusercontent.com, pypi.org, files.pythonhosted.org]
+    toFQDNs: [s3.eu-central-003.backblazeb2.com, imap.fastmail.com, smtp.fastmail.com, imap.purelymail.com, smtp.purelymail.com, github.com, release-assets.githubusercontent.com, objects.githubusercontent.com]
   telemetry:
     toNamespaces: [argocd, cert-manager, immich, kaneo, kube-system, longhorn-system, pocket-id, robusta, spegel, toloka-torznab, volsync, crowdsec]
     toEntities: [kube-apiserver, host, remote-node]

@@ -42,7 +42,6 @@ spec:
               mountPath: /plan
             - name: work
               mountPath: /work
-      containers:
         - name: apply
           image: {{ .Values.configure.cliImage }}
           args: [apply, --file, /work/plan.ndjson]
@@ -64,6 +63,30 @@ spec:
           volumeMounts:
             - name: work
               mountPath: /work
+      containers:
+        - name: sieve
+          image: {{ .Values.configure.pythonImage }}
+          command: [python, -I, /plan/install-sieve.py]
+          env:
+            - name: STALWART_URL
+              value: http://stalwart-http:8080
+            - name: STALWART_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: stalwart-secrets
+                  key: ADMIN_PASSWORD
+            - name: SIEVE_SCRIPT_PATH
+              value: /plan/inbound.sieve
+            - name: SIEVE_ACCOUNTS
+              value: {{ join " " .Values.configure.sieveAccounts | quote }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: plan
+              mountPath: /plan
       volumes:
         - name: plan
           configMap:
@@ -71,5 +94,9 @@ spec:
             items:
               - key: plan.ndjson
                 path: plan.ndjson
+              - key: inbound.sieve
+                path: inbound.sieve
+              - key: install-sieve.py
+                path: install-sieve.py
         - name: work
           emptyDir: {}

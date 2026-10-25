@@ -1,6 +1,10 @@
 configure:
   renderImage: docker.io/library/alpine:3.24@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6
   cliImage: docker.io/stalwartlabs/cli:1.0.13@sha256:9a1e07307d6f890a193322c4b737fc0868405f0f8486a19922cbf362f43884fd
+  pythonImage: docker.io/library/python:3.14-alpine@sha256:601e99e090cb08c2784a42395487709500bc39930307fe72f3f11a8f3c430762
+  sieveAccounts:
+    - maksym@ivanchenko.io
+    - karyna@ivanchenko.io
 
 stalwart:
   defaultPodOptions:
@@ -13,24 +17,6 @@ stalwart:
         securityContext:
           fsGroup: 2000
           fsGroupChangePolicy: "OnRootMismatch"
-      initContainers:
-        getmail:
-          image:
-            repository: docker.io/library/python
-            tag: 3.13-alpine@sha256:bf12ecc0bea3f171d55145dd02c78b5eeb09f30ee2ac9cc2b4c9e4e8f5e30741
-          command:
-            - pip
-            - install
-            - --no-cache-dir
-            - --disable-pip-version-check
-            - --target
-            - /opt/getmail
-            - getmail6==6.20.2
-          env:
-            HOME: /tmp
-          securityContext:
-            runAsUser: 2000
-            runAsGroup: 2000
       containers:
         main:
           image:
@@ -80,16 +66,14 @@ stalwart:
         fetch:
           image:
             repository: docker.io/library/python
-            tag: 3.13-alpine@sha256:bf12ecc0bea3f171d55145dd02c78b5eeb09f30ee2ac9cc2b4c9e4e8f5e30741
+            tag: 3.14-alpine@sha256:601e99e090cb08c2784a42395487709500bc39930307fe72f3f11a8f3c430762
           command:
-            - sh
-            - /config/fetch.sh
+            - python
+            - -I
+            - /config/fetch.py
           envFrom:
             - secretRef:
                 name: stalwart-secrets
-          env:
-            PYTHONPATH: /opt/getmail
-            HOME: /tmp
           resources:
             requests:
               cpu: 5m
@@ -127,6 +111,11 @@ stalwart:
             OAUTH_SCOPES: openid email profile groups offline_access
             OAUTH_END_SESSION: "false"
             SETTINGS_SYNC_ENABLED: "true"
+            SESSION_SECRET:
+              valueFrom:
+                secretKeyRef:
+                  name: stalwart-secrets
+                  key: SESSION_SECRET
             BULWARK_TELEMETRY: "off"
           resources:
             requests:
@@ -246,15 +235,6 @@ stalwart:
         main:
           main:
             - path: /etc/stalwart/tls
-              readOnly: true
-    getmail:
-      type: emptyDir
-      advancedMounts:
-        main:
-          getmail:
-            - path: /opt/getmail
-          fetch:
-            - path: /opt/getmail
               readOnly: true
 
 helpers:
