@@ -24,9 +24,9 @@ hermes-karyna:
           resources:
             requests:
               cpu: 10m
-              memory: 704Mi
+              memory: 2Gi
             limits:
-              memory: 704Mi
+              memory: 2Gi
 
         browser:
           image: *hermesImage
