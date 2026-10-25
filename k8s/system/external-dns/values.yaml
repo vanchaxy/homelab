@@ -67,13 +67,42 @@ internal-external-dns:
           value: "false"
   txtOwnerId: internal-homelab
   extraArgs:
-    - --annotation-filter=external-dns.alpha.kubernetes.io/exclude notin (true)
+    - --annotation-filter=external-dns.alpha.kubernetes.io/exclude notin (true),dns.ivanchenko.io/target notin (cloudflare)
     - --gateway-name=internal-gw
 #    - --min-ttl=60s
   sources:
     - service
     - gateway-httproute
     - crd
+  policy: sync
+
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+
+cloudflare-records-external-dns:
+  fullnameOverride: cloudflare-records-external-dns
+  provider:
+    name: cloudflare
+  txtOwnerId: homelab-records
+  txtPrefix: "_extdns.%{record_type}."
+  env:
+    - name: CF_API_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: cloudflare-api-token
+          key: api-token
+  extraArgs:
+    - --annotation-filter=dns.ivanchenko.io/target in (cloudflare)
+  sources:
+    - crd
+  managedRecordTypes:
+    - A
+    - AAAA
+    - CNAME
+    - MX
+    - TXT
   policy: sync
 
   metrics:

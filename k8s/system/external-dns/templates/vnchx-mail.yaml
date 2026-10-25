@@ -1,0 +1,33 @@
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: vnchx-mail
+  annotations:
+    dns.ivanchenko.io/target: cloudflare
+spec:
+  endpoints:
+    - dnsName: vnchx.com
+      recordType: MX
+      targets:
+        - "50 mailserver.purelymail.com"
+    - dnsName: vnchx.com
+      recordType: TXT
+      targets:
+        - "v=spf1 include:_spf.purelymail.com ~all"
+        - "purelymail_ownership_proof=ba19313e37ec15816ead8b2265d997bd0f084781d982c1d1979cb9646a3144d8517e0b9b3fa063dea41c0e1ad124ef54ce28444a5ffd6c8878b0ad0feeea59fe"
+    - dnsName: purelymail1._domainkey.vnchx.com
+      recordType: CNAME
+      targets:
+        - key1.dkimroot.purelymail.com
+    - dnsName: purelymail2._domainkey.vnchx.com
+      recordType: CNAME
+      targets:
+        - key2.dkimroot.purelymail.com
+    - dnsName: purelymail3._domainkey.vnchx.com
+      recordType: CNAME
+      targets:
+        - key3.dkimroot.purelymail.com
+    - dnsName: _dmarc.vnchx.com
+      recordType: CNAME
+      targets:
+        - dmarcroot.purelymail.com
