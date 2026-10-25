@@ -1,4 +1,4 @@
-require ["fileinto", "mailbox", "variables", "regex", "envelope", "relational", "comparator-i;ascii-numeric", "special-use"];
+require ["fileinto", "mailbox", "variables", "regex", "envelope", "relational", "comparator-i;ascii-numeric", "special-use", "editheader"];
 
 set "to" "";
 set "local" "";
@@ -25,6 +25,10 @@ if header :regex "X-Forwarded-For" "^([^ ]+)" {
 if string :regex "${to}" "^([^@]+)@([^@]+)$" {
   set :lower "local" "${1}";
   set :lower "domain" "${2}";
+
+  if not address :is ["To", "Cc"] "${to}" {
+    addheader :last "Bcc" "${to}";
+  }
 
   if string :regex "${local}" "^([^.]*)\\.?([^.]*)\\.?([^.]*)\\.?([^.]*)$" {
     set "local" "${1}${2}${3}${4}";
