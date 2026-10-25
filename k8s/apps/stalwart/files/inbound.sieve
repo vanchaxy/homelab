@@ -30,6 +30,7 @@ if string :regex "${to}" "^([^@]+)@([^@]+)$" {
     set "local" "${1}${2}${3}${4}";
   }
 
+  fileinto :create "${domain}";
   fileinto :create "${domain}/${local}";
   stop;
 }
