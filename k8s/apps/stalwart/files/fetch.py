@@ -5,6 +5,7 @@ import json
 import logging
 import os
 import re
+import signal
 import smtplib
 import ssl
 import sys
@@ -117,6 +118,7 @@ def run(source):
 
 
 def main():
+    signal.signal(signal.SIGTERM, lambda *_: sys.exit(0))
     os.makedirs(STATE_DIR, exist_ok=True)
     threads = []
     with open(SOURCES) as f:
