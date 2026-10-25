@@ -1,0 +1,300 @@
+configure:
+  renderImage: docker.io/library/alpine:3.24@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6
+  cliImage: docker.io/stalwartlabs/cli:1.0.13@sha256:9a1e07307d6f890a193322c4b737fc0868405f0f8486a19922cbf362f43884fd
+
+stalwart:
+  defaultPodOptions:
+    automountServiceAccountToken: false
+
+  controllers:
+    main:
+      strategy: Recreate
+      pod:
+        securityContext:
+          fsGroup: 2000
+          fsGroupChangePolicy: "OnRootMismatch"
+      initContainers:
+        getmail:
+          image:
+            repository: docker.io/library/python
+            tag: 3.13-alpine@sha256:bf12ecc0bea3f171d55145dd02c78b5eeb09f30ee2ac9cc2b4c9e4e8f5e30741
+          command:
+            - pip
+            - install
+            - --no-cache-dir
+            - --disable-pip-version-check
+            - --target
+            - /opt/getmail
+            - getmail6==6.20.2
+          env:
+            HOME: /tmp
+          securityContext:
+            runAsUser: 2000
+            runAsGroup: 2000
+      containers:
+        main:
+          image:
+            repository: docker.io/stalwartlabs/stalwart
+            tag: v0.16.27@sha256:c429b311c93db5606598abc1c68225a85a6953183848ae01bee9c6a98885836c
+          args:
+            - --config
+            - /etc/stalwart/config.json
+          envFrom:
+            - secretRef:
+                name: stalwart-secrets
+          env:
+            STALWART_PUBLIC_URL: https://stalwart.ivanchenko.io
+          resources:
+            requests:
+              cpu: 20m
+              memory: 256Mi
+            limits:
+              memory: 1Gi
+          securityContext:
+            runAsUser: 2000
+            runAsGroup: 2000
+          probes:
+            liveness:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /healthz/live
+                  port: 8080
+                  httpHeaders:
+                    - name: X-Forwarded-For
+                      value: 127.0.0.1
+                initialDelaySeconds: 30
+                periodSeconds: 10
+            readiness:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /healthz/ready
+                  port: 8080
+                  httpHeaders:
+                    - name: X-Forwarded-For
+                      value: 127.0.0.1
+                periodSeconds: 10
+        fetch:
+          image:
+            repository: docker.io/library/python
+            tag: 3.13-alpine@sha256:bf12ecc0bea3f171d55145dd02c78b5eeb09f30ee2ac9cc2b4c9e4e8f5e30741
+          command:
+            - sh
+            - /config/fetch.sh
+          envFrom:
+            - secretRef:
+                name: stalwart-secrets
+          env:
+            PYTHONPATH: /opt/getmail
+            HOME: /tmp
+          resources:
+            requests:
+              cpu: 5m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+          securityContext:
+            runAsUser: 2000
+            runAsGroup: 2000
+
+    bulwark:
+      strategy: Recreate
+      pod:
+        securityContext:
+          fsGroup: 1001
+          fsGroupChangePolicy: "OnRootMismatch"
+      containers:
+        main:
+          image:
+            repository: ghcr.io/bulwarkmail/webmail
+            tag: 1.17.2@sha256:395232a8b62c371619c3692f63c42ee26bd0258faa5d60d4c9132948c8418729
+          env:
+            APP_NAME: Mail
+            JMAP_SERVER_URL: https://stalwart.ivanchenko.io
+            STALWART_FEATURES: "true"
+            OAUTH_ENABLED: "true"
+            OAUTH_ONLY: "true"
+            OAUTH_ISSUER_URL: https://id.ivanchenko.io
+            OAUTH_CLIENT_ID: bulwark
+            OAUTH_CLIENT_SECRET:
+              valueFrom:
+                secretKeyRef:
+                  name: bulwark-oidc
+                  key: client_secret
+            OAUTH_SCOPES: openid email profile groups offline_access
+            OAUTH_END_SESSION: "false"
+            SETTINGS_SYNC_ENABLED: "true"
+            BULWARK_TELEMETRY: "off"
+          resources:
+            requests:
+              cpu: 10m
+              memory: 192Mi
+            limits:
+              memory: 512Mi
+          securityContext:
+            runAsUser: 1001
+          probes:
+            liveness:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /api/health
+                  port: 3000
+                initialDelaySeconds: 30
+            readiness:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /api/health
+                  port: 3000
+
+  service:
+    http:
+      controller: main
+      ports:
+        http:
+          port: 8080
+    mail:
+      controller: main
+      type: LoadBalancer
+      loadBalancerIP: 10.10.61.232
+      annotations:
+        internal.ivanchenko.io/hostname: "imap.ivanchenko.io"
+      ports:
+        imaps:
+          port: 993
+        submissions:
+          port: 465
+        submission:
+          port: 587
+        sieve:
+          port: 4190
+    bulwark:
+      controller: bulwark
+      ports:
+        http:
+          port: 3000
+
+  route:
+    stalwart:
+      hostnames:
+        - stalwart.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      rules:
+        - backendRefs:
+            - identifier: http
+              port: 8080
+    bulwark:
+      hostnames:
+        - mail.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      rules:
+        - backendRefs:
+            - identifier: bulwark
+              port: 3000
+
+  persistence:
+    data:
+      enabled: true
+      suffix: data
+      storageClass: longhorn-ssd
+      size: 10Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        main:
+          main:
+            - path: /var/lib/stalwart
+          fetch:
+            - path: /var/lib/stalwart
+    bulwark:
+      enabled: true
+      suffix: bulwark
+      storageClass: longhorn-ssd
+      size: 1Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        bulwark:
+          main:
+            - path: /app/data
+    files:
+      type: configMap
+      name: stalwart-files
+      advancedMounts:
+        main:
+          main:
+            - path: /etc/stalwart/config.json
+              subPath: config.json
+              readOnly: true
+          fetch:
+            - path: /config
+              readOnly: true
+    tls:
+      type: secret
+      name: stalwart-tls
+      advancedMounts:
+        main:
+          main:
+            - path: /etc/stalwart/tls
+              readOnly: true
+    getmail:
+      type: emptyDir
+      advancedMounts:
+        main:
+          getmail:
+            - path: /opt/getmail
+          fetch:
+            - path: /opt/getmail
+              readOnly: true
+
+helpers:
+  oidcClients:
+    - name: bulwark
+      spec:
+        clientID: "bulwark"
+        callbackUrls:
+          - "https://mail.ivanchenko.io/en/auth/callback"
+          - "https://mail.ivanchenko.io/uk/auth/callback"
+        launchUrl: "https://mail.ivanchenko.io/"
+        allowedUserGroups:
+          - name: admins
+            namespace: pocket-id
+          - name: family
+            namespace: pocket-id
+        secret:
+          name: bulwark-oidc
+  infisicalSecrets:
+    - name: stalwart-secrets
+      infisical:
+        path: "/stalwart"
+      template:
+        includeAllSecrets: true
+        data:
+          STALWART_RECOVERY_ADMIN: "admin:{{ .ADMIN_PASSWORD.Value }}"
+  backups:
+    - enabled: true
+      pvcName: stalwart-data
+      resticRepoSuffix: stalwart/data
+      moverSecurityContext:
+        fsGroup: 2000
+        runAsGroup: 2000
+        runAsNonRoot: true
+        runAsUser: 2000
+    - enabled: true
+      pvcName: stalwart-bulwark
+      resticRepoSuffix: stalwart/bulwark
+      moverSecurityContext:
+        fsGroup: 1001
+        runAsGroup: 1001
+        runAsNonRoot: true
+        runAsUser: 1001

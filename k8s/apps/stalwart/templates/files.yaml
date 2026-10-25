@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: stalwart-files
+data:
+  config.json: |
+    {"@type":"RocksDb","path":"/var/lib/stalwart/data"}
+  plan.ndjson: |
+{{ .Files.Get "files/plan.ndjson" | indent 4 }}
+  fetch.sh: |
+{{ .Files.Get "files/fetch.sh" | indent 4 }}
+  sources: |
+{{ .Files.Get "files/sources" | indent 4 }}

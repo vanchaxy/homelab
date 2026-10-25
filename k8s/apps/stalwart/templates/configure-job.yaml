@@ -1,0 +1,75 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: stalwart-configure
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  backoffLimit: 6
+  ttlSecondsAfterFinished: 86400
+  template:
+    spec:
+      restartPolicy: OnFailure
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: render
+          image: {{ .Values.configure.renderImage }}
+          command:
+            - sh
+            - -c
+            - >-
+              sed -e "s|\${FASTMAIL_MAKSYM_USER}|$FASTMAIL_MAKSYM_USER|g"
+              -e "s|\${FASTMAIL_KARYNA_USER}|$FASTMAIL_KARYNA_USER|g"
+              -e "s|\${PURELYMAIL_USER}|$PURELYMAIL_USER|g"
+              /plan/plan.ndjson > /work/plan.ndjson
+          envFrom:
+            - secretRef:
+                name: stalwart-secrets
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: plan
+              mountPath: /plan
+            - name: work
+              mountPath: /work
+      containers:
+        - name: apply
+          image: {{ .Values.configure.cliImage }}
+          args: [apply, --file, /work/plan.ndjson]
+          env:
+            - name: STALWART_URL
+              value: http://stalwart-http:8080
+            - name: STALWART_USER
+              value: admin
+            - name: STALWART_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: stalwart-secrets
+                  key: ADMIN_PASSWORD
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: work
+              mountPath: /work
+      volumes:
+        - name: plan
+          configMap:
+            name: stalwart-files
+            items:
+              - key: plan.ndjson
+                path: plan.ndjson
+        - name: work
+          emptyDir: {}
