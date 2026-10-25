@@ -99,11 +99,6 @@ stalwart:
             OAUTH_ONLY: "true"
             OAUTH_ISSUER_URL: https://id.ivanchenko.io
             OAUTH_CLIENT_ID: bulwark
-            OAUTH_CLIENT_SECRET:
-              valueFrom:
-                secretKeyRef:
-                  name: bulwark-oidc
-                  key: client_secret
             OAUTH_SCOPES: openid email profile groups offline_access
             OAUTH_END_SESSION: "false"
             SETTINGS_SYNC_ENABLED: "true"
@@ -241,7 +236,11 @@ helpers:
         callbackUrls:
           - "https://mail.ivanchenko.io/en/auth/callback"
           - "https://mail.ivanchenko.io/uk/auth/callback"
+          - "https://stalwart.ivanchenko.io/admin/oauth/callback"
+          - "https://stalwart.ivanchenko.io/account/oauth/callback"
         launchUrl: "https://mail.ivanchenko.io/"
+        isPublic: true
+        pkceEnabled: true
         allowedUserGroups:
           - name: admins
             namespace: pocket-id
