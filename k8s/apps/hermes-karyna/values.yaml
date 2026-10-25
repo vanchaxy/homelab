@@ -85,6 +85,11 @@ hermes-karyna:
             HINDSIGHT_API_WORKER_ID: hermes-karyna-hindsight
             HINDSIGHT_API_LLM_PROVIDER: claude-code
             HINDSIGHT_API_LLM_MODEL: claude-sonnet-5
+            HINDSIGHT_API_LLM_API_KEY:
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-karyna-secret
+                  key: CLAUDE_CODE_OAUTH_TOKEN
             HINDSIGHT_API_RETAIN_LLM_MAX_CONCURRENT: "3"
             HINDSIGHT_API_RETAIN_LLM_INITIAL_BACKOFF: "2.0"
             HINDSIGHT_API_RETAIN_LLM_MAX_BACKOFF: "120.0"
