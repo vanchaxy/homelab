@@ -146,7 +146,7 @@ media:
         main:
           image:
             repository: linuxserver/prowlarr
-            tag: 2.6.5@sha256:f2b26429893d4c4cb71941b7ee50b1bdecd9d5f9f9e02d5410615e9f4f7c8d95
+            tag: 2.6.5@sha256:b3b00047ed20f6ce2b16780145cb6a0acb51c9e28ea6aa6f5dcd33c7034f1797
           env:
             PUID: 568
             PGID: 568
@@ -179,7 +179,7 @@ media:
         main:
           image:
             repository: linuxserver/sonarr
-            tag: 4.0.20@sha256:f247545d23ba8b233d6604575347e48a623fe6ad75dda02348bf81917f3b5c06
+            tag: 4.0.20@sha256:48e36b608b461273b9dae857725cd0561a127f2c694b687318f6d0c5ce63e5c9
           env:
             PUID: 568
             PGID: 568
