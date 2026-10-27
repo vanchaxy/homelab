@@ -1,0 +1,54 @@
+europa-park-map:
+  controllers:
+    main:
+      pod:
+        imagePullSecrets:
+          - name: ghcr-login-secret
+      containers:
+        main:
+          image:
+            repository: ghcr.io/vanchaxy/europa-park-map
+            tag: 0.1.0@sha256:82ca9363cb105b951987a896be2216611eca969292e133578ee46c3b564ef50a
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
+          probes:
+            liveness:
+              enabled: true
+            readiness:
+              enabled: true
+
+  service:
+    main:
+      controller: main
+      type: ClusterIP
+      ports:
+        http:
+          port: 8080
+
+  persistence:
+    # nginx tile cache (proxied official map artwork)
+    tile-cache:
+      type: emptyDir
+      sizeLimit: 2Gi
+      globalMounts:
+        - path: /tmp/tile-cache
+
+  route:
+    main:
+      hostnames:
+        - park.ivanchenko.io
+      parentRefs:
+        - name: internal-gw
+          namespace: envoy-gateway
+          sectionName: https
+      rules:
+        - backendRefs:
+            - identifier: main
+
+helpers:
+  ghcrSecret:
+    enabled: true
