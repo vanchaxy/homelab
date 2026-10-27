@@ -8,7 +8,7 @@ europa-park-map:
         main:
           image:
             repository: ghcr.io/vanchaxy/europa-park-map
-            tag: 0.2.0@sha256:a7c9cc2db8fd989a8b30429708daf2231b789a1ff1aa451f724f5fc023812b4d
+            tag: 0.3.0@sha256:52dfc714633c28af48058e4462669a2b5f9f53ea670854a2722fed2b41a2bd2e
           resources:
             requests:
               cpu: 10m
