@@ -1,6 +1,6 @@
 locals {
   # renovate: datasource=github-releases depName=cilium/cilium
-  cilium_version = "v1.20.3"
+  cilium_version = "v1.20.4"
   # renovate: datasource=docker depName=alpine/helm
   helm_version = "4.3.1"
 }
