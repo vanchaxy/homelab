@@ -5,17 +5,6 @@ metadata:
 data:
   config.json: |
     {"@type":"RocksDb","path":"/var/lib/stalwart/data-v1"}
-  config-v016.json: |
-    {"@type":"RocksDb","path":"/var/lib/stalwart/data"}
-  migrate-final.sh: |
-    set -eu
-    if stalwart-migrate status | grep -E '^final_done' | grep -qv 'not done'; then
-      echo "migration already finalized"
-      exit 0
-    fi
-    exec stalwart-migrate run --final --yes --verify-full --log-format text \
-      --source /etc/stalwart/config.json \
-      --target /etc/stalwart-v1/config.json
   plan.ndjson: |
 {{ .Files.Get "files/plan.ndjson" | indent 4 }}
     {{ dict "@type" "upsert" "object" "SieveUserScript" "matchOn" (list "name") "value" (dict "inbound" (dict "name" "inbound" "description" "Inbound filing, included by each account's active script" "isActive" true "contents" (.Files.Get "files/inbound.sieve"))) | toJson }}
