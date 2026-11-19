@@ -49,7 +49,7 @@ opengym:
         web:
           image:
             repository: ghcr.io/duartesantos8/opengym-web
-            tag: 1.4.2@sha256:748c77417d40969d9840f064fd0cafecd84e47ac786d424688d0cff0d6b53299
+            tag: 1.4.5@sha256:e621677554302a0e1745e3b8c90acddc7d7149e118c4d683d51c13aa88f47d27
           resources:
             requests:
               cpu: 10m
