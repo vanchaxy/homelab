@@ -12,7 +12,7 @@ opengym:
         api:
           image:
             repository: ghcr.io/duartesantos8/opengym-api
-            tag: 1.4.2@sha256:57f4dd3fb9e4a6f48aa139b09de60398098ba85457f9498c1bcd4ac86c948f12
+            tag: 1.4.5@sha256:397c83e9ac33a413bc8f21e66b2e55038100fc7f9da900d80be28b30fbb12ea8
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000
