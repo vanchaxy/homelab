@@ -5,7 +5,7 @@ kaneo:
         main:
           image:
             repository: ghcr.io/usekaneo/api
-            tag: 2.46.2@sha256:8a758cbd8e229b877ee9f8b87200d39241d850f39507e000a21d983ebbbaa7a6
+            tag: 2.50.0@sha256:9360cc1183b62313a09fd9e663ee9223601a69634624e3692e02f3a9f452ca9e
           resources:
             requests:
               cpu: 10m
@@ -47,7 +47,7 @@ kaneo:
         main:
           image:
             repository: ghcr.io/usekaneo/web
-            tag: 2.46.2@sha256:42f299412d44a27da5d98afc123f79a3c53ec3e5631880edf864c33d15bd5a7e
+            tag: 2.50.0@sha256:0cd5e83aa57b3d51c16474ea3288d5ce77b55786cce99befcc551d0b6a4e2951
           resources:
             requests:
               cpu: 10m
