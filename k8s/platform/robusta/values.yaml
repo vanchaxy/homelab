@@ -20,6 +20,11 @@ robusta:
           secretKeyRef:
             key: ROBUSTA_UI_TOKEN
             name: robusta-secrets
+      - name: SIGNING_KEY
+        valueFrom:
+          secretKeyRef:
+            key: SIGNING_KEY
+            name: robusta-secrets
     resources:
       requests:
         cpu: 10m
