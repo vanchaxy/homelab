@@ -224,7 +224,7 @@ egressExceptions:
     toFQDNs: [s3.eu-central-003.backblazeb2.com]
   cert-manager:
     toEntities: [kube-apiserver]
-    toFQDNs: [acme-v02.api.letsencrypt.org, api.cloudflare.com, '*.ns.cloudflare.com']
+    toFQDNs: [acme-v02.api.letsencrypt.org, api.cloudflare.com, '*.ns.cloudflare.com', cloudflare-dns.com]
   cloudnative-pg:
     toNamespaces: [immich, kaneo, toloka-torznab]
     toEntities: [kube-apiserver]
