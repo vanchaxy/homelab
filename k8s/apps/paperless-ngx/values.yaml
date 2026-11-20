@@ -54,7 +54,7 @@ paperless-ngx:
           command:
             - "gotenberg"
             - "--chromium-disable-javascript=true"
-            - "--chromium-allow-list=file:///tmp/.*"
+            - "--chromium-allow-list=^file:///tmp/.*"
     tika:
       containers:
         main:
