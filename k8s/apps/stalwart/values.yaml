@@ -84,7 +84,7 @@ stalwart:
         main:
           image:
             repository: ghcr.io/bulwarkmail/webmail
-            tag: 1.19.1@sha256:dcb6ef96e3b020fa30d8a161b94ea39431f4a21a97a663cbc980b515e894879b
+            tag: 1.21.2@sha256:037b85b1433233d2d7eebb83f928df5ecc3b4adc91dc7e4c55f0a2f69024e754
           env:
             APP_NAME: Mail
             JMAP_SERVER_URL: https://stalwart.ivanchenko.io
