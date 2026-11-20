@@ -1,5 +1,8 @@
 cert-manager:
   installCRDs: true
+  extraArgs:
+    - --dns01-recursive-nameservers-only
+    - --dns01-recursive-nameservers=https://cloudflare-dns.com/dns-query
   prometheus:
     enabled: true
     servicemonitor:
