@@ -60,8 +60,14 @@ spec:
   templatePatch: |
     {{ `{{- $privileged := eq .path.basename` }} {{ .Values.appsSync.privilegedNamespaces | toJson | replace "[" "" | replace "," " " | replace "]" "" }}{{ ` -}}` }}
     {{ `{{- $unmanagedReplicas := eq .path.basename` }} {{ .Values.appsSync.unmanagedReplicas | toJson | replace "[" "" | replace "," " " | replace "]" "" }}{{ ` -}}` }}
-    {{ `{{- if or $privileged $unmanagedReplicas }}` }}
+    {{ `{{- $skipCrds := eq .path.basename` }} {{ .Values.appsSync.skipCrds | toJson | replace "[" "" | replace "," " " | replace "]" "" }}{{ ` -}}` }}
+    {{ `{{- if or $privileged $unmanagedReplicas $skipCrds }}` }}
     spec:
+      {{ `{{- if $skipCrds }}` }}
+      source:
+        helm:
+          skipCrds: true
+      {{ `{{- end }}` }}
       {{ `{{- if $privileged }}` }}
       syncPolicy:
         managedNamespaceMetadata:

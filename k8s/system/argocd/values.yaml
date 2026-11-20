@@ -136,6 +136,8 @@ appsSync:
     - spegel
     - telemetry
     - unraid
+  skipCrds:
+    - external-dns
   unmanagedReplicas:
     - abiotic-factor
     - core-keeper
