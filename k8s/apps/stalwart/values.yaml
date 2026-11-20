@@ -1,6 +1,6 @@
 configure:
   renderImage: docker.io/library/alpine:3.24@sha256:f59abe656b692d901e184be3445e084786602108599d2a51d229c0f5a48c71bf
-  cliImage: docker.io/stalwartlabs/cli:1.0.14@sha256:5b70732cb69cdab3ff0894c501544cf0bfa180fa75bcd0eeba4eebe04c1064e1
+  cliImage: docker.io/stalwartlabs/cli:2.0.0@sha256:8588aa3ea88ed740f83292ab37760869541df3da39cd1c8e6494fb43ece888c9
 
 stalwart:
   defaultPodOptions:
