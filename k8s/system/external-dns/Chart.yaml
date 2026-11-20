@@ -3,14 +3,14 @@ name: external-dns
 version: 0.0.0
 dependencies:
   - name: external-dns
-    version: 1.23.0
+    version: 1.24.0
     repository: https://kubernetes-sigs.github.io/external-dns
   - name: external-dns
-    version: 1.23.0
+    version: 1.24.0
     repository: https://kubernetes-sigs.github.io/external-dns
     alias: internal-external-dns
   - name: external-dns
-    version: 1.23.0
+    version: 1.24.0
     repository: https://kubernetes-sigs.github.io/external-dns
     alias: cloudflare-records-external-dns
   - name: helpers
