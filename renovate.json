@@ -301,6 +301,13 @@
       ],
       "minimumReleaseAge": "3 days",
       "automerge": true
+    },
+    {
+      "description": "paperless-ngx's gotenberg-client 1.0.0 still calls /forms/pdfengines/* and sends pdfa, both removed in Gotenberg 9 (paperless-ngx#14702)",
+      "matchPackageNames": [
+        "docker.io/gotenberg/gotenberg"
+      ],
+      "allowedVersions": "<9"
     }
   ],
   "platformAutomerge": false
