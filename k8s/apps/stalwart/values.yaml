@@ -26,6 +26,7 @@ stalwart:
                 name: stalwart-secrets
           env:
             STALWART_PUBLIC_URL: https://stalwart.ivanchenko.io
+            STALWART_UPDATE_ROLE_PERMISSIONS: "true"
           resources:
             requests:
               cpu: 20m
