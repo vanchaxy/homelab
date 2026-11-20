@@ -6,6 +6,11 @@ factorio:
           image:
             repository: factoriotools/factorio
             tag: 2.1.25@sha256:69d0bb4e0a152c1154e69dbf8bee14cacb0970711e52d7306507bef3526456db
+          command:
+            - /bin/bash
+            - -c
+            - exec 9>/dev/null; BASH_XTRACEFD=9 exec /docker-entrypoint.sh "$@"
+            - docker-entrypoint
 
   service:
     main:
