@@ -17,7 +17,7 @@ stalwart:
         main:
           image:
             repository: docker.io/stalwartlabs/stalwart
-            tag: v1.0.1@sha256:b9da4df8b4efc06bc926dd6e990bdeb0ad7b9261a7c3893d74b0461a00bb389b
+            tag: v1.1.0@sha256:f772aa6ef8cd8018969fa491640f1436b0270eb14e2c219b5f37f1a77020837e
           args:
             - --config
             - /etc/stalwart/config.json
