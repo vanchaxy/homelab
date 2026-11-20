@@ -48,9 +48,9 @@ paperless-ngx:
           resources:
             requests:
               cpu: 10m
-              memory: 64Mi
+              memory: 512Mi
             limits:
-              memory: 64Mi
+              memory: 512Mi
           command:
             - "gotenberg"
             - "--chromium-disable-javascript=true"
