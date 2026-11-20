@@ -1,0 +1,5 @@
+{{- $chart := index .Subcharts "external-dns" }}
+{{- range $path, $_ := $chart.Files.Glob "crds/*.yaml" }}
+---
+{{ $chart.Files.Get $path }}
+{{- end }}
