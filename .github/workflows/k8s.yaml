@@ -45,7 +45,7 @@ jobs:
           if grep -qE '^(k8s/_helpers/|\.github/)' <<<"$changed"; then
             charts=$(dirname k8s/*/*/Chart.yaml)
           else
-            charts=$(cut -d/ -f1-3 <<<"$changed" | sort -u | while read -r d; do [ -f "$d/Chart.yaml" ] && echo "$d"; done)
+            charts=$(cut -d/ -f1-3 <<<"$changed" | sort -u | while read -r d; do if [ -f "$d/Chart.yaml" ]; then echo "$d"; fi; done)
           fi
 
           kube="${KUBERNETES_VERSION#v}"
