@@ -106,6 +106,7 @@ immichframe:
               memory: 192Mi
           env:
             TZ: Europe/Berlin
+            IMMICHFRAME_CONFIG_SOURCE: file
   service:
     frame:
       controller: frame
