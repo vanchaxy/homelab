@@ -73,7 +73,7 @@ set container name vymanager-frontend restart 'always'
 set container name vymanager-postgres environment POSTGRES_DB value 'vymanager'
 set container name vymanager-postgres environment POSTGRES_PASSWORD value "$(cat /config/auth/vymanager-postgres.POSTGRES_PASSWORD)"
 set container name vymanager-postgres environment POSTGRES_USER value 'vymanager'
-set container name vymanager-postgres image 'postgres:16-alpine@sha256:deb28ee471183cb0c303113dac9b2433c51eeeeb678def7af9a9ec5820367815'
+set container name vymanager-postgres image 'postgres:16-alpine@sha256:f2f98726820d0342055351c6e9d36e705f5bfffb3dd53ff556325114b08afb6d'
 set container name vymanager-postgres network vymanager address '172.31.255.2'
 set container name vymanager-postgres network vymanager mac '02:eb:92:e9:81:23'
 set container name vymanager-postgres restart 'always'
