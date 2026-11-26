@@ -47,7 +47,8 @@ class Source:
 
 
 def envelope_sender(raw):
-    headers = email.parser.BytesHeaderParser().parsebytes(raw)
+    end = re.search(rb"\r?\n\r?\n", raw)
+    headers = email.parser.BytesHeaderParser().parsebytes(raw[: end.end()] if end else raw)
     _, addr = email.utils.parseaddr(headers.get("Return-Path", ""))
     return addr
 
